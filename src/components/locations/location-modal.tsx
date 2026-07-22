@@ -12,7 +12,7 @@ type LocationModalProps = {
     name: string;
     description?: string | null;
   } | null;
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function LocationModal({
@@ -53,10 +53,11 @@ export function LocationModal({
     try {
       if (editLocation) {
         await updateLocation(editLocation.id, { name, description });
+        onSuccess('Data lokasi storage berhasil diperbarui.');
       } else {
         await createLocation({ name, description });
+        onSuccess('Lokasi storage baru berhasil ditambahkan.');
       }
-      onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal menyimpan lokasi');

@@ -18,6 +18,7 @@ import { ItemModal } from '@/components/items/item-modal';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import { SuccessModal } from '@/components/ui/success-modal';
 import { useRouter } from 'next/navigation';
 
 type ItemType = {
@@ -69,6 +70,9 @@ export function ItemsClient({
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
+  // Success modal state
+  const [successMsg, setSuccessMsg] = useState('');
+
   // Filter items
   const filteredItems = initialItems.filter((item) => {
     // Type tab filter
@@ -93,7 +97,8 @@ export function ItemsClient({
     return true;
   });
 
-  const handleRefresh = () => {
+  const handleSuccess = (msg?: string) => {
+    setSuccessMsg(msg || 'Data berhasil disimpan!');
     router.refresh();
   };
 
@@ -101,6 +106,7 @@ export function ItemsClient({
     if (deleteTarget) {
       await deleteItem(deleteTarget.id);
       setDeleteTarget(null);
+      setSuccessMsg('Item inventaris telah berhasil dihapus.');
       router.refresh();
     }
   };
@@ -373,7 +379,7 @@ export function ItemsClient({
         brands={brands}
         locations={locations}
         editItem={editItem}
-        onSuccess={handleRefresh}
+        onSuccess={handleSuccess}
       />
 
       {/* Opname Modal */}
@@ -382,7 +388,7 @@ export function ItemsClient({
         onClose={() => setIsOpnameModalOpen(false)}
         item={opnameItem}
         locations={locations}
-        onSuccess={handleRefresh}
+        onSuccess={handleSuccess}
       />
 
       {/* Quick Mutate Modal */}
@@ -391,7 +397,7 @@ export function ItemsClient({
         onClose={() => setIsMutateModalOpen(false)}
         item={mutateItem}
         locations={locations}
-        onSuccess={handleRefresh}
+        onSuccess={handleSuccess}
       />
 
       {/* Delete Confirmation Modal */}
@@ -402,6 +408,13 @@ export function ItemsClient({
         itemName={deleteTarget?.name || ''}
         itemType="item inventaris"
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Success Notification Modal */}
+      <SuccessModal
+        isOpen={!!successMsg}
+        onClose={() => setSuccessMsg('')}
+        message={successMsg}
       />
     </div>
   );

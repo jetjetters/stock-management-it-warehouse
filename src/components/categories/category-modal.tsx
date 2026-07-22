@@ -15,7 +15,7 @@ type CategoryModalProps = {
     type: ItemCategoryType;
     codePrefix: string;
   } | null;
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function CategoryModal({
@@ -59,10 +59,11 @@ export function CategoryModal({
     try {
       if (editCategory) {
         await updateCategory(editCategory.id, { name, type, codePrefix });
+        onSuccess('Data kategori master berhasil diperbarui.');
       } else {
         await createCategory({ name, type, codePrefix });
+        onSuccess('Kategori master baru berhasil ditambahkan.');
       }
-      onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal menyimpan kategori');

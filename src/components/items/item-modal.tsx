@@ -41,7 +41,7 @@ type ItemModalProps = {
     currentStock: number;
     description?: string | null;
   } | null;
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function ItemModal({
@@ -148,6 +148,7 @@ export function ItemModal({
           locationId,
           description,
         });
+        onSuccess('Data item inventaris berhasil diperbarui.');
       } else {
         await createItem({
           name,
@@ -157,8 +158,8 @@ export function ItemModal({
           initialStock,
           description,
         });
+        onSuccess('Item inventaris baru berhasil ditambahkan.');
       }
-      onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal menyimpan item');

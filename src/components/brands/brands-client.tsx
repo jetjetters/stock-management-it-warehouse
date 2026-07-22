@@ -5,6 +5,7 @@ import { Plus, Layers, Pencil, Trash2 } from 'lucide-react';
 import { deleteBrand } from '@/app/actions/master-data';
 import { BrandModal } from '@/components/brands/brand-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import { SuccessModal } from '@/components/ui/success-modal';
 import { useRouter } from 'next/navigation';
 
 type BrandType = {
@@ -25,13 +26,20 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editBrand, setEditBrand] = useState<BrandType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleConfirmDelete = async () => {
     if (deleteTarget) {
       await deleteBrand(deleteTarget.id);
       setDeleteTarget(null);
+      setSuccessMsg('Merk / brand telah berhasil dihapus.');
       router.refresh();
     }
+  };
+
+  const handleSuccess = (msg?: string) => {
+    setSuccessMsg(msg || 'Data berhasil disimpan!');
+    router.refresh();
   };
 
   return (
@@ -105,7 +113,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
         onClose={() => setIsModalOpen(false)}
         categories={categories}
         editBrand={editBrand}
-        onSuccess={() => router.refresh()}
+        onSuccess={handleSuccess}
       />
 
       <DeleteConfirmModal
@@ -115,6 +123,12 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
         itemName={deleteTarget?.name || ''}
         itemType="merk/brand"
         onConfirm={handleConfirmDelete}
+      />
+
+      <SuccessModal
+        isOpen={!!successMsg}
+        onClose={() => setSuccessMsg('')}
+        message={successMsg}
       />
     </div>
   );

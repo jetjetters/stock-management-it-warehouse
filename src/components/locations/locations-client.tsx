@@ -5,6 +5,7 @@ import { Plus, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { deleteLocation } from '@/app/actions/master-data';
 import { LocationModal } from '@/components/locations/location-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import { SuccessModal } from '@/components/ui/success-modal';
 import { useRouter } from 'next/navigation';
 
 type LocationType = {
@@ -23,13 +24,20 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editLocation, setEditLocation] = useState<LocationType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleConfirmDelete = async () => {
     if (deleteTarget) {
       await deleteLocation(deleteTarget.id);
       setDeleteTarget(null);
+      setSuccessMsg('Lokasi storage telah berhasil dihapus.');
       router.refresh();
     }
+  };
+
+  const handleSuccess = (msg?: string) => {
+    setSuccessMsg(msg || 'Data berhasil disimpan!');
+    router.refresh();
   };
 
   return (
@@ -104,7 +112,7 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         editLocation={editLocation}
-        onSuccess={() => router.refresh()}
+        onSuccess={handleSuccess}
       />
 
       <DeleteConfirmModal
@@ -114,6 +122,12 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
         itemName={deleteTarget?.name || ''}
         itemType="lokasi storage"
         onConfirm={handleConfirmDelete}
+      />
+
+      <SuccessModal
+        isOpen={!!successMsg}
+        onClose={() => setSuccessMsg('')}
+        message={successMsg}
       />
     </div>
   );

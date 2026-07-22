@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, ArrowDownRight, ArrowUpRight, Repeat } from 'lucide-react';
-import { mutateStock } from '@/app/actions/items';
-import { MutationType } from '@prisma/client';
+import { mutateStock, type MutationType } from '@/app/actions/items';
 
 type LocationItem = {
   id: string;
@@ -22,7 +21,7 @@ type QuickMutateModalProps = {
     location: { name: string };
   } | null;
   locations: LocationItem[];
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function QuickMutateModal({
@@ -32,7 +31,7 @@ export function QuickMutateModal({
   locations,
   onSuccess,
 }: QuickMutateModalProps) {
-  const [type, setType] = useState<MutationType>(MutationType.IN);
+  const [type, setType] = useState<'IN' | 'OUT'>('IN');
   const [quantity, setQuantity] = useState<number>(1);
   const [locationId, setLocationId] = useState('');
   const [notes, setNotes] = useState('');
@@ -41,7 +40,7 @@ export function QuickMutateModal({
 
   useEffect(() => {
     if (item) {
-      setType(MutationType.IN);
+      setType('IN');
       setQuantity(1);
       setLocationId(item.locationId);
       setNotes('');
@@ -65,11 +64,11 @@ export function QuickMutateModal({
       await mutateStock({
         itemId: item.id,
         mutation: quantity,
-        type,
+        type: type as MutationType,
         notes,
         locationId,
       });
-      onSuccess();
+      onSuccess(`Mutasi stok (${type === 'IN' ? '+' : '-'}${quantity}) berhasil dicatat.`);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal mengubah stok');
@@ -77,6 +76,11 @@ export function QuickMutateModal({
       setLoading(false);
     }
   };
+
+  const calculatedResult =
+    type === 'IN'
+      ? item.currentStock + quantity
+      : item.currentStock - quantity;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -89,7 +93,7 @@ export function QuickMutateModal({
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-100">Mutasi Stok Instant</h2>
-              <p className="text-xs text-slate-400">Pencatatan Masuk & Keluar Inventaris</p>
+              <p className="text-xs text-slate-400">Catat stok masuk / keluar secara cepat</p>
             </div>
           </div>
           <button
@@ -108,63 +112,77 @@ export function QuickMutateModal({
             </div>
           )}
 
-          {/* Item Banner */}
-          <div className="p-3.5 bg-slate-950 border border-slate-800 rounded-lg">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-blue-400 font-bold">{item.itemCode}</span>
-              <span className="text-slate-400">Stok Saat Ini: <strong className="text-slate-100">{item.currentStock}</strong></span>
+          {/* Item Info Summary */}
+          <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between">
+            <div>
+              <span className="font-mono text-xs text-blue-400 font-bold">{item.itemCode}</span>
+              <h4 className="text-sm font-semibold text-slate-200">{item.name}</h4>
             </div>
-            <div className="text-sm font-semibold text-slate-200 mt-0.5">{item.name}</div>
+            <div className="text-right">
+              <span className="text-[11px] text-slate-500 block">Stok Saat Ini</span>
+              <span className="font-mono text-sm font-bold text-slate-100">{item.currentStock} Unit</span>
+            </div>
           </div>
 
-          {/* Type Toggle: IN vs OUT */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setType(MutationType.IN)}
-              className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
-                type === MutationType.IN
-                  ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-md shadow-emerald-500/10'
-                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              <span>STOK MASUK (IN)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setType(MutationType.OUT)}
-              className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
-                type === MutationType.OUT
-                  ? 'bg-rose-500/20 border-rose-500 text-rose-400 shadow-md shadow-rose-500/10'
-                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <ArrowDownRight className="w-4 h-4" />
-              <span>STOK KELUAR (OUT)</span>
-            </button>
-          </div>
-
-          {/* Quantity Input */}
+          {/* Mutation Type Toggle */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Jumlah Kuantitas <span className="text-rose-400">*</span>
+              Jenis Mutasi Stok <span className="text-rose-400">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setType('IN')}
+                className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
+                  type === 'IN'
+                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-md shadow-emerald-500/10'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                }`}
+              >
+                <ArrowUpRight className="w-4 h-4" />
+                <span>STOK MASUK (IN)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setType('OUT')}
+                className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
+                  type === 'OUT'
+                    ? 'bg-rose-500/20 border-rose-500 text-rose-400 shadow-md shadow-rose-500/10'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                }`}
+              >
+                <ArrowDownRight className="w-4 h-4" />
+                <span>STOK KELUAR (OUT)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quantity */}
+          <div>
+            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              Jumlah Unit <span className="text-rose-400">*</span>
             </label>
             <input
               type="number"
-              min="1"
+              min={1}
               required
               value={quantity}
-              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-base font-bold font-mono text-slate-100 focus:outline-none focus:border-blue-500"
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 0))}
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono font-bold focus:outline-none focus:border-blue-500"
             />
+            <p className="text-[11px] text-slate-400 mt-1">
+              Estimasi Stok Akhir:{' '}
+              <strong className={calculatedResult < 0 ? 'text-rose-400' : 'text-emerald-400'}>
+                {calculatedResult} Unit
+              </strong>
+            </p>
           </div>
 
-          {/* Location Selection */}
+          {/* Location Target */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Tujuan / Lokasi Terkait
+              Lokasi Penyimpanan <span className="text-rose-400">*</span>
             </label>
             <select
               value={locationId}
@@ -190,7 +208,7 @@ export function QuickMutateModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={
-                type === MutationType.IN
+                type === 'IN'
                   ? 'Contoh: Pembelian PO-2026/04 atau Donasi'
                   : 'Contoh: Dipinjam Chelsy di Main Office'
               }
@@ -211,12 +229,12 @@ export function QuickMutateModal({
               type="submit"
               disabled={loading}
               className={`px-5 py-2 text-white font-medium rounded-lg text-sm shadow-lg transition disabled:opacity-50 ${
-                type === MutationType.IN
+                type === 'IN'
                   ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
                   : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/20'
               }`}
             >
-              {loading ? 'Menyimpan...' : type === MutationType.IN ? 'Tambah Stok (+)' : 'Kurangi Stok (-)'}
+              {loading ? 'Menyimpan...' : type === 'IN' ? 'Tambah Stok (+)' : 'Kurangi Stok (-)'}
             </button>
           </div>
         </form>

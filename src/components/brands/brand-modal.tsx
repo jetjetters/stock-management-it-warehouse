@@ -18,7 +18,7 @@ type BrandModalProps = {
     name: string;
     categoryId: string;
   } | null;
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function BrandModal({
@@ -60,10 +60,11 @@ export function BrandModal({
     try {
       if (editBrand) {
         await updateBrand(editBrand.id, { name, categoryId });
+        onSuccess('Data merk/brand berhasil diperbarui.');
       } else {
         await createBrand({ name, categoryId });
+        onSuccess('Merk/brand baru berhasil ditambahkan.');
       }
-      onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal menyimpan brand');

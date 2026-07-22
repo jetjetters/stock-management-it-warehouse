@@ -21,7 +21,7 @@ type StockOpnameModalProps = {
     location: { name: string };
   } | null;
   locations: LocationItem[];
-  onSuccess: () => void;
+  onSuccess: (msg?: string) => void;
 };
 
 export function StockOpnameModal({
@@ -68,7 +68,7 @@ export function StockOpnameModal({
         notes,
         locationId,
       });
-      onSuccess();
+      onSuccess('Penyesuaian Stock Opname berhasil dilakukan dan tercatat di audit trail.');
       onClose();
     } catch (err: any) {
       setError(err.message || 'Gagal melakukan verifikasi opname');

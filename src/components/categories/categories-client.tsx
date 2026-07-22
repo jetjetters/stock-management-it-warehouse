@@ -5,6 +5,7 @@ import { Plus, Tags, Pencil, Trash2 } from 'lucide-react';
 import { deleteCategory } from '@/app/actions/master-data';
 import { CategoryModal } from '@/components/categories/category-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import { SuccessModal } from '@/components/ui/success-modal';
 import type { ItemCategoryType } from '@/app/actions/items';
 import { useRouter } from 'next/navigation';
 
@@ -25,13 +26,20 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<CategoryType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleConfirmDelete = async () => {
     if (deleteTarget) {
       await deleteCategory(deleteTarget.id);
       setDeleteTarget(null);
+      setSuccessMsg('Kategori master telah berhasil dihapus.');
       router.refresh();
     }
+  };
+
+  const handleSuccess = (msg?: string) => {
+    setSuccessMsg(msg || 'Data berhasil disimpan!');
+    router.refresh();
   };
 
   return (
@@ -121,7 +129,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         editCategory={editCategory}
-        onSuccess={() => router.refresh()}
+        onSuccess={handleSuccess}
       />
 
       <DeleteConfirmModal
@@ -131,6 +139,12 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         itemName={deleteTarget?.name || ''}
         itemType="kategori"
         onConfirm={handleConfirmDelete}
+      />
+
+      <SuccessModal
+        isOpen={!!successMsg}
+        onClose={() => setSuccessMsg('')}
+        message={successMsg}
       />
     </div>
   );
