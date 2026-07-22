@@ -21,16 +21,23 @@ export function DeleteConfirmModal({
   onConfirm,
 }: DeleteConfirmModalProps) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
+  const handleClose = () => {
+    setError('');
+    onClose();
+  };
+
   const handleConfirm = async () => {
     setLoading(true);
+    setError('');
     try {
       await onConfirm();
-      onClose();
-    } catch (err) {
-      console.error(err);
+      handleClose();
+    } catch (err: any) {
+      setError(err.message || 'Gagal menghapus data');
     } finally {
       setLoading(false);
     }
@@ -51,7 +58,7 @@ export function DeleteConfirmModal({
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             disabled={loading}
             className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition"
           >
@@ -61,6 +68,12 @@ export function DeleteConfirmModal({
 
         {/* Content Body */}
         <div className="p-6 space-y-4">
+          {error && (
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg text-xs leading-relaxed font-medium">
+              {error}
+            </div>
+          )}
+
           <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
             <p className="text-xs text-slate-400">
               Apakah Anda yakin ingin menghapus {itemType} berikut secara permanen?

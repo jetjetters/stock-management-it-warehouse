@@ -283,9 +283,24 @@ export async function stockOpnameAdjustment(data: {
 }
 
 export async function deleteItem(id: string) {
-  await prisma.item.delete({
+  const item = await prisma.item.findUnique({
     where: { id },
   });
+
+  if (!item) throw new Error('Item tidak ditemukan');
+
+  if (item.currentStock > 0) {
+    throw new Error(
+      `Tidak dapat menghapus item "${item.name}" karena masih memiliki sisa stok (${item.currentStock} unit). Kosongkan stok terlebih dahulu via mutasi/opname.`
+    );
+  }
+
+  await prisma.$transaction([
+    prisma.stockLog.deleteMany({ where: { itemId: id } }),
+    prisma.item.delete({ where: { id } }),
+  ]);
+
   revalidatePath('/items');
+  revalidatePath('/logs');
   revalidatePath('/');
 }

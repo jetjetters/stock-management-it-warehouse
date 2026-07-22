@@ -86,6 +86,27 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string) {
+  const category = await prisma.category.findUnique({
+    where: { id },
+    include: {
+      _count: { select: { items: true, brands: true } },
+    },
+  });
+
+  if (!category) throw new Error('Kategori tidak ditemukan');
+
+  if (category._count.items > 0) {
+    throw new Error(
+      `Tidak dapat menghapus kategori "${category.name}" karena masih menyimpan ${category._count.items} item barang. Pindahkan atau hapus item tersebut terlebih dahulu.`
+    );
+  }
+
+  if (category._count.brands > 0) {
+    throw new Error(
+      `Tidak dapat menghapus kategori "${category.name}" karena masih memiliki ${category._count.brands} merk/brand terdaftar. Hapus atau ubah merk tersebut terlebih dahulu.`
+    );
+  }
+
   await prisma.category.delete({ where: { id } });
   revalidatePath('/categories');
   revalidatePath('/items');
@@ -170,6 +191,21 @@ export async function updateBrand(
 }
 
 export async function deleteBrand(id: string) {
+  const brand = await prisma.brand.findUnique({
+    where: { id },
+    include: {
+      _count: { select: { items: true } },
+    },
+  });
+
+  if (!brand) throw new Error('Merk tidak ditemukan');
+
+  if (brand._count.items > 0) {
+    throw new Error(
+      `Tidak dapat menghapus merk "${brand.name}" karena masih digunakan oleh ${brand._count.items} item barang. Ubah merk barang tersebut terlebih dahulu.`
+    );
+  }
+
   await prisma.brand.delete({ where: { id } });
   revalidatePath('/brands');
   revalidatePath('/items');
@@ -238,6 +274,27 @@ export async function updateLocation(
 }
 
 export async function deleteLocation(id: string) {
+  const location = await prisma.location.findUnique({
+    where: { id },
+    include: {
+      _count: { select: { items: true, stockLogs: true } },
+    },
+  });
+
+  if (!location) throw new Error('Lokasi tidak ditemukan');
+
+  if (location._count.items > 0) {
+    throw new Error(
+      `Lokasi "${location.name}" masih menyimpan ${location._count.items} item stok barang di dalamnya. Pindahkan atau edit lokasi barang tersebut ke lokasi lain terlebih dahulu.`
+    );
+  }
+
+  if (location._count.stockLogs > 0) {
+    throw new Error(
+      `Tidak dapat menghapus lokasi "${location.name}" karena memiliki riwayat audit trail mutasi stok.`
+    );
+  }
+
   await prisma.location.delete({ where: { id } });
   revalidatePath('/locations');
   revalidatePath('/items');
