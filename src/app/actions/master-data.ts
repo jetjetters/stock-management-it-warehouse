@@ -27,6 +27,16 @@ export async function createCategory(data: {
   const name = data.name.trim();
   const codePrefix = data.codePrefix.trim().toUpperCase();
 
+  const existingName = await prisma.category.findFirst({
+    where: { name: { equals: name } },
+  });
+  if (existingName) throw new Error('Kategori sudah ada');
+
+  const existingPrefix = await prisma.category.findFirst({
+    where: { codePrefix: { equals: codePrefix } },
+  });
+  if (existingPrefix) throw new Error('Prefix SKU sudah digunakan oleh kategori lain');
+
   const category = await prisma.category.create({
     data: {
       name,
@@ -50,6 +60,16 @@ export async function updateCategory(
 ) {
   const name = data.name.trim();
   const codePrefix = data.codePrefix.trim().toUpperCase();
+
+  const existingName = await prisma.category.findFirst({
+    where: { name: { equals: name }, NOT: { id } },
+  });
+  if (existingName) throw new Error('Kategori sudah ada');
+
+  const existingPrefix = await prisma.category.findFirst({
+    where: { codePrefix: { equals: codePrefix }, NOT: { id } },
+  });
+  if (existingPrefix) throw new Error('Prefix SKU sudah digunakan oleh kategori lain');
 
   const category = await prisma.category.update({
     where: { id },
@@ -88,6 +108,18 @@ export async function getBrands(categoryId?: string) {
 
 export async function createBrand(data: { name: string; categoryId: string }) {
   const name = data.name.trim();
+
+  const existing = await prisma.brand.findFirst({
+    where: {
+      name: { equals: name },
+      categoryId: data.categoryId,
+    },
+  });
+
+  if (existing) {
+    throw new Error('Merk sudah ada');
+  }
+
   const brand = await prisma.brand.create({
     data: {
       name,
@@ -108,6 +140,19 @@ export async function updateBrand(
   data: { name: string; categoryId: string }
 ) {
   const name = data.name.trim();
+
+  const existing = await prisma.brand.findFirst({
+    where: {
+      name: { equals: name },
+      categoryId: data.categoryId,
+      NOT: { id },
+    },
+  });
+
+  if (existing) {
+    throw new Error('Merk sudah ada');
+  }
+
   const brand = await prisma.brand.update({
     where: { id },
     data: {
@@ -144,6 +189,15 @@ export async function getLocations() {
 
 export async function createLocation(data: { name: string; description?: string }) {
   const name = data.name.trim();
+
+  const existing = await prisma.location.findFirst({
+    where: { name: { equals: name } },
+  });
+
+  if (existing) {
+    throw new Error('Lokasi storage sudah ada');
+  }
+
   const location = await prisma.location.create({
     data: {
       name,
@@ -161,6 +215,15 @@ export async function updateLocation(
   data: { name: string; description?: string }
 ) {
   const name = data.name.trim();
+
+  const existing = await prisma.location.findFirst({
+    where: { name: { equals: name }, NOT: { id } },
+  });
+
+  if (existing) {
+    throw new Error('Lokasi storage sudah ada');
+  }
+
   const location = await prisma.location.update({
     where: { id },
     data: {
