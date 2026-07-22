@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Plus, Tags, Pencil, Trash2 } from 'lucide-react';
 import { deleteCategory } from '@/app/actions/master-data';
 import { CategoryModal } from '@/components/categories/category-modal';
-import { ItemCategoryType } from '@prisma/client';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import type { ItemCategoryType } from '@/app/actions/items';
 import { useRouter } from 'next/navigation';
 
 type CategoryType = {
@@ -23,10 +24,12 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<CategoryType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus kategori "${name}"?`)) {
-      await deleteCategory(id);
+  const handleConfirmDelete = async () => {
+    if (deleteTarget) {
+      await deleteCategory(deleteTarget.id);
+      setDeleteTarget(null);
       router.refresh();
     }
   };
@@ -55,7 +58,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {initialCategories.map((category) => {
-          const isDevice = category.type === ItemCategoryType.DEVICE;
+          const isDevice = category.type === 'DEVICE';
 
           return (
             <div
@@ -86,7 +89,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                     <Pencil className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(category.id, category.name)}
+                    onClick={() => setDeleteTarget({ id: category.id, name: category.name })}
                     className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -119,6 +122,15 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         onClose={() => setIsModalOpen(false)}
         editCategory={editCategory}
         onSuccess={() => router.refresh()}
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Kategori Master"
+        itemName={deleteTarget?.name || ''}
+        itemType="kategori"
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Plus, Layers, Pencil, Trash2 } from 'lucide-react';
 import { deleteBrand } from '@/app/actions/master-data';
 import { BrandModal } from '@/components/brands/brand-modal';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { useRouter } from 'next/navigation';
 
 type BrandType = {
@@ -23,10 +24,12 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editBrand, setEditBrand] = useState<BrandType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus merk "${name}"?`)) {
-      await deleteBrand(id);
+  const handleConfirmDelete = async () => {
+    if (deleteTarget) {
+      await deleteBrand(deleteTarget.id);
+      setDeleteTarget(null);
       router.refresh();
     }
   };
@@ -81,7 +84,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => handleDelete(brand.id, brand.name)}
+                  onClick={() => setDeleteTarget({ id: brand.id, name: brand.name })}
                   className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -103,6 +106,15 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
         categories={categories}
         editBrand={editBrand}
         onSuccess={() => router.refresh()}
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Merk / Brand"
+        itemName={deleteTarget?.name || ''}
+        itemType="merk/brand"
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

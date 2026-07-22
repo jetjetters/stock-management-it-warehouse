@@ -13,11 +13,11 @@ import {
   Monitor,
   Package,
 } from 'lucide-react';
-import { deleteItem } from '@/app/actions/items';
+import { deleteItem, type ItemCategoryType } from '@/app/actions/items';
 import { ItemModal } from '@/components/items/item-modal';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
-import { ItemCategoryType } from '@prisma/client';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { useRouter } from 'next/navigation';
 
 type ItemType = {
@@ -66,6 +66,9 @@ export function ItemsClient({
   const [isMutateModalOpen, setIsMutateModalOpen] = useState(false);
   const [mutateItem, setMutateItem] = useState<ItemType | null>(null);
 
+  // Delete modal state
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
   // Filter items
   const filteredItems = initialItems.filter((item) => {
     // Type tab filter
@@ -94,9 +97,10 @@ export function ItemsClient({
     router.refresh();
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus item "${name}"?`)) {
-      await deleteItem(id);
+  const handleConfirmDelete = async () => {
+    if (deleteTarget) {
+      await deleteItem(deleteTarget.id);
+      setDeleteTarget(null);
       router.refresh();
     }
   };
@@ -238,7 +242,7 @@ export function ItemsClient({
                 </tr>
               ) : (
                 filteredItems.map((item) => {
-                  const isDevice = item.type === ItemCategoryType.DEVICE;
+                  const isDevice = item.type === 'DEVICE';
                   const isLowStock = item.currentStock <= 5;
 
                   return (
@@ -345,7 +349,7 @@ export function ItemsClient({
                           {/* Delete Item button */}
                           <button
                             title="Hapus Item"
-                            onClick={() => handleDelete(item.id, item.name)}
+                            onClick={() => setDeleteTarget({ id: item.id, name: item.name })}
                             className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -388,6 +392,16 @@ export function ItemsClient({
         item={mutateItem}
         locations={locations}
         onSuccess={handleRefresh}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Item Inventaris"
+        itemName={deleteTarget?.name || ''}
+        itemType="item inventaris"
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

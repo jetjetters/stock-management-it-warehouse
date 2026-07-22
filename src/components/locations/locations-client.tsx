@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Plus, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { deleteLocation } from '@/app/actions/master-data';
 import { LocationModal } from '@/components/locations/location-modal';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { useRouter } from 'next/navigation';
 
 type LocationType = {
@@ -21,10 +22,12 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editLocation, setEditLocation] = useState<LocationType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus lokasi "${name}"?`)) {
-      await deleteLocation(id);
+  const handleConfirmDelete = async () => {
+    if (deleteTarget) {
+      await deleteLocation(deleteTarget.id);
+      setDeleteTarget(null);
       router.refresh();
     }
   };
@@ -81,7 +84,7 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(loc.id, loc.name)}
+                  onClick={() => setDeleteTarget({ id: loc.id, name: loc.name })}
                   className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -102,6 +105,15 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
         onClose={() => setIsModalOpen(false)}
         editLocation={editLocation}
         onSuccess={() => router.refresh()}
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Lokasi Storage"
+        itemName={deleteTarget?.name || ''}
+        itemType="lokasi storage"
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
