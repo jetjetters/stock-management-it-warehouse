@@ -96,9 +96,15 @@ export function ItemModal({
 
   // Update SKU preview & Filter brands when Category changes
   useEffect(() => {
-    if (categoryId && !editItem) {
-      getItemNextSku(categoryId).then((code) => setSkuPreview(code));
-      
+    if (categoryId) {
+      if (!editItem) {
+        getItemNextSku(categoryId).then((code) => setSkuPreview(code));
+      } else if (editItem && categoryId !== editItem.categoryId) {
+        getItemNextSku(categoryId).then((code) => setSkuPreview(code));
+      } else {
+        setSkuPreview(editItem.itemCode);
+      }
+
       // Filter brands for selected category
       const filtered = brandsList.filter((b) => b.categoryId === categoryId);
       if (filtered.length > 0) {
@@ -193,11 +199,15 @@ export function ItemModal({
           )}
 
           {/* Auto SKU Preview Badge */}
-          {!editItem && categoryId && (
+          {categoryId && (
             <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
               <div className="flex items-center space-x-2 text-blue-400 text-xs font-semibold">
                 <Sparkles className="w-4 h-4" />
-                <span>Otomatisasi Kode SKU</span>
+                <span>
+                  {editItem && categoryId !== editItem.categoryId
+                    ? 'Generasi SKU Baru (Kategori Berubah)'
+                    : 'Kode SKU Item'}
+                </span>
               </div>
               <span className="font-mono text-sm font-bold tracking-wider text-blue-300 bg-blue-950 px-2.5 py-1 rounded border border-blue-800">
                 {skuPreview || 'Generasi SKU...'}

@@ -1,7 +1,9 @@
 'use server';
 
 import { prisma } from '@/lib/db';
-import { ItemCategoryType } from '@prisma/client';
+
+export type ItemCategoryType = 'DEVICE' | 'BARANG';
+
 import { revalidatePath } from 'next/cache';
 
 // --- CATEGORY ACTIONS ---

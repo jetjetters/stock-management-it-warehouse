@@ -1,7 +1,8 @@
 'use server';
 
 import { prisma } from '@/lib/db';
-import { MutationType } from '@prisma/client';
+
+export type MutationType = 'IN' | 'OUT' | 'ADJUSTMENT';
 
 export type LogFilterParams = {
   search?: string;
