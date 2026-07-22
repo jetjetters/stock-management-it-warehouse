@@ -1,0 +1,63 @@
+# Dependencies
+/node_modules
+/.pnpm
+/.yarn
+
+# Agent Configurations & Context
+.agent/
+.agent
+
+# Next.js Build Outputs
+/.next/
+/out/
+/build
+/dist
+
+# Environment Variables & Secrets
+.env
+.env*.local
+.env.production
+.env.staging
+
+# Local Databases (SQLite / Prisma local db)
+prisma/dev.db
+prisma/dev.db-journal
+*.sqlite
+*.sqlite-journal
+*.db
+
+# Debug & Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE & Editor Files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files & Caches
+.eslintcache
+.cache
+tsconfig.tsbuildinfo
