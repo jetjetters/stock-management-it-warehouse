@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   Plus,
   Search,
@@ -374,11 +374,11 @@ export function ItemsClient({
                 <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   <th className="p-4 w-10"></th>
                   <th className="p-4">Nama Barang / Model</th>
-                  <th className="p-4">Tipe</th>
-                  <th className="p-4">Kategori & Brand</th>
-                  <th className="p-4">Lokasi Storage</th>
-                  <th className="p-4 text-center">Total Stok Unit (SN)</th>
-                  <th className="p-4 text-right">Aksi</th>
+                  <th className="p-4 whitespace-nowrap">Tipe</th>
+                  <th className="p-4 whitespace-nowrap">Kategori & Brand</th>
+                  <th className="p-4 whitespace-nowrap">Lokasi Storage</th>
+                  <th className="p-4 text-center whitespace-nowrap">Total Stok Unit (SN)</th>
+                  <th className="p-4 text-right whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -394,12 +394,12 @@ export function ItemsClient({
                     const isDevice = group.type === 'DEVICE';
 
                     return (
-                      <tbody key={group.key} className="border-b border-slate-800/60">
+                      <Fragment key={group.key}>
                         <tr
                           onClick={() => toggleGroupExpand(group.key)}
                           className="hover:bg-slate-800/40 transition cursor-pointer select-none"
                         >
-                          <td className="p-4 text-slate-500">
+                          <td className="p-4 text-slate-500 w-10">
                             {isExpanded ? (
                               <ChevronDown className="w-4 h-4 text-blue-400" />
                             ) : (
@@ -415,7 +415,7 @@ export function ItemsClient({
                           </td>
 
                           {/* Type */}
-                          <td className="p-4">
+                          <td className="p-4 whitespace-nowrap">
                             <span
                               className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
                                 isDevice
@@ -428,7 +428,7 @@ export function ItemsClient({
                           </td>
 
                           {/* Category & Brand */}
-                          <td className="p-4">
+                          <td className="p-4 whitespace-nowrap">
                             <div className="text-xs font-medium text-slate-200">
                               {group.category.name}
                             </div>
@@ -436,28 +436,28 @@ export function ItemsClient({
                           </td>
 
                           {/* Location */}
-                          <td className="p-4">
+                          <td className="p-4 whitespace-nowrap">
                             <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-medium">
                               {group.location.name}
                             </span>
                           </td>
 
                           {/* Total Stock Count Badge */}
-                          <td className="p-4 text-center">
+                          <td className="p-4 text-center whitespace-nowrap">
                             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-slate-950 text-slate-100 border border-slate-700 font-mono text-sm font-bold shadow-inner">
                               <span className="text-blue-400">{group.totalStock}</span>
-                              <span className="text-[10px] text-slate-400 font-sans">
+                              <span className="text-[10px] text-slate-400 font-sans whitespace-nowrap">
                                 ({group.availableStock} Tersedia)
                               </span>
                             </div>
                           </td>
 
                           {/* Action Buttons */}
-                          <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <td className="p-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end space-x-2">
                               <button
                                 onClick={() => toggleGroupExpand(group.key)}
-                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition flex items-center space-x-1"
+                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition flex items-center space-x-1 whitespace-nowrap"
                               >
                                 <QrCode className="w-3.5 h-3.5 text-blue-400" />
                                 <span>{isExpanded ? 'Sembunyikan SN' : `Lihat ${group.totalStock} SN`}</span>
@@ -567,7 +567,7 @@ export function ItemsClient({
                             </td>
                           </tr>
                         )}
-                      </tbody>
+                      </Fragment>
                     );
                   })
                 )}
@@ -582,12 +582,12 @@ export function ItemsClient({
             <table className="w-full text-left text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  <th className="p-4">Serial Number (SN)</th>
-                  <th className="p-4">Kode SKU & Model</th>
-                  <th className="p-4">Kategori & Brand</th>
-                  <th className="p-4">Lokasi Storage</th>
-                  <th className="p-4 text-center">Status Unit</th>
-                  <th className="p-4 text-right">Aksi Unit</th>
+                  <th className="p-4 whitespace-nowrap">Serial Number (SN)</th>
+                  <th className="p-4 whitespace-nowrap">Kode SKU & Model</th>
+                  <th className="p-4 whitespace-nowrap">Kategori & Brand</th>
+                  <th className="p-4 whitespace-nowrap">Lokasi Storage</th>
+                  <th className="p-4 text-center whitespace-nowrap">Status Unit</th>
+                  <th className="p-4 text-right whitespace-nowrap">Aksi Unit</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -600,7 +600,7 @@ export function ItemsClient({
                 ) : (
                   filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-4">
+                      <td className="p-4 whitespace-nowrap">
                         <span className="font-mono text-xs font-bold text-slate-100 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
                           SN: {item.serialNumber}
                         </span>
@@ -613,22 +613,22 @@ export function ItemsClient({
                         <div className="font-semibold text-slate-200">{item.name}</div>
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-4 whitespace-nowrap">
                         <div className="text-xs font-medium text-slate-200">
                           {item.category.name}
                         </div>
                         <div className="text-[11px] text-slate-400">{item.brand.name}</div>
                       </td>
 
-                      <td className="p-4">
-                        <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-medium">
+                      <td className="p-4 whitespace-nowrap">
+                        <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-medium whitespace-nowrap">
                           {item.location.name}
                         </span>
                       </td>
 
-                      <td className="p-4 text-center">{getStatusBadge(item.status)}</td>
+                      <td className="p-4 text-center whitespace-nowrap">{getStatusBadge(item.status)}</td>
 
-                      <td className="p-4 text-right">
+                      <td className="p-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1.5">
                           <button
                             title="Mutasi / Pindah Lokasi"
