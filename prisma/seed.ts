@@ -3,7 +3,7 @@ import { PrismaClient, ItemCategoryType, MutationType } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding IT Warehouse database...');
+  console.log('Seeding IT Warehouse database with SN units...');
 
   // 1. Create Locations
   const warehouseIT = await prisma.location.upsert({
@@ -30,15 +30,6 @@ async function main() {
     create: {
       name: 'Server Room',
       description: 'Ruang Server & Ruang Jaringan',
-    },
-  });
-
-  const rackA1 = await prisma.location.upsert({
-    where: { name: 'Rack A1' },
-    update: {},
-    create: {
-      name: 'Rack A1',
-      description: 'Rak Penyimpanan Komponen Kecil',
     },
   });
 
@@ -124,78 +115,148 @@ async function main() {
     create: { name: 'Belden', categoryId: catKabel.id },
   });
 
-  // 4. Create Initial Items & Audit Stock Logs
-  const itemsData = [
+  // 4. Create Physical SN Item Units & Stock Logs
+  const itemsUnits = [
+    // Mouse Logitech at Warehouse IT
     {
+      serialNumber: 'SN-LOGI-MOS-001',
       itemCode: 'MOS0001',
-      name: 'Mouse Wireless M170 Silent',
+      name: 'Mouse Wireless M170',
       type: ItemCategoryType.DEVICE,
-      description: 'Mouse wireless 2.4GHz standar kantor',
-      currentStock: 15,
+      status: 'TERSEDIA',
+      description: 'Mouse wireless standar kantor',
       categoryId: catMouse.id,
       brandId: brandLogitechMouse.id,
       locationId: warehouseIT.id,
     },
     {
+      serialNumber: 'SN-LOGI-MOS-002',
+      itemCode: 'MOS0001',
+      name: 'Mouse Wireless M170',
+      type: ItemCategoryType.DEVICE,
+      status: 'TERSEDIA',
+      description: 'Mouse wireless standar kantor',
+      categoryId: catMouse.id,
+      brandId: brandLogitechMouse.id,
+      locationId: warehouseIT.id,
+    },
+    {
+      serialNumber: 'SN-LOGI-MOS-003',
+      itemCode: 'MOS0001',
+      name: 'Mouse Wireless M170',
+      type: ItemCategoryType.DEVICE,
+      status: 'TERPAKAI',
+      description: 'Dipakai staff operasional',
+      categoryId: catMouse.id,
+      brandId: brandLogitechMouse.id,
+      locationId: mainOffice.id,
+    },
+    // Mouse MX Master 3S at Main Office
+    {
+      serialNumber: 'SN-MX3S-99102',
       itemCode: 'MOS0002',
       name: 'MX Master 3S Ergonomic',
       type: ItemCategoryType.DEVICE,
-      description: 'Mouse ergonomis high-end untuk desainer/dev',
-      currentStock: 4,
+      status: 'TERPAKAI',
+      description: 'Mouse ergonomis dev team',
       categoryId: catMouse.id,
       brandId: brandLogitechMouse.id,
       locationId: mainOffice.id,
     },
     {
+      serialNumber: 'SN-MX3S-99103',
+      itemCode: 'MOS0002',
+      name: 'MX Master 3S Ergonomic',
+      type: ItemCategoryType.DEVICE,
+      status: 'TERSEDIA',
+      description: 'Unit cadangan VIP',
+      categoryId: catMouse.id,
+      brandId: brandLogitechMouse.id,
+      locationId: warehouseIT.id,
+    },
+
+    // Keyboards
+    {
+      serialNumber: 'SN-KBD-8801',
       itemCode: 'KBD0001',
       name: 'Keyboard Mechanical K835 TKL',
       type: ItemCategoryType.DEVICE,
-      description: 'Keyboard mechanical switch red',
-      currentStock: 8,
+      status: 'TERSEDIA',
+      description: 'Switch Red TKL',
       categoryId: catKeyboard.id,
       brandId: brandLogitechKeyboard.id,
       locationId: warehouseIT.id,
     },
     {
+      serialNumber: 'SN-KBD-8802',
+      itemCode: 'KBD0001',
+      name: 'Keyboard Mechanical K835 TKL',
+      type: ItemCategoryType.DEVICE,
+      status: 'TERSEDIA',
+      description: 'Switch Red TKL',
+      categoryId: catKeyboard.id,
+      brandId: brandLogitechKeyboard.id,
+      locationId: warehouseIT.id,
+    },
+
+    // Printers
+    {
+      serialNumber: 'SN-EPS-PRN-001',
       itemCode: 'PRN0001',
       name: 'Printer EcoTank L3210',
       type: ItemCategoryType.DEVICE,
-      description: 'Printer multifungsi print scan copy',
-      currentStock: 2,
+      status: 'TERPAKAI',
+      description: 'Printer resepsionis',
       categoryId: catPrinter.id,
       brandId: brandEpsonPrinter.id,
       locationId: mainOffice.id,
     },
+
+    // Tinta Printer (Consumable SN units)
     {
+      serialNumber: 'SN-TNT-BLK-101',
       itemCode: 'TNT0001',
       name: 'Tinta Black 003 Epson',
       type: ItemCategoryType.BARANG,
-      description: 'Botol Tinta hitam 65ml untuk series EcoTank',
-      currentStock: 25,
+      status: 'TERSEDIA',
+      description: 'Botol Tinta 65ml',
       categoryId: catTinta.id,
       brandId: brandEpsonTinta.id,
       locationId: warehouseIT.id,
     },
     {
+      serialNumber: 'SN-TNT-BLK-102',
+      itemCode: 'TNT0001',
+      name: 'Tinta Black 003 Epson',
+      type: ItemCategoryType.BARANG,
+      status: 'TERSEDIA',
+      description: 'Botol Tinta 65ml',
+      categoryId: catTinta.id,
+      brandId: brandEpsonTinta.id,
+      locationId: warehouseIT.id,
+    },
+
+    // Kabel UTP
+    {
+      serialNumber: 'SN-KBL-BLD-01',
       itemCode: 'KBL0001',
       name: 'Kabel UTP Cat6 Unshielded 305m',
       type: ItemCategoryType.BARANG,
-      description: 'Roll kabel LAN Cat6 indoor',
-      currentStock: 3,
+      status: 'TERSEDIA',
+      description: 'Roll cable 305m indoor',
       categoryId: catKabel.id,
       brandId: brandBeldenKabel.id,
       locationId: serverRoom.id,
     },
   ];
 
-  for (const itemData of itemsData) {
+  for (const uData of itemsUnits) {
     const item = await prisma.item.upsert({
-      where: { itemCode: itemData.itemCode },
+      where: { serialNumber: uData.serialNumber },
       update: {},
-      create: itemData,
+      create: uData,
     });
 
-    // Initial Audit Trail Stock Log
     const existingLog = await prisma.stockLog.findFirst({
       where: { itemId: item.id },
     });
@@ -205,9 +266,9 @@ async function main() {
         data: {
           itemId: item.id,
           locationId: item.locationId,
-          mutation: item.currentStock,
+          mutation: 1,
           type: MutationType.IN,
-          notes: 'Pencatatan Stok Awal Sistem (Initial Stock)',
+          notes: `Registrasi Awal Unit SN: ${item.serialNumber}`,
         },
       });
     }
@@ -224,3 +285,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

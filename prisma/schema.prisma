@@ -64,11 +64,12 @@ model Location {
 
 model Item {
   id           String           @id @default(uuid())
-  itemCode     String           @unique
+  serialNumber String           @unique
+  itemCode     String
   name         String
   type         ItemCategoryType
   description  String?
-  currentStock Int              @default(0)
+  status       String           @default("TERSEDIA")
 
   categoryId   String
   category     Category         @relation(fields: [categoryId], references: [id])
@@ -85,6 +86,7 @@ model Item {
   updatedAt    DateTime         @updatedAt
 
   @@index([categoryId, brandId, locationId])
+  @@index([itemCode])
   @@map("items")
 }
 

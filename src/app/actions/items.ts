@@ -1,13 +1,11 @@
-'use me';
 'use server';
 
 import { prisma } from '@/lib/db';
 import { generateNextItemCode } from '@/lib/sku';
+import { revalidatePath } from 'next/cache';
 
 export type ItemCategoryType = 'DEVICE' | 'BARANG';
 export type MutationType = 'IN' | 'OUT' | 'ADJUSTMENT';
-
-import { revalidatePath } from 'next/cache';
 
 export type ItemFilterParams = {
   search?: string;
@@ -15,10 +13,11 @@ export type ItemFilterParams = {
   categoryId?: string;
   brandId?: string;
   locationId?: string;
+  status?: string;
 };
 
 export async function getItems(params?: ItemFilterParams) {
-  const { search, type, categoryId, brandId, locationId } = params || {};
+  const { search, type, categoryId, brandId, locationId, status } = params || {};
 
   const whereClause: any = {};
 
@@ -26,7 +25,9 @@ export async function getItems(params?: ItemFilterParams) {
     whereClause.OR = [
       { name: { contains: search } },
       { itemCode: { contains: search } },
+      { serialNumber: { contains: search } },
       { description: { contains: search } },
+      { brand: { name: { contains: search } } },
     ];
   }
 
@@ -46,6 +47,10 @@ export async function getItems(params?: ItemFilterParams) {
     whereClause.locationId = locationId;
   }
 
+  if (status && status !== 'ALL') {
+    whereClause.status = status;
+  }
+
   const items = await prisma.item.findMany({
     where: whereClause,
     include: {
@@ -59,6 +64,71 @@ export async function getItems(params?: ItemFilterParams) {
   });
 
   return items;
+}
+
+export type GroupedStockItem = {
+  key: string;
+  name: string;
+  categoryId: string;
+  brandId: string;
+  locationId: string;
+  category: { id: string; name: string; codePrefix: string; type: ItemCategoryType };
+  brand: { id: string; name: string };
+  location: { id: string; name: string };
+  totalStock: number;
+  availableStock: number;
+  items: Array<{
+    id: string;
+    serialNumber: string;
+    itemCode: string;
+    name: string;
+    status: string;
+    description: string | null;
+    createdAt: Date;
+  }>;
+};
+
+export async function getGroupedStock(params?: ItemFilterParams): Promise<GroupedStockItem[]> {
+  const items = await getItems(params);
+
+  const groupsMap = new Map<string, GroupedStockItem>();
+
+  for (const item of items) {
+    const groupKey = `${item.categoryId}_${item.brandId}_${item.locationId}_${item.name.toLowerCase().trim()}`;
+
+    if (!groupsMap.has(groupKey)) {
+      groupsMap.set(groupKey, {
+        key: groupKey,
+        name: item.name,
+        categoryId: item.categoryId,
+        brandId: item.brandId,
+        locationId: item.locationId,
+        category: item.category,
+        brand: item.brand,
+        location: item.location,
+        totalStock: 0,
+        availableStock: 0,
+        items: [],
+      });
+    }
+
+    const group = groupsMap.get(groupKey)!;
+    group.totalStock += 1;
+    if (item.status === 'TERSEDIA') {
+      group.availableStock += 1;
+    }
+    group.items.push({
+      id: item.id,
+      serialNumber: item.serialNumber,
+      itemCode: item.itemCode,
+      name: item.name,
+      status: item.status,
+      description: item.description,
+      createdAt: item.createdAt,
+    });
+  }
+
+  return Array.from(groupsMap.values());
 }
 
 export async function getItemNextSku(categoryId: string) {
@@ -75,10 +145,11 @@ export async function createItem(data: {
   categoryId: string;
   brandId: string;
   locationId: string;
-  initialStock: number;
+  serialNumberInput: string; // single or multi-line / comma separated
+  status?: string;
   description?: string;
 }) {
-  const { name, categoryId, brandId, locationId, initialStock, description } = data;
+  const { name, categoryId, brandId, locationId, serialNumberInput, status = 'TERSEDIA', description } = data;
 
   const category = await prisma.category.findUnique({
     where: { id: categoryId },
@@ -88,50 +159,84 @@ export async function createItem(data: {
     throw new Error('Kategori tidak ditemukan');
   }
 
-  const itemCode = await generateNextItemCode(category.codePrefix);
-  const stockQty = Math.max(0, Number(initialStock) || 0);
+  // Parse serial numbers (split by comma, space, or newline)
+  const rawSns = serialNumberInput
+    .split(/[\n,\r]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 
-  const item = await prisma.$transaction(async (tx: any) => {
-    const newItem = await tx.item.create({
-      data: {
-        itemCode,
-        name: name.trim(),
-        type: category.type,
-        categoryId,
-        brandId,
-        locationId,
-        currentStock: stockQty,
-        description: description?.trim() || null,
+  if (rawSns.length === 0) {
+    throw new Error('Wajib memasukkan setidaknya 1 Serial Number (SN).');
+  }
+
+  // Deduplicate input SNs
+  const uniqueSns = Array.from(new Set(rawSns));
+
+  // Check if any SN already exists in DB
+  const existingItems = await prisma.item.findMany({
+    where: {
+      serialNumber: {
+        in: uniqueSns,
       },
-    });
+    },
+    select: { serialNumber: true },
+  });
 
-    if (stockQty > 0) {
+  if (existingItems.length > 0) {
+    const duplicates = existingItems.map((i) => i.serialNumber).join(', ');
+    throw new Error(`Serial Number berikut sudah terdaftar di sistem: ${duplicates}`);
+  }
+
+  const itemCode = await generateNextItemCode(category.codePrefix);
+
+  const createdItems = await prisma.$transaction(async (tx: any) => {
+    const results = [];
+    for (const sn of uniqueSns) {
+      const newItem = await tx.item.create({
+        data: {
+          serialNumber: sn,
+          itemCode,
+          name: name.trim(),
+          type: category.type,
+          categoryId,
+          brandId,
+          locationId,
+          status,
+          description: description?.trim() || null,
+        },
+      });
+
       await tx.stockLog.create({
         data: {
           itemId: newItem.id,
           locationId: newItem.locationId,
-          mutation: stockQty,
+          mutation: 1,
           type: 'IN',
-          notes: 'Pencatatan Stok Awal Item Baru',
+          notes: `Pencatatan Unit Baru (SN: ${sn})`,
         },
       });
+
+      results.push(newItem);
     }
 
-    return newItem;
+    return results;
   });
 
   revalidatePath('/items');
+  revalidatePath('/logs');
   revalidatePath('/');
-  return item;
+  return createdItems;
 }
 
 export async function updateItem(
   id: string,
   data: {
+    serialNumber: string;
     name: string;
     categoryId: string;
     brandId: string;
     locationId: string;
+    status: string;
     description?: string;
   }
 ) {
@@ -147,73 +252,100 @@ export async function updateItem(
 
   if (!newCategory) throw new Error('Kategori tidak ditemukan');
 
-  // If category changed, generate new SKU sequence for the new category
+  // Check SN uniqueness if SN changed
+  const cleanSN = data.serialNumber.trim();
+  if (cleanSN !== currentItem.serialNumber) {
+    const existing = await prisma.item.findUnique({
+      where: { serialNumber: cleanSN },
+    });
+    if (existing) {
+      throw new Error(`Serial Number ${cleanSN} sudah digunakan oleh barang lain.`);
+    }
+  }
+
   let itemCode = currentItem.itemCode;
   if (currentItem.categoryId !== data.categoryId) {
     itemCode = await generateNextItemCode(newCategory.codePrefix);
   }
 
-  const updated = await prisma.item.update({
-    where: { id },
-    data: {
-      itemCode,
-      name: data.name.trim(),
-      categoryId: data.categoryId,
-      brandId: data.brandId,
-      locationId: data.locationId,
-      type: newCategory.type,
-      description: data.description?.trim() || null,
-    },
+  const isLocationChanged = currentItem.locationId !== data.locationId;
+
+  const updated = await prisma.$transaction(async (tx: any) => {
+    const updatedItem = await tx.item.update({
+      where: { id },
+      data: {
+        serialNumber: cleanSN,
+        itemCode,
+        name: data.name.trim(),
+        categoryId: data.categoryId,
+        brandId: data.brandId,
+        locationId: data.locationId,
+        status: data.status,
+        type: newCategory.type,
+        description: data.description?.trim() || null,
+      },
+    });
+
+    if (isLocationChanged) {
+      await tx.stockLog.create({
+        data: {
+          itemId: id,
+          locationId: data.locationId,
+          mutation: 0,
+          type: 'ADJUSTMENT',
+          notes: `Perubahan Lokasi SN: ${cleanSN} ke lokasi baru`,
+        },
+      });
+    }
+
+    return updatedItem;
   });
 
   revalidatePath('/items');
+  revalidatePath('/logs');
   revalidatePath('/');
   return updated;
 }
 
-export async function mutateStock(data: {
+export async function mutateItemLocation(data: {
   itemId: string;
-  mutation: number;
-  type: MutationType;
-  notes: string;
-  locationId?: string;
+  targetLocationId: string;
+  notes?: string;
 }) {
-  const { itemId, mutation, type, notes, locationId } = data;
+  const { itemId, targetLocationId, notes } = data;
 
   const item = await prisma.item.findUnique({
     where: { id: itemId },
+    include: { location: true },
   });
 
   if (!item) throw new Error('Item tidak ditemukan');
 
-  if (mutation === 0) {
-    throw new Error('Jumlah mutasi stok tidak boleh 0');
+  if (item.locationId === targetLocationId) {
+    throw new Error('Lokasi tujuan sama dengan lokasi saat ini.');
   }
 
-  const effectiveLocationId = locationId || item.locationId;
-  const delta = type === 'OUT' ? -Math.abs(mutation) : Math.abs(mutation);
+  const targetLocation = await prisma.location.findUnique({
+    where: { id: targetLocationId },
+  });
+
+  if (!targetLocation) throw new Error('Lokasi tujuan tidak ditemukan');
 
   const updatedItem = await prisma.$transaction(async (tx: any) => {
-    const newStock = item.currentStock + delta;
-    if (newStock < 0) {
-      throw new Error(`Stok tidak mencukupi. Stok saat ini: ${item.currentStock}, pengeluaran: ${Math.abs(delta)}`);
-    }
-
     const updated = await tx.item.update({
       where: { id: itemId },
       data: {
-        currentStock: newStock,
-        locationId: effectiveLocationId,
+        locationId: targetLocationId,
       },
     });
 
     await tx.stockLog.create({
       data: {
         itemId,
-        locationId: effectiveLocationId,
-        mutation: delta,
-        type,
-        notes: notes.trim() || (delta > 0 ? 'Penambahan Stok' : 'Pengurangan Stok'),
+        locationId: targetLocationId,
+        mutation: 0,
+        type: 'ADJUSTMENT',
+        notes: notes?.trim() || `Mutasi SN ${item.serialNumber} dari ${item.location.name} ke ${targetLocation.name}`,
       },
     });
 
@@ -226,13 +358,12 @@ export async function mutateStock(data: {
   return updatedItem;
 }
 
-export async function stockOpnameAdjustment(data: {
+export async function updateItemStatus(data: {
   itemId: string;
-  physicalStock: number;
-  notes: string;
-  locationId?: string;
+  status: string;
+  notes?: string;
 }) {
-  const { itemId, physicalStock, notes, locationId } = data;
+  const { itemId, status, notes } = data;
 
   const item = await prisma.item.findUnique({
     where: { id: itemId },
@@ -240,36 +371,21 @@ export async function stockOpnameAdjustment(data: {
 
   if (!item) throw new Error('Item tidak ditemukan');
 
-  const targetStock = Math.max(0, physicalStock);
-  const diff = targetStock - item.currentStock;
-
-  if (diff === 0) {
-    throw new Error('Jumlah stok fisik sama dengan stok sistem. Tidak ada koreksi yang dibuat.');
-  }
-
-  const effectiveLocationId = locationId || item.locationId;
+  const oldStatus = item.status;
 
   const updatedItem = await prisma.$transaction(async (tx: any) => {
     const updated = await tx.item.update({
       where: { id: itemId },
-      data: {
-        currentStock: targetStock,
-        locationId: effectiveLocationId,
-      },
+      data: { status },
     });
-
-    const mutationType = diff > 0 ? 'IN' : 'OUT';
-    const notesText = notes.trim()
-      ? `Stock Opname: ${notes.trim()} (Stok Sistem: ${item.currentStock} -> Fisik: ${targetStock})`
-      : `Koreksi Stock Opname (Stok Sistem: ${item.currentStock} -> Fisik: ${targetStock})`;
 
     await tx.stockLog.create({
       data: {
         itemId,
-        locationId: effectiveLocationId,
-        mutation: diff,
-        type: mutationType,
-        notes: notesText,
+        locationId: item.locationId,
+        mutation: status === 'RUSAK' || status === 'KELUAR' ? -1 : 0,
+        type: status === 'KELUAR' ? 'OUT' : 'ADJUSTMENT',
+        notes: notes?.trim() || `Status SN ${item.serialNumber} diubah: ${oldStatus} -> ${status}`,
       },
     });
 
@@ -289,12 +405,6 @@ export async function deleteItem(id: string) {
 
   if (!item) throw new Error('Item tidak ditemukan');
 
-  if (item.currentStock > 0) {
-    throw new Error(
-      `Tidak dapat menghapus item "${item.name}" karena masih memiliki sisa stok (${item.currentStock} unit). Kosongkan stok terlebih dahulu via mutasi/opname.`
-    );
-  }
-
   await prisma.$transaction([
     prisma.stockLog.deleteMany({ where: { itemId: id } }),
     prisma.item.delete({ where: { id } }),
@@ -304,3 +414,4 @@ export async function deleteItem(id: string) {
   revalidatePath('/logs');
   revalidatePath('/');
 }
+

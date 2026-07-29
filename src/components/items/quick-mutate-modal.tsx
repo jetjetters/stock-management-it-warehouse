@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, ArrowDownRight, ArrowUpRight, Repeat } from 'lucide-react';
-import { mutateStock, type MutationType } from '@/app/actions/items';
+import { X, Repeat, MapPin } from 'lucide-react';
+import { mutateItemLocation } from '@/app/actions/items';
 
 type LocationItem = {
   id: string;
@@ -14,9 +14,9 @@ type QuickMutateModalProps = {
   onClose: () => void;
   item: {
     id: string;
+    serialNumber: string;
     itemCode: string;
     name: string;
-    currentStock: number;
     locationId: string;
     location: { name: string };
   } | null;
@@ -31,56 +31,42 @@ export function QuickMutateModal({
   locations,
   onSuccess,
 }: QuickMutateModalProps) {
-  const [type, setType] = useState<'IN' | 'OUT'>('IN');
-  const [quantity, setQuantity] = useState<number>(1);
-  const [locationId, setLocationId] = useState('');
+  const [targetLocationId, setTargetLocationId] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (item) {
-      setType('IN');
-      setQuantity(1);
-      setLocationId(item.locationId);
+      // Pick first location different from current
+      const otherLoc = locations.find((l) => l.id !== item.locationId);
+      setTargetLocationId(otherLoc?.id || item.locationId);
       setNotes('');
       setError('');
     }
-  }, [item, isOpen]);
+  }, [item, isOpen, locations]);
 
   if (!isOpen || !item) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (quantity <= 0) {
-      setError('Jumlah mutasi harus lebih dari 0.');
-      return;
-    }
-
     setLoading(true);
     setError('');
 
     try {
-      await mutateStock({
+      await mutateItemLocation({
         itemId: item.id,
-        mutation: quantity,
-        type: type as MutationType,
+        targetLocationId,
         notes,
-        locationId,
       });
-      onSuccess(`Mutasi stok (${type === 'IN' ? '+' : '-'}${quantity}) berhasil dicatat.`);
+      onSuccess(`Mutasi lokasi SN (${item.serialNumber}) berhasil diperbarui.`);
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Gagal mengubah stok');
+      setError(err.message || 'Gagal mengubah lokasi unit SN');
     } finally {
       setLoading(false);
     }
   };
-
-  const calculatedResult =
-    type === 'IN'
-      ? item.currentStock + quantity
-      : item.currentStock - quantity;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -92,8 +78,8 @@ export function QuickMutateModal({
               <Repeat className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-100">Mutasi Stok Instant</h2>
-              <p className="text-xs text-slate-400">Catat stok masuk / keluar secara cepat</p>
+              <h2 className="text-lg font-bold text-slate-100">Mutasi Lokasi Storage</h2>
+              <p className="text-xs text-slate-400">Pindahkan unit SN ke lokasi storage baru</p>
             </div>
           </div>
           <button
@@ -113,85 +99,33 @@ export function QuickMutateModal({
           )}
 
           {/* Item Info Summary */}
-          <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between">
-            <div>
+          <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
+            <div className="flex items-center justify-between">
               <span className="font-mono text-xs text-blue-400 font-bold">{item.itemCode}</span>
-              <h4 className="text-sm font-semibold text-slate-200">{item.name}</h4>
+              <span className="font-mono text-xs text-slate-300 font-bold bg-slate-800 px-2 py-0.5 rounded">
+                SN: {item.serialNumber}
+              </span>
             </div>
-            <div className="text-right">
-              <span className="text-[11px] text-slate-500 block">Stok Saat Ini</span>
-              <span className="font-mono text-sm font-bold text-slate-100">{item.currentStock} Unit</span>
-            </div>
-          </div>
-
-          {/* Mutation Type Toggle */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Jenis Mutasi Stok <span className="text-rose-400">*</span>
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setType('IN')}
-                className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
-                  type === 'IN'
-                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-md shadow-emerald-500/10'
-                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <ArrowUpRight className="w-4 h-4" />
-                <span>STOK MASUK (IN)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setType('OUT')}
-                className={`p-3 rounded-lg border flex items-center justify-center space-x-2 text-xs font-bold transition ${
-                  type === 'OUT'
-                    ? 'bg-rose-500/20 border-rose-500 text-rose-400 shadow-md shadow-rose-500/10'
-                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <ArrowDownRight className="w-4 h-4" />
-                <span>STOK KELUAR (OUT)</span>
-              </button>
+            <h4 className="text-sm font-semibold text-slate-200">{item.name}</h4>
+            <div className="text-[11px] text-slate-400 flex items-center space-x-1 pt-1">
+              <MapPin className="w-3 h-3 text-amber-400" />
+              <span>Lokasi Saat Ini: <strong>{item.location.name}</strong></span>
             </div>
           </div>
 
-          {/* Quantity */}
+          {/* Target Location */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Jumlah Unit <span className="text-rose-400">*</span>
-            </label>
-            <input
-              type="number"
-              min={1}
-              required
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 0))}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono font-bold focus:outline-none focus:border-blue-500"
-            />
-            <p className="text-[11px] text-slate-400 mt-1">
-              Estimasi Stok Akhir:{' '}
-              <strong className={calculatedResult < 0 ? 'text-rose-400' : 'text-emerald-400'}>
-                {calculatedResult} Unit
-              </strong>
-            </p>
-          </div>
-
-          {/* Location Target */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Lokasi Penyimpanan <span className="text-rose-400">*</span>
+              Lokasi Storage Tujuan <span className="text-rose-400">*</span>
             </label>
             <select
-              value={locationId}
-              onChange={(e) => setLocationId(e.target.value)}
+              value={targetLocationId}
+              onChange={(e) => setTargetLocationId(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
             >
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.id}>
-                  {loc.name}
+                  {loc.name} {loc.id === item.locationId ? '(Lokasi Saat Ini)' : ''}
                 </option>
               ))}
             </select>
@@ -200,18 +134,13 @@ export function QuickMutateModal({
           {/* Notes */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Keterangan / Tujuan Mutasi <span className="text-rose-400">*</span>
+              Keterangan / Alasan Pindah Lokasi
             </label>
             <textarea
-              required
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                type === 'IN'
-                  ? 'Contoh: Pembelian PO-2026/04 atau Donasi'
-                  : 'Contoh: Dipinjam Chelsy di Main Office'
-              }
+              placeholder="Contoh: Dipindahkan untuk penugasan staff di Main Office"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -228,13 +157,9 @@ export function QuickMutateModal({
             <button
               type="submit"
               disabled={loading}
-              className={`px-5 py-2 text-white font-medium rounded-lg text-sm shadow-lg transition disabled:opacity-50 ${
-                type === 'IN'
-                  ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
-                  : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/20'
-              }`}
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-600/20 transition disabled:opacity-50"
             >
-              {loading ? 'Menyimpan...' : type === 'IN' ? 'Tambah Stok (+)' : 'Kurangi Stok (-)'}
+              {loading ? 'Menyimpan...' : 'Proses Mutasi Lokasi'}
             </button>
           </div>
         </form>
@@ -242,3 +167,4 @@ export function QuickMutateModal({
     </div>
   );
 }
+

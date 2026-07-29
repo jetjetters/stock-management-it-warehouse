@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Sparkles } from 'lucide-react';
+import { X, Plus, Sparkles, QrCode } from 'lucide-react';
 import { createItem, updateItem, getItemNextSku } from '@/app/actions/items';
 import { createBrand } from '@/app/actions/master-data';
 
@@ -33,12 +33,13 @@ type ItemModalProps = {
   locations: LocationItem[];
   editItem?: {
     id: string;
+    serialNumber: string;
     itemCode: string;
     name: string;
     categoryId: string;
     brandId: string;
     locationId: string;
-    currentStock: number;
+    status: string;
     description?: string | null;
   } | null;
   onSuccess: (msg?: string) => void;
@@ -57,7 +58,8 @@ export function ItemModal({
   const [categoryId, setCategoryId] = useState('');
   const [brandId, setBrandId] = useState('');
   const [locationId, setLocationId] = useState('');
-  const [initialStock, setInitialStock] = useState<number>(0);
+  const [serialNumberInput, setSerialNumberInput] = useState('');
+  const [status, setStatus] = useState('TERSEDIA');
   const [description, setDescription] = useState('');
   const [skuPreview, setSkuPreview] = useState('');
 
@@ -79,7 +81,8 @@ export function ItemModal({
       setCategoryId(editItem.categoryId);
       setBrandId(editItem.brandId);
       setLocationId(editItem.locationId);
-      setInitialStock(editItem.currentStock);
+      setSerialNumberInput(editItem.serialNumber);
+      setStatus(editItem.status || 'TERSEDIA');
       setDescription(editItem.description || '');
       setSkuPreview(editItem.itemCode);
     } else {
@@ -87,7 +90,8 @@ export function ItemModal({
       setCategoryId(categories[0]?.id || '');
       setBrandId('');
       setLocationId(locations[0]?.id || '');
-      setInitialStock(0);
+      setSerialNumberInput('');
+      setStatus('TERSEDIA');
       setDescription('');
       setSkuPreview('');
     }
@@ -142,23 +146,26 @@ export function ItemModal({
     try {
       if (editItem) {
         await updateItem(editItem.id, {
+          serialNumber: serialNumberInput.trim(),
           name,
           categoryId,
           brandId,
           locationId,
+          status,
           description,
         });
-        onSuccess('Data item inventaris berhasil diperbarui.');
+        onSuccess('Data item unit (SN) berhasil diperbarui.');
       } else {
         await createItem({
           name,
           categoryId,
           brandId,
           locationId,
-          initialStock,
+          serialNumberInput,
+          status,
           description,
         });
-        onSuccess('Item inventaris baru berhasil ditambahkan.');
+        onSuccess('Unit Serial Number (SN) baru berhasil ditambahkan.');
       }
       onClose();
     } catch (err: any) {
@@ -168,8 +175,6 @@ export function ItemModal({
     }
   };
 
-  const selectedCategory = categories.find((c) => c.id === categoryId);
-
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -177,10 +182,10 @@ export function ItemModal({
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-100">
-              {editItem ? 'Edit Informasi Barang' : 'Tambah Inventaris Baru'}
+              {editItem ? 'Edit Unit Serial Number (SN)' : 'Registrasi Unit Inventaris (SN)'}
             </h2>
             <p className="text-xs text-slate-400">
-              {editItem ? `Kode Unik: ${editItem.itemCode}` : 'Isi formulir inventaris IT di bawah ini'}
+              {editItem ? `Kode SKU: ${editItem.itemCode}` : 'Tambahkan unit barang ber-Serial Number ke stok'}
             </p>
           </div>
           <button
@@ -206,8 +211,8 @@ export function ItemModal({
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {editItem && categoryId !== editItem.categoryId
-                    ? 'Generasi SKU Baru (Kategori Berubah)'
-                    : 'Kode SKU Item'}
+                    ? 'Generasi SKU Baru'
+                    : 'Kode SKU Sekelompok'}
                 </span>
               </div>
               <span className="font-mono text-sm font-bold tracking-wider text-blue-300 bg-blue-950 px-2.5 py-1 rounded border border-blue-800">
@@ -216,7 +221,7 @@ export function ItemModal({
             </div>
           )}
 
-          {/* Nama Item */}
+          {/* Nama Item / Model */}
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
               Nama Barang / Model <span className="text-rose-400">*</span>
@@ -229,6 +234,40 @@ export function ItemModal({
               placeholder="Contoh: Mouse Wireless M170 / EcoTank L3210"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
+          </div>
+
+          {/* Serial Number Input */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-medium text-slate-300 flex items-center space-x-1.5">
+                <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                <span>Serial Number (SN) <span className="text-rose-400">*</span></span>
+              </label>
+              {!editItem && (
+                <span className="text-[10px] text-slate-400 font-mono">
+                  Multi-SN: Pisahkan per baris / koma
+                </span>
+              )}
+            </div>
+            {editItem ? (
+              <input
+                type="text"
+                required
+                value={serialNumberInput}
+                onChange={(e) => setSerialNumberInput(e.target.value)}
+                placeholder="Serial Number Unik (contoh: SN-LOGI-10293)"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-blue-500"
+              />
+            ) : (
+              <textarea
+                required
+                rows={3}
+                value={serialNumberInput}
+                onChange={(e) => setSerialNumberInput(e.target.value)}
+                placeholder={'Contoh:\nSN-LOGI-001\nSN-LOGI-002\nSN-LOGI-003'}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500"
+              />
+            )}
           </div>
 
           {/* Category Dropdown */}
@@ -250,7 +289,7 @@ export function ItemModal({
               </select>
             </div>
 
-            {/* Brand Dropdown (Dependent) */}
+            {/* Brand Dropdown */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-slate-300">
@@ -301,7 +340,7 @@ export function ItemModal({
             </div>
           </div>
 
-          {/* Location & Initial Stock */}
+          {/* Location & Status */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
@@ -320,20 +359,21 @@ export function ItemModal({
               </select>
             </div>
 
-            {!editItem && (
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Stok Awal (Initial)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={initialStock}
-                  onChange={(e) => setInitialStock(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 font-mono"
-                />
-              </div>
-            )}
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Status Unit <span className="text-rose-400">*</span>
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+              >
+                <option value="TERSEDIA">TERSEDIA (Available)</option>
+                <option value="TERPAKAI">TERPAKAI (In Use)</option>
+                <option value="DIPINJAM">DIPINJAM (On Loan)</option>
+                <option value="RUSAK">RUSAK (Damaged)</option>
+              </select>
+            </div>
           </div>
 
           {/* Keterangan */}
@@ -345,7 +385,7 @@ export function ItemModal({
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Contoh: Serial Number, Garansi, atau Catatan Kondisi"
+              placeholder="Contoh: Garansi 1 Tahun, Nota Pembelian #102"
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -364,7 +404,7 @@ export function ItemModal({
               disabled={loading}
               className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-600/20 transition disabled:opacity-50"
             >
-              {loading ? 'Menyimpan...' : editItem ? 'Simpan Perubahan' : 'Tambah Inventaris'}
+              {loading ? 'Menyimpan...' : editItem ? 'Simpan Perubahan' : 'Registrasi Unit SN'}
             </button>
           </div>
         </form>
@@ -372,3 +412,4 @@ export function ItemModal({
     </div>
   );
 }
+

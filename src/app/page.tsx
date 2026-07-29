@@ -4,8 +4,8 @@ import {
   Boxes,
   Monitor,
   Package,
+  CheckCircle,
   AlertTriangle,
-  XCircle,
   History,
   ArrowUpRight,
   ArrowDownRight,
@@ -13,25 +13,26 @@ import {
   ArrowRight,
   BellRing,
   ExternalLink,
+  QrCode,
 } from 'lucide-react';
 
 export const revalidate = 0;
 
 export default async function DashboardPage() {
   const [
-    totalItems,
+    totalSNUnits,
     devicesCount,
     barangCount,
-    lowStockCount,
-    zeroStockCount,
+    availableCount,
+    damagedCount,
     recentLogs,
-    attentionItems,
+    recentUnits,
   ] = await Promise.all([
     prisma.item.count(),
     prisma.item.count({ where: { type: 'DEVICE' } }),
     prisma.item.count({ where: { type: 'BARANG' } }),
-    prisma.item.count({ where: { currentStock: { gt: 0, lte: 5 } } }),
-    prisma.item.count({ where: { currentStock: 0 } }),
+    prisma.item.count({ where: { status: 'TERSEDIA' } }),
+    prisma.item.count({ where: { status: 'RUSAK' } }),
     prisma.stockLog.findMany({
       take: 6,
       orderBy: { createdAt: 'desc' },
@@ -41,9 +42,8 @@ export default async function DashboardPage() {
       },
     }),
     prisma.item.findMany({
-      where: { currentStock: { lte: 5 } },
       take: 5,
-      orderBy: { currentStock: 'asc' },
+      orderBy: { createdAt: 'desc' },
       include: {
         category: true,
         location: true,
@@ -58,32 +58,33 @@ export default async function DashboardPage() {
       <div className="bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-slate-900 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden">
         <div className="relative z-10 max-w-2xl space-y-2">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
-            <span>Control Center & Stock Audit</span>
+            <QrCode className="w-3.5 h-3.5" />
+            <span>Control Center & Stock Audit SN</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-            IT Warehouse Management & Stock Taking
+            IT Warehouse Management & Stock Taking (SN)
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Sistem pengawasan inventaris perangkat IT dan bahan habis pakai. Dilengkapi mutasi stok *real-time*, otomatisasi SKU, pengingat restock, serta jejak audit lengkap.
+            Sistem pengawasan inventaris berbasis Serial Number (SN). Pengelompokan stok otomatis per Kategori, Merk, dan Lokasi dengan mutasi real-time & audit trail lengkap.
           </p>
         </div>
       </div>
 
       {/* Analytics Metric Cards (5 Grid Columns) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Total Item */}
+        {/* Total Unit SN */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 relative overflow-hidden shadow-lg">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              Total SKU Item
+              Total Unit SN
             </span>
             <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
               <Boxes className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-slate-100">{totalItems}</span>
-            <span className="text-[11px] text-slate-500">Terdaftar</span>
+            <span className="text-2xl font-bold font-mono text-slate-100">{totalSNUnits}</span>
+            <span className="text-[11px] text-slate-500">Physical Units</span>
           </div>
         </div>
 
@@ -99,7 +100,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-baseline justify-between">
             <span className="text-2xl font-bold font-mono text-blue-400">{devicesCount}</span>
-            <span className="text-[11px] text-slate-500">Aset IT</span>
+            <span className="text-[11px] text-slate-500">Unit SN Aset</span>
           </div>
         </div>
 
@@ -119,35 +120,35 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Low Stock Warning (Amber) */}
-        <div className="bg-slate-900 border border-amber-500/30 rounded-xl p-4 space-y-3 shadow-lg">
+        {/* Unit Tersedia (Available) */}
+        <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-4 space-y-3 shadow-lg">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">
-              Stok Menipis (1-5)
+            <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
+              Unit Tersedia
             </span>
-            <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg">
+            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+              <CheckCircle className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <span className="text-2xl font-bold font-mono text-emerald-400">{availableCount}</span>
+            <span className="text-[11px] text-slate-400">Available</span>
+          </div>
+        </div>
+
+        {/* Unit Rusak / Perlu Perhatian */}
+        <div className="bg-slate-900 border border-rose-500/40 rounded-xl p-4 space-y-3 shadow-xl bg-rose-950/10">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">
+              Unit Rusak / Defect
+            </span>
+            <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/30">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-amber-400">{lowStockCount}</span>
-            <span className="text-[11px] text-slate-400">Reorder</span>
-          </div>
-        </div>
-
-        {/* Zero Stock Alert (Red Card) */}
-        <div className="bg-slate-900 border border-rose-500/40 rounded-xl p-4 space-y-3 shadow-xl bg-rose-950/10">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">
-              Stok Kosong (0)
-            </span>
-            <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/30">
-              <XCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-rose-400">{zeroStockCount}</span>
-            <span className="text-[11px] font-semibold text-rose-400/90">Habis Total</span>
+            <span className="text-2xl font-bold font-mono text-rose-400">{damagedCount}</span>
+            <span className="text-[11px] font-semibold text-rose-400/90">Perlu Service</span>
           </div>
         </div>
       </div>
@@ -163,7 +164,7 @@ export default async function DashboardPage() {
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-blue-600/20 transition flex items-center space-x-2"
           >
             <Plus className="w-4 h-4" />
-            <span>Kelola Inventaris</span>
+            <span>Kelola Inventaris SN</span>
           </Link>
           <Link
             href="/logs"
@@ -177,36 +178,34 @@ export default async function DashboardPage() {
 
       {/* Reminder Panel & Recent Activity Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Reminder & Restock Attention Panel (Left 1 col on large screens) */}
-        <div className="bg-slate-900 border border-amber-500/30 rounded-xl overflow-hidden shadow-xl lg:col-span-1 flex flex-col">
-          <div className="p-4 bg-amber-950/20 border-b border-amber-500/20 flex items-center justify-between">
+        {/* Unit Registrasi Terbaru */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl lg:col-span-1 flex flex-col">
+          <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
-              <div className="p-1.5 bg-amber-500/20 text-amber-400 rounded-lg">
+              <div className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
                 <BellRing className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-100 text-sm">Pengingat Stok & Reorder</h3>
-                <p className="text-[11px] text-slate-400">Daftar item perlu tindakan segera</p>
+                <h3 className="font-bold text-slate-100 text-sm">Registrasi SN Terbaru</h3>
+                <p className="text-[11px] text-slate-400">Daftar unit SN terdaftar terbaru</p>
               </div>
             </div>
             <Link
               href="/items"
-              className="text-xs text-amber-400 hover:text-amber-300 flex items-center space-x-1 font-semibold"
+              className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1 font-semibold"
             >
-              <span>Inventaris</span>
+              <span>Semua SN</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
           </div>
 
           <div className="divide-y divide-slate-800/80 flex-1">
-            {attentionItems.length === 0 ? (
+            {recentUnits.length === 0 ? (
               <div className="p-6 text-center text-slate-500 text-xs">
-                Semua stok barang dalam kondisi aman (&gt;5 unit).
+                Belum ada unit Serial Number terdaftar.
               </div>
             ) : (
-              attentionItems.map((item: any) => {
-                const isZero = item.currentStock === 0;
-
+              recentUnits.map((item: any) => {
                 return (
                   <div
                     key={item.id}
@@ -221,22 +220,16 @@ export default async function DashboardPage() {
                           {item.name}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 flex items-center space-x-1.5">
-                        <span>{item.category.name}</span>
+                      <div className="text-[11px] text-slate-400 flex items-center space-x-1.5 font-mono">
+                        <span className="text-slate-300 font-bold">SN: {item.serialNumber}</span>
                         <span>•</span>
                         <span className="text-slate-500">{item.location.name}</span>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold font-mono border ${
-                          isZero
-                            ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
-                            : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                        }`}
-                      >
-                        {isZero ? '0 UNIT (HABIS)' : `${item.currentStock} Unit`}
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                        {item.status}
                       </span>
                     </div>
                   </div>
@@ -251,7 +244,7 @@ export default async function DashboardPage() {
           <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <History className="w-5 h-5 text-blue-400" />
-              <h3 className="font-bold text-slate-200 text-base">Riwayat Mutasi Stok Terbaru</h3>
+              <h3 className="font-bold text-slate-200 text-base">Riwayat Mutasi & Audit Terbaru</h3>
             </div>
             <Link
               href="/logs"
@@ -334,3 +327,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
