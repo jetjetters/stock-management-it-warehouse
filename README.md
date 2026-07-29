@@ -149,3 +149,44 @@ npm run start
   npx prisma db push --force-reset
   npm run prisma:seed
   ```
+
+---
+
+## ⚠️ Troubleshooting & Solusi Prisma Validation Error
+
+Jika saat menjalankan aplikasi mengalami **Prisma Validation Error** atau `PrismaClientValidationError`, ikuti langkah-langkah perbaikan berikut:
+
+### 1. Masalah File `.env` Mismatch atau Belum Ada
+Pastikan file `.env` sudah ada di root proyek dan berisi:
+```env
+DATABASE_URL="file:./dev.db"
+```
+
+### 2. Prisma Client Belum Ter-generate Sesuai OS
+Jika proyek baru di-clone di laptop lain, jalankan perintah berikut untuk menginisialisasi ulang Prisma Client & Skema Database:
+```bash
+# Regenerasi Prisma Client
+npx prisma generate
+
+# Pindahkan/Sinkronkan skema ke database SQLite
+npx prisma db push
+```
+
+### 3. Skema Database SQLite Out of Sync / Rusak
+Jika tabel atau skema tidak cocok dengan data awal, lakukan reset database dan jalankan ulang seeding:
+```bash
+# Force reset database lokal
+npx prisma db push --force-reset
+
+# Isi ulang data awal / demo data
+npm run prisma:seed
+```
+
+### 4. Nilai Enum Tidak Sesuai (Case Sensitivity)
+Pada skema Prisma SQLite, enum `ItemCategoryType` (`DEVICE`, `BARANG`) dan `MutationType` (`IN`, `OUT`, `ADJUSTMENT`) bersifat **Strict Case-Sensitive (Huruf Kapital)**. Pastikan input data tidak menggunakan huruf kecil (`device` atau `barang`).
+
+### 5. Perintah Seed Menggunakan `npm run` (Bukan `npx run`)
+Gunakan perintah **`npm run prisma:seed`** atau **`npx prisma db seed`**.
+*Catatan: Jangan gunakan `npx run prisma:seed`, karena `npx` akan mencoba menginstall paket npm bernama `run` yang bukan merupakan skrip proyek.*
+
+

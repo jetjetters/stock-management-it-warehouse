@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
+import Link from 'next/link';
 import {
   Plus,
   Search,
@@ -18,12 +19,11 @@ import {
   Layers,
 } from 'lucide-react';
 import { deleteItem, type ItemCategoryType } from '@/app/actions/items';
-import { ItemModal } from '@/components/items/item-modal';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { SuccessModal } from '@/components/ui/success-modal';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type ItemType = {
   id: string;
@@ -68,6 +68,7 @@ export function ItemsClient({
   locations,
 }: ItemsClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // View Mode: 'GROUPED' (Stok Per Kategori/Merk/Lokasi) or 'FLAT_SN' (Semua Serial Number)
   const [viewMode, setViewMode] = useState<'GROUPED' | 'FLAT_SN'>('GROUPED');
@@ -83,9 +84,6 @@ export function ItemsClient({
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   // Modals state
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [editItem, setEditItem] = useState<ItemType | null>(null);
-
   const [isOpnameModalOpen, setIsOpnameModalOpen] = useState(false);
   const [opnameItem, setOpnameItem] = useState<ItemType | null>(null);
 
@@ -97,6 +95,14 @@ export function ItemsClient({
 
   // Success modal state
   const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    const msg = searchParams.get('success');
+    if (msg) {
+      setSuccessMsg(msg);
+      router.replace('/items');
+    }
+  }, [searchParams, router]);
 
   // Filter raw items
   const filteredItems = initialItems.filter((item) => {
@@ -220,16 +226,13 @@ export function ItemsClient({
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            setEditItem(null);
-            setIsItemModalOpen(true);
-          }}
+        <Link
+          href="/items/new"
           className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-sm shadow-lg shadow-blue-600/20 transition flex items-center space-x-2 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Unit (SN Baru)</span>
-        </button>
+        </Link>
       </div>
 
       {/* Tabs & Filters Bar */}
@@ -535,16 +538,13 @@ export function ItemsClient({
                                         </div>
 
                                         <div className="flex items-center space-x-1">
-                                          <button
+                                          <Link
+                                            href={`/items/${item.id}/edit`}
                                             title="Edit SN Unit"
-                                            onClick={() => {
-                                              setEditItem(item);
-                                              setIsItemModalOpen(true);
-                                            }}
                                             className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition"
                                           >
                                             <Pencil className="w-3.5 h-3.5" />
-                                          </button>
+                                          </Link>
                                           <button
                                             title="Hapus Unit SN"
                                             onClick={() =>
@@ -654,16 +654,13 @@ export function ItemsClient({
                             <span className="hidden lg:inline">Audit</span>
                           </button>
 
-                          <button
+                          <Link
+                            href={`/items/${item.id}/edit`}
                             title="Edit Unit SN"
-                            onClick={() => {
-                              setEditItem(item);
-                              setIsItemModalOpen(true);
-                            }}
                             className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
                           >
                             <Pencil className="w-4 h-4" />
-                          </button>
+                          </Link>
 
                           <button
                             title="Hapus Unit SN"
@@ -689,16 +686,7 @@ export function ItemsClient({
         </div>
       )}
 
-      {/* Item Modal */}
-      <ItemModal
-        isOpen={isItemModalOpen}
-        onClose={() => setIsItemModalOpen(false)}
-        categories={categories}
-        brands={brands}
-        locations={locations}
-        editItem={editItem}
-        onSuccess={handleSuccess}
-      />
+
 
       {/* Opname Modal */}
       <StockOpnameModal
