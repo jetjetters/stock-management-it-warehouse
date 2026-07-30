@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import Link from 'next/link';
 import {
   Plus,
   Search,
@@ -19,6 +18,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { deleteItem, type ItemCategoryType } from '@/app/actions/items';
+import { ItemModal, type PresetItemData } from '@/components/items/item-modal';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
@@ -52,6 +52,9 @@ type ItemsClientProps = {
 type GroupedStock = {
   key: string;
   name: string;
+  categoryId: string;
+  brandId: string;
+  locationId: string;
   type: ItemCategoryType;
   category: any;
   brand: any;
@@ -83,6 +86,11 @@ export function ItemsClient({
   // Expanded Groups in Grouped View
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
+  // Item Modal state (For Add SN, Add Preset SN, or Edit SN)
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [modalPresetItem, setModalPresetItem] = useState<PresetItemData | null>(null);
+  const [modalEditItem, setModalEditItem] = useState<ItemType | null>(null);
+
   // Modals state
   const [isOpnameModalOpen, setIsOpnameModalOpen] = useState(false);
   const [opnameItem, setOpnameItem] = useState<ItemType | null>(null);
@@ -103,6 +111,20 @@ export function ItemsClient({
       router.replace('/items');
     }
   }, [searchParams, router]);
+
+  // Open Item Modal for Add New
+  const handleOpenAddModal = (preset?: PresetItemData) => {
+    setModalEditItem(null);
+    setModalPresetItem(preset || null);
+    setIsItemModalOpen(true);
+  };
+
+  // Open Item Modal for Edit Existing SN Item
+  const handleOpenEditModal = (item: ItemType) => {
+    setModalPresetItem(null);
+    setModalEditItem(item);
+    setIsItemModalOpen(true);
+  };
 
   // Filter raw items
   const filteredItems = initialItems.filter((item) => {
@@ -140,6 +162,9 @@ export function ItemsClient({
       groupedStockMap.set(key, {
         key,
         name: item.name,
+        categoryId: item.categoryId,
+        brandId: item.brandId,
+        locationId: item.locationId,
         type: item.type,
         category: item.category,
         brand: item.brand,
@@ -226,13 +251,13 @@ export function ItemsClient({
           </p>
         </div>
 
-        <Link
-          href="/items/new"
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-sm shadow-lg shadow-blue-600/20 transition flex items-center space-x-2 self-start sm:self-auto"
+        <button
+          onClick={() => handleOpenAddModal()}
+          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Unit (SN Baru)</span>
-        </Link>
+        </button>
       </div>
 
       {/* Tabs & Filters Bar */}
@@ -458,6 +483,23 @@ export function ItemsClient({
                           {/* Action Buttons */}
                           <td className="p-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end space-x-2">
+                              {/* + Tambah SN Button for specific product */}
+                              <button
+                                onClick={() =>
+                                  handleOpenAddModal({
+                                    name: group.name,
+                                    categoryId: group.categoryId,
+                                    brandId: group.brandId,
+                                    locationId: group.locationId,
+                                  })
+                                }
+                                className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow"
+                                title={`Tambah unit SN baru untuk ${group.name}`}
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Tambah SN</span>
+                              </button>
+
                               <button
                                 onClick={() => toggleGroupExpand(group.key)}
                                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition flex items-center space-x-1 whitespace-nowrap"
@@ -479,6 +521,22 @@ export function ItemsClient({
                                     <QrCode className="w-4 h-4" />
                                     <span>Daftar Serial Number Unit ({group.items.length} Registered SN)</span>
                                   </span>
+
+                                  {/* Direct + Tambah SN Produk Ini button inside expanded header */}
+                                  <button
+                                    onClick={() =>
+                                      handleOpenAddModal({
+                                        name: group.name,
+                                        categoryId: group.categoryId,
+                                        brandId: group.brandId,
+                                        locationId: group.locationId,
+                                      })
+                                    }
+                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>+ Tambah Unit SN ({group.name})</span>
+                                  </button>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -538,13 +596,14 @@ export function ItemsClient({
                                         </div>
 
                                         <div className="flex items-center space-x-1">
-                                          <Link
-                                            href={`/items/${item.id}/edit`}
+                                          {/* Edit Modal trigger - Opens ItemModal directly without needing Enter or page reload */}
+                                          <button
+                                            onClick={() => handleOpenEditModal(item)}
                                             title="Edit SN Unit"
                                             className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition"
                                           >
                                             <Pencil className="w-3.5 h-3.5" />
-                                          </Link>
+                                          </button>
                                           <button
                                             title="Hapus Unit SN"
                                             onClick={() =>
@@ -600,67 +659,72 @@ export function ItemsClient({
                 ) : (
                   filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-4 whitespace-nowrap">
-                        <span className="font-mono text-xs font-bold text-slate-100 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
-                          SN: {item.serialNumber}
+                      {/* Serial Number */}
+                      <td className="p-4 font-mono font-bold text-slate-100 whitespace-nowrap">
+                        <span className="bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
+                          {item.serialNumber}
                         </span>
                       </td>
 
+                      {/* Item Code & Model Name */}
                       <td className="p-4">
-                        <div className="font-mono text-xs font-bold text-blue-400">
-                          {item.itemCode}
-                        </div>
-                        <div className="font-semibold text-slate-200">{item.name}</div>
+                        <div className="font-semibold text-slate-100">{item.name}</div>
+                        <div className="text-xs font-mono text-blue-400">SKU: {item.itemCode}</div>
                       </td>
 
+                      {/* Category & Brand */}
                       <td className="p-4 whitespace-nowrap">
                         <div className="text-xs font-medium text-slate-200">
-                          {item.category.name}
+                          {item.category.name} ({item.type})
                         </div>
                         <div className="text-[11px] text-slate-400">{item.brand.name}</div>
                       </td>
 
+                      {/* Location */}
                       <td className="p-4 whitespace-nowrap">
-                        <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-medium whitespace-nowrap">
+                        <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700">
                           {item.location.name}
                         </span>
                       </td>
 
-                      <td className="p-4 text-center whitespace-nowrap">{getStatusBadge(item.status)}</td>
+                      {/* Status */}
+                      <td className="p-4 text-center whitespace-nowrap">
+                        {getStatusBadge(item.status)}
+                      </td>
 
+                      {/* Actions */}
                       <td className="p-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end space-x-1.5">
+                        <div className="flex items-center justify-end space-x-1">
                           <button
-                            title="Mutasi / Pindah Lokasi"
+                            title="Mutasi Lokasi"
                             onClick={() => {
                               setMutateItem(item);
                               setIsMutateModalOpen(true);
                             }}
-                            className="p-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 rounded-lg text-xs font-medium transition flex items-center space-x-1"
+                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition"
                           >
                             <Repeat className="w-3.5 h-3.5" />
-                            <span className="hidden lg:inline">Mutasi</span>
                           </button>
 
                           <button
-                            title="Audit Status Unit"
+                            title="Audit Status"
                             onClick={() => {
                               setOpnameItem(item);
                               setIsOpnameModalOpen(true);
                             }}
-                            className="p-1.5 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg text-xs font-medium transition flex items-center space-x-1"
+                            className="p-1.5 text-amber-400 hover:bg-amber-500/10 rounded border border-amber-500/20 transition"
                           >
                             <ClipboardCheck className="w-3.5 h-3.5" />
-                            <span className="hidden lg:inline">Audit</span>
                           </button>
 
-                          <Link
-                            href={`/items/${item.id}/edit`}
-                            title="Edit Unit SN"
-                            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
+                          {/* Edit Item via Modal */}
+                          <button
+                            onClick={() => handleOpenEditModal(item)}
+                            title="Edit SN Unit"
+                            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition"
                           >
-                            <Pencil className="w-4 h-4" />
-                          </Link>
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
 
                           <button
                             title="Hapus Unit SN"
@@ -671,9 +735,9 @@ export function ItemsClient({
                                 sn: item.serialNumber,
                               })
                             }
-                            className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
+                            className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded transition"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
@@ -686,9 +750,19 @@ export function ItemsClient({
         </div>
       )}
 
+      {/* Item Modal (Create New, Add SN to Preset Product, or Edit SN Unit) */}
+      <ItemModal
+        isOpen={isItemModalOpen}
+        onClose={() => setIsItemModalOpen(false)}
+        categories={categories}
+        brands={brands}
+        locations={locations}
+        presetItem={modalPresetItem}
+        editItem={modalEditItem}
+        onSuccess={handleSuccess}
+      />
 
-
-      {/* Opname Modal */}
+      {/* Stock Opname Status Audit Modal */}
       <StockOpnameModal
         isOpen={isOpnameModalOpen}
         onClose={() => setIsOpnameModalOpen(false)}
@@ -697,7 +771,7 @@ export function ItemsClient({
         onSuccess={handleSuccess}
       />
 
-      {/* Quick Mutate Modal */}
+      {/* Quick Mutate Location Modal */}
       <QuickMutateModal
         isOpen={isMutateModalOpen}
         onClose={() => setIsMutateModalOpen(false)}
@@ -709,20 +783,18 @@ export function ItemsClient({
       {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
         isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
         title="Hapus Unit Serial Number (SN)"
-        itemName={`SN: ${deleteTarget?.sn} (${deleteTarget?.name})`}
-        itemType="unit SN inventaris"
+        message={`Apakah Anda yakin ingin menghapus unit SN ${deleteTarget?.sn} (${deleteTarget?.name})? Seluruh riwayat mutasi unit ini akan dihapus.`}
+        onClose={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
       />
 
-      {/* Success Notification Modal */}
+      {/* Success Modal */}
       <SuccessModal
         isOpen={!!successMsg}
-        onClose={() => setSuccessMsg('')}
         message={successMsg}
+        onClose={() => setSuccessMsg('')}
       />
     </div>
   );
 }
-

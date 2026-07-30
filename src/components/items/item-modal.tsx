@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Plus, Sparkles, QrCode } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Plus, Sparkles, QrCode, CheckCircle2 } from 'lucide-react';
 import { createItem, updateItem, getItemNextSku } from '@/app/actions/items';
 import { createBrand } from '@/app/actions/master-data';
 
@@ -25,12 +25,20 @@ type LocationItem = {
   name: string;
 };
 
+export type PresetItemData = {
+  name: string;
+  categoryId: string;
+  brandId: string;
+  locationId: string;
+};
+
 type ItemModalProps = {
   isOpen: boolean;
   onClose: () => void;
   categories: CategoryItem[];
   brands: BrandItem[];
   locations: LocationItem[];
+  presetItem?: PresetItemData | null;
   editItem?: {
     id: string;
     serialNumber: string;
@@ -51,9 +59,12 @@ export function ItemModal({
   categories,
   brands: initialBrands,
   locations,
+  presetItem,
   editItem,
   onSuccess,
 }: ItemModalProps) {
+  const snInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [brandId, setBrandId] = useState('');
@@ -85,6 +96,15 @@ export function ItemModal({
       setStatus(editItem.status || 'TERSEDIA');
       setDescription(editItem.description || '');
       setSkuPreview(editItem.itemCode);
+    } else if (presetItem) {
+      setName(presetItem.name);
+      setCategoryId(presetItem.categoryId);
+      setBrandId(presetItem.brandId);
+      setLocationId(presetItem.locationId);
+      setSerialNumberInput('');
+      setStatus('TERSEDIA');
+      setDescription('');
+      setSkuPreview('');
     } else {
       setName('');
       setCategoryId(categories[0]?.id || '');
@@ -96,28 +116,39 @@ export function ItemModal({
       setSkuPreview('');
     }
     setError('');
-  }, [editItem, isOpen, categories, locations]);
+
+    // Focus SN input when modal opens
+    if (isOpen) {
+      setTimeout(() => {
+        snInputRef.current?.focus();
+      }, 100);
+    }
+  }, [editItem, presetItem, isOpen, categories, locations]);
 
   // Update SKU preview & Filter brands when Category changes
   useEffect(() => {
     if (categoryId) {
-      if (!editItem) {
+      if (!editItem && !presetItem) {
         getItemNextSku(categoryId).then((code) => setSkuPreview(code));
       } else if (editItem && categoryId !== editItem.categoryId) {
         getItemNextSku(categoryId).then((code) => setSkuPreview(code));
-      } else {
+      } else if (presetItem && categoryId !== presetItem.categoryId) {
+        getItemNextSku(categoryId).then((code) => setSkuPreview(code));
+      } else if (editItem) {
         setSkuPreview(editItem.itemCode);
+      } else if (presetItem) {
+        getItemNextSku(categoryId).then((code) => setSkuPreview(code));
       }
 
       // Filter brands for selected category
       const filtered = brandsList.filter((b) => b.categoryId === categoryId);
       if (filtered.length > 0) {
-        setBrandId(filtered[0].id);
+        setBrandId((prev) => (filtered.some((f) => f.id === prev) ? prev : filtered[0].id));
       } else {
         setBrandId('');
       }
     }
-  }, [categoryId, editItem, brandsList]);
+  }, [categoryId, editItem, presetItem, brandsList]);
 
   if (!isOpen) return null;
 
@@ -154,7 +185,7 @@ export function ItemModal({
           status,
           description,
         });
-        onSuccess('Data item unit (SN) berhasil diperbarui.');
+        onSuccess(`Unit SN (${serialNumberInput.trim()}) berhasil diperbarui.`);
       } else {
         await createItem({
           name,
@@ -165,7 +196,11 @@ export function ItemModal({
           status,
           description,
         });
-        onSuccess('Unit Serial Number (SN) baru berhasil ditambahkan.');
+        onSuccess(
+          presetItem
+            ? `Unit Serial Number (SN) baru berhasil ditambahkan untuk ${name}.`
+            : 'Unit Serial Number (SN) baru berhasil ditambahkan.'
+        );
       }
       onClose();
     } catch (err: any) {
@@ -177,18 +212,30 @@ export function ItemModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
           <div>
-            <h2 className="text-lg font-bold text-slate-100">
-              {editItem ? 'Edit Unit Serial Number (SN)' : 'Registrasi Unit Inventaris (SN)'}
+            <h2 className="text-lg font-bold text-slate-100 flex items-center space-x-2">
+              <QrCode className="w-5 h-5 text-blue-400" />
+              <span>
+                {editItem
+                  ? 'Edit Unit Serial Number (SN)'
+                  : presetItem
+                  ? `Tambah Unit SN (${presetItem.name})`
+                  : 'Registrasi Unit Inventaris (SN)'}
+              </span>
             </h2>
-            <p className="text-xs text-slate-400">
-              {editItem ? `Kode SKU: ${editItem.itemCode}` : 'Tambahkan unit barang ber-Serial Number ke stok'}
+            <p className="text-xs text-slate-400 mt-0.5">
+              {editItem
+                ? `Mengubah data unit SKU: ${editItem.itemCode}`
+                : presetItem
+                ? `Menambahkan unit SN baru untuk produk: ${presetItem.name}`
+                : 'Tambahkan unit barang ber-Serial Number ke dalam sistem stok'}
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition"
           >
@@ -199,14 +246,26 @@ export function ItemModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg text-sm">
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs font-medium">
               {error}
+            </div>
+          )}
+
+          {/* Preset Product Banner Info if Preset */}
+          {presetItem && (
+            <div className="p-3 bg-blue-950/60 border border-blue-500/30 rounded-xl flex items-center justify-between text-xs">
+              <span className="text-blue-300 font-semibold truncate">
+                Produk Target: <strong className="text-white">{name}</strong>
+              </span>
+              <span className="text-[10px] bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0">
+                PRE-SET
+              </span>
             </div>
           )}
 
           {/* Auto SKU Preview Badge */}
           {categoryId && (
-            <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
+            <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between">
               <div className="flex items-center space-x-2 text-blue-400 text-xs font-semibold">
                 <Sparkles className="w-4 h-4" />
                 <span>
@@ -232,45 +291,49 @@ export function ItemModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Mouse Wireless M170 / EcoTank L3210"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
             />
           </div>
 
           {/* Serial Number Input */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-medium text-slate-300 flex items-center space-x-1.5">
+              <label className="text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
                 <QrCode className="w-3.5 h-3.5 text-blue-400" />
-                <span>Serial Number (SN) <span className="text-rose-400">*</span></span>
+                <span>
+                  Serial Number (SN) <span className="text-rose-400">*</span>
+                </span>
               </label>
               {!editItem && (
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-blue-400 font-mono bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                   Multi-SN: Pisahkan per baris / koma
                 </span>
               )}
             </div>
             {editItem ? (
               <input
+                ref={snInputRef as any}
                 type="text"
                 required
                 value={serialNumberInput}
                 onChange={(e) => setSerialNumberInput(e.target.value)}
                 placeholder="Serial Number Unik (contoh: SN-LOGI-10293)"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono focus:outline-none focus:border-blue-500 transition"
               />
             ) : (
               <textarea
+                ref={snInputRef as any}
                 required
                 rows={3}
                 value={serialNumberInput}
                 onChange={(e) => setSerialNumberInput(e.target.value)}
-                placeholder={'Contoh:\nSN-LOGI-001\nSN-LOGI-002\nSN-LOGI-003'}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                placeholder={'Masukkan SN baru...\nContoh:\nSN-LOGI-001\nSN-LOGI-002'}
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500 transition"
               />
             )}
           </div>
 
-          {/* Category Dropdown */}
+          {/* Category Dropdown & Brand Dropdown */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
@@ -279,7 +342,7 @@ export function ItemModal({
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
               >
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -311,12 +374,12 @@ export function ItemModal({
                     value={newBrandName}
                     onChange={(e) => setNewBrandName(e.target.value)}
                     placeholder="Nama Merk Baru"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-100"
                   />
                   <button
                     type="button"
                     onClick={handleCreateInlineBrand}
-                    className="px-2.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-500"
+                    className="px-2.5 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-500 shrink-0"
                   >
                     Simpan
                   </button>
@@ -325,7 +388,7 @@ export function ItemModal({
                 <select
                   value={brandId}
                   onChange={(e) => setBrandId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
                 >
                   <option value="" disabled>
                     -- Pilih Merk --
@@ -349,7 +412,7 @@ export function ItemModal({
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
@@ -366,7 +429,7 @@ export function ItemModal({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
               >
                 <option value="TERSEDIA">TERSEDIA (Available)</option>
                 <option value="TERPAKAI">TERPAKAI (In Use)</option>
@@ -386,25 +449,38 @@ export function ItemModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Contoh: Garansi 1 Tahun, Nota Pembelian #102"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t border-slate-800 flex justify-end space-x-3">
+          <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition"
+              className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700 transition"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-600/20 transition disabled:opacity-50"
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30 transition disabled:opacity-50 flex items-center space-x-2 cursor-pointer"
             >
-              {loading ? 'Menyimpan...' : editItem ? 'Simpan Perubahan' : 'Registrasi Unit SN'}
+              {loading ? (
+                <span>Menyimpan...</span>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>
+                    {editItem
+                      ? 'Simpan Perubahan'
+                      : presetItem
+                      ? 'Simpan Unit SN Baru'
+                      : 'Registrasi Unit SN'}
+                  </span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -412,4 +488,3 @@ export function ItemModal({
     </div>
   );
 }
-
