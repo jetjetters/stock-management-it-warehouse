@@ -4,62 +4,169 @@ Sistem Manajemen Inventaris, Stock Opname, dan Tracking Unit **Serial Number (SN
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Tech Stack (Teknologi yang Digunakan)
 
-- **Framework**: Next.js 14+ (App Router, Server Actions, TypeScript)
-- **Styling & UI**: Tailwind CSS & Lucide React Icons
-- **Database**: SQLite (Local Zero-Config File Database)
-- **ORM**: Prisma ORM v6
-- **Forms & Validation**: React Hook Form & Zod Validation
+Sistem ini dibangun menggunakan arsitektur modern Next.js App Router full-stack TypeScript dengan komposit teknologi berikut:
 
----
-
-## ✨ Fitur Utama
-
-1. **Pendaftaran Unit Serial Number (SN) & Bulk Entry**:
-   - Pencatatan barang secara spesifik menggunakan **Serial Number (SN)** unik per unit fisik.
-   - Fitur **Bulk SN Input**: Memungkinkan pendaftaran banyak unit sekaligus dalam satu form dengan memisahkan Serial Number menggunakan koma atau baris baru.
-
-2. **Pemisahan Klasifikasi Inventaris**:
-   - **`DEVICE` (Perangkat Physical Asset)**: Mouse, Keyboard, Laptop, Printer, Monitor, dll.
-   - **`BARANG` (Consumables)**: Tinta Printer, Kabel UTP Cat6, Connector RJ45, Paper, dll.
-
-3. **Otomatisasi Penomoran SKU**:
-   - Penomoran otomatis berbasis *Prefix Category* dengan format **`[PREFIX][4_DIGIT_SEQUENCE]`** (Contoh: `MOS0001`, `KBD0001`, `PRN0001`, `TNT0001`).
-   - Preview kode SKU baru secara *real-time* saat memilih kategori di form penambahan barang.
-
-4. **Master Data Dinamis & Dependent Dropdowns**:
-   - Dropdown Merk/Brand ter-filter otomatis sesuai Kategori yang dipilih.
-   - Pembuatan Merk/Brand baru secara langsung (*inline creation*) dari modal tanpa meninggalkan form.
-   - Pos Lokasi Storage yang fleksibel dan terpusat (`Warehouse IT`, `Main Office`, `Server Room`, `Rack A1`).
-
-5. **Tampilan Stok Terkelompok (Grouped Stock View)**:
-   - Pengelompokan unit otomatis berdasarkan Kategori, Brand, Lokasi, dan Nama Barang.
-   - Informasi kuantitas ringkas: **Total Stok** dan **Stok Tersedia (Available)** dengan daftar detail unit SN yang dapat di-expand.
-
-6. **Mutasi Lokasi & Perubahan Status Unit**:
-   - **Transfer Lokasi**: Pemindahan posisi unit SN dari satu lokasi ke lokasi lain disertai catatan alasan mutasi.
-   - **Update Status Unit**: Manajemen status fisik (`TERSEDIA`, `TERPAKAI`, `RUSAK`, `KELUAR`) yang secara otomatis mencatat dampaknya ke log audit mutasi.
-
-7. **Audit Trail Mutasi Stok (Immutable Log)**:
-   - Seluruh aktivitas penambahan (`IN`), pengurangan (`OUT`), maupun penyesuaian lokasi/status (`ADJUSTMENT`) dicatat secara otomatis ke tabel audit trail `StockLog`.
-   - Format rekaman log transparan: mencatat kode item, lokasi, tanggal, jenis mutasi, dan keterangan lengkap.
-
-8. **Dashboard Analytics Center**:
-   - Ringkasan statistik real-time: Total Unit SN, Jumlah Devices, Jumlah Barang Consumables, Unit Tersedia, dan Unit Rusak.
-   - Widget aktivitas mutasi stok terbaru dan unit barang yang baru didaftarkan.
+| Layer | Teknologi | Peran & Deskripsi |
+| :--- | :--- | :--- |
+| **Framework** | **Next.js 14+** (App Router) | Framework React Full-Stack dengan Server Actions & Server Components untuk performa tinggi tanpa REST API terpisah. |
+| **Bahasa Pemrograman** | **TypeScript 5.6** | Pengetikan statis (*static typing*) pada seluruh lapisan kode client & server untuk mencegah runtime error. |
+| **UI Components & Styling** | **Tailwind CSS v3** & **Lucide React** | Utility-first CSS framework untuk styling responsif & modern visual icon system. |
+| **Forms & Validasi** | **React Hook Form v7** & **Zod v3** | Manajemen state formulir ringan dengan validasi skema tipe data ketat pada modal input. |
+| **Database** | **SQLite** (`dev.db`) | Database relasional lokal zero-config yang ringan dan cepat untuk deployment localhost. |
+| **ORM Layer** | **Prisma ORM v6.2** | Type-safe ORM untuk migrasi skema database, pemutakhiran relasi data, dan *seed data*. |
+| **State & Cache Invalidation** | **Next.js `revalidatePath`** | Sinkronisasi data real-time dan pembaruan cache otomatis pada seluruh halaman setelah aksi server (*mutations*). |
 
 ---
 
-## 📐 Skema Database (Prisma Schema)
+## 📌 Use Case Diagram
 
-Sistem menggunakan model relasional berikut:
+Diagram Use Case berikut menggambarkan seluruh interaksi **IT Warehouse Admin / Staff** dengan fitur-fitur utama di dalam sistem:
 
-- **`Category`**: Mengelola nama kategori (`Mouse`, `Printer`, `Tinta`), tipe (`DEVICE` atau `BARANG`), dan prefix SKU (`MOS`, `PRN`, `TNT`).
-- **`Brand`**: Merk barang yang terikat pada Kategori spesifik (`Logitech`, `Epson`, `Belden`).
-- **`Location`**: Area atau posisi penyimpanan inventaris (`Warehouse IT`, `Main Office`, `Server Room`).
-- **`Item`**: Unit barang individu dengan `serialNumber` (unik), `itemCode` (SKU), `name`, `type`, `status` (`TERSEDIA`, `TERPAKAI`, `RUSAK`, `KELUAR`), serta relasi ke Category, Brand, dan Location.
-- **`StockLog`**: Catatan riwayat mutasi stok (`IN`, `OUT`, `ADJUSTMENT`) dengan kolom `mutation` (+/-), `locationId`, `notes`, dan `createdAt`.
+```mermaid
+graph TD
+    User(("👤 IT Warehouse Admin / Staff"))
+
+    subgraph Modul_Dashboard ["1. Dashboard Analytics Center"]
+        UC1["Melihat Ringkasan Statistik Inventaris"]
+        UC2["Melihat Recent Stock Activity & Item Terdaftar"]
+    end
+
+    subgraph Modul_Inventaris ["2. Manajemen Inventaris & Unit Serial Number"]
+        UC3["Melihat Grouped Stock & Detail Unit SN"]
+        UC4["Mencari & Memfilter Inventaris"]
+        UC5["Pendaftaran Unit SN Baru (Single & Bulk Entry)"]
+        UC6["Otomatisasi Penomoran Kode SKU"]
+        UC7["Edit Informasi Detail Unit SN"]
+        UC8["Mutasi Lokasi Storage Unit"]
+        UC9["Update Status Unit (TERSEDIA/TERPAKAI/RUSAK/KELUAR)"]
+        UC10["Hapus Unit SN & Hapus Log Terkait"]
+    end
+
+    subgraph Modul_MasterData ["3. Manajemen Master Data"]
+        UC11["Kelola Master Kategori (Device / Barang & SKU Prefix)"]
+        UC12["Kelola Master Merk / Brand (Terikat Kategori & Inline Form)"]
+        UC13["Kelola Master Lokasi Storage (Warehouse, Office, Server Room)"]
+    end
+
+    subgraph Modul_AuditLog ["4. Audit Trail & Mutasi Stok"]
+        UC14["Melihat Complete History Log Mutasi Stok"]
+        UC15["Memfilter Log Mutasi (Berdasarkan Lokasi, Tipe IN/OUT/ADJUSTMENT)"]
+    end
+
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC7
+    User --> UC8
+    User --> UC9
+    User --> UC10
+    User --> UC11
+    User --> UC12
+    User --> UC13
+    User --> UC14
+    User --> UC15
+
+    UC5 ..> UC6 : "<<include>>"
+```
+
+### Deskripsi Ringkas Use Case Per Modul:
+
+1. **Dashboard Analytics Center**:
+   - **Melihat Ringkasan Statistik**: Menampilkan metrik total unit SN, total perangkat Device, total bahan habis pakai (Consumables/Barang), stok tersedia, dan unit rusak.
+   - **Recent Activity Log**: Memantau daftar aktivitas transaksi stok dan barang baru yang terdaftar secara real-time.
+
+2. **Manajemen Inventaris & Unit Serial Number (SN)**:
+   - **Grouped Stock View**: Mengelompokkan barang berdasarkan nama, kategori, brand, dan lokasi dengan opsi rincian unit Serial Number (SN).
+   - **Pendaftaran Bulk SN**: Memungkinkan pendaftaran sekaligus banyak unit SN via pemisah koma atau baris baru (*newline*).
+   - **Auto SKU Generator**: Otomatis membuat kode SKU format `[PREFIX][4_DIGIT]` sesuai kategori yang dipilih.
+   - **Mutasi Lokasi Storage**: Memindahkan unit dari satu pos lokasi ke pos lokasi lain disertai catatan audit.
+   - **Update Status Unit**: Mengubah status fisik unit (`TERSEDIA`, `TERPAKAI`, `RUSAK`, `KELUAR`) yang berdampak langsung pada kalkulasi stok & audit log.
+
+3. **Manajemen Master Data**:
+   - **Master Kategori**: Pengelolaan jenis barang dengan atribusi `type` (`DEVICE` vs `BARANG`) dan inisial `codePrefix`.
+   - **Master Brand**: Pengelolaan merk barang yang difilter secara fleksibel sesuai kategori terkait (*dependent dropdown*).
+   - **Master Lokasi Storage**: Pengelolaan pos area penyimpan (*Warehouse IT*, *Main Office*, *Server Room*, dll).
+
+4. **Audit Trail & Log Mutasi**:
+   - **Immutable Log Record**: Pencatatan riwayat transaksi penambahan (`IN`), pengurangan (`OUT`), dan penyesuaian lokasi/status (`ADJUSTMENT`).
+
+---
+
+## 🗄️ Entity Relationship Diagram (ERD)
+
+Berikut adalah diagram keterhubungan antar entitas (**ERD**) yang digunakan dalam skema database sistem:
+
+```mermaid
+erDiagram
+    Category ||--o{ Brand : "memiliki (1:N)"
+    Category ||--o{ Item : "mengelompokkan (1:N)"
+    Brand ||--o{ Item : "memproduksi (1:N)"
+    Location ||--o{ Item : "menyimpan (1:N)"
+    Location ||--o{ StockLog : "mencatat_lokasi (1:N)"
+    Item ||--o{ StockLog : "menghasilkan_log (1:N)"
+
+    Category {
+        String id PK "UUID"
+        String name UK "Nama Kategori (Mouse, Printer, dll)"
+        ItemCategoryType type "Enum: DEVICE | BARANG"
+        String codePrefix UK "Prefix Kode SKU (MOS, PRN, TNT)"
+        DateTime createdAt "Waktu Dibuat"
+        DateTime updatedAt "Waktu Diperbarui"
+    }
+
+    Brand {
+        String id PK "UUID"
+        String name "Nama Merk (Logitech, Epson, Dell)"
+        String categoryId FK "Relasi ke Category"
+        DateTime createdAt "Waktu Dibuat"
+    }
+
+    Location {
+        String id PK "UUID"
+        String name UK "Nama Lokasi Storage (Warehouse, Office)"
+        String description "Keterangan Tambahan"
+        DateTime createdAt "Waktu Dibuat"
+        DateTime updatedAt "Waktu Diperbarui"
+    }
+
+    Item {
+        String id PK "UUID"
+        String serialNumber UK "Serial Number unik unit fisik"
+        String itemCode "Kode SKU unik (MOS0001)"
+        String name "Nama Spesifik Barang"
+        ItemCategoryType type "Enum: DEVICE | BARANG"
+        String status "Status: TERSEDIA | TERPAKAI | RUSAK | KELUAR"
+        String description "Deskripsi/Catatan Unit"
+        String categoryId FK "Relasi ke Category"
+        String brandId FK "Relasi ke Brand"
+        String locationId FK "Relasi ke Location"
+        DateTime createdAt "Waktu Dibuat"
+        DateTime updatedAt "Waktu Diperbarui"
+    }
+
+    StockLog {
+        String id PK "UUID"
+        String itemId FK "Relasi ke Item Unit"
+        String locationId FK "Relasi ke Location"
+        Int mutation "Kuantitas Perubahan (+1, -1, 0)"
+        MutationType type "Enum: IN | OUT | ADJUSTMENT"
+        String notes "Catatan/Keterangan Mutasi"
+        DateTime createdAt "Waktu Log Dibuat"
+    }
+```
+
+### Rincian Relasi & Integritas Entitas:
+
+- **`Category` ➔ `Brand`**: Relasi 1-to-N (*Cascade Delete*). Satu kategori memiliki banyak pilihan merk.
+- **`Category` ➔ `Item`**: Relasi 1-to-N. Menentukan tipe aset (`DEVICE`/`BARANG`) dan prefix SKU dari unit barang.
+- **`Brand` ➔ `Item`**: Relasi 1-to-N. Menghubungkan unit barang ke merk terdaftar.
+- **`Location` ➔ `Item`**: Relasi 1-to-N. Menentukan posisi storage fisik tempat unit disimpan.
+- **`Item` ➔ `StockLog`**: Relasi 1-to-N (*Cascade Delete*). Setiap perubahan lokasi, penambahan, atau status unit menghasilkan rekaman histori di audit trail.
+- **`Location` ➔ `StockLog`**: Relasi 1-to-N. Menandai lokasi terkait pada saat transaksi mutasi dilakukan.
 
 ---
 
