@@ -99,3 +99,18 @@ export async function createHandover(data: {
   revalidatePath('/logs');
   return handover;
 }
+
+export async function deleteHandover(id: string) {
+  const handover = await prisma.handover.findUnique({
+    where: { id },
+  });
+
+  if (!handover) throw new Error('Dokumen serah terima tidak ditemukan');
+
+  await prisma.handover.delete({ where: { id } });
+
+  revalidatePath('/items');
+  revalidatePath('/handovers');
+  revalidatePath('/logs');
+}
+

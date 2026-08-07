@@ -107,13 +107,14 @@ export function ItemsClient({
   // Success modal state
   const [successMsg, setSuccessMsg] = useState('');
 
+  const successParam = searchParams.get('success');
+
   useEffect(() => {
-    const msg = searchParams.get('success');
-    if (msg) {
-      setSuccessMsg(msg);
-      router.replace('/items');
+    if (successParam) {
+      setSuccessMsg(successParam);
+      window.history.replaceState(null, '', '/items');
     }
-  }, [searchParams, router]);
+  }, [successParam]);
 
   // Open Item Page for Add New
   const handleOpenAddModal = (preset?: PresetItemData) => {

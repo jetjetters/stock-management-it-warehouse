@@ -11,12 +11,14 @@ import {
   History,
   Boxes,
   UserCheck,
+  FileText,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/items', label: 'Inventaris Stok', icon: Package },
+  { href: '/handovers', label: 'Surat Serah Terima', icon: FileText },
   { href: '/categories', label: 'Kategori', icon: Tags },
   { href: '/brands', label: 'Merk / Brand', icon: Layers },
   { href: '/locations', label: 'Lokasi Storage', icon: MapPin },

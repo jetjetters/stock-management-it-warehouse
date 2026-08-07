@@ -43,18 +43,20 @@ export function HandoverModal({
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (officersList.length > 0) {
+    if (!isOpen) return;
+
+    if (officersList && officersList.length > 0) {
       setOfficers(officersList);
       setGiverName(officersList[0].name);
     } else {
       getOfficers().then((data) => {
         setOfficers(data);
         if (data.length > 0) {
-          setGiverName(data[0].name);
+          setGiverName((prev) => prev || data[0].name);
         }
       });
     }
-  }, [officersList, isOpen]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
