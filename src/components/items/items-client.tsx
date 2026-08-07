@@ -164,10 +164,10 @@ export function ItemsClient({
     return true;
   });
 
-  // Group items by Category + Brand + Location + Name
+  // Group items by Category + Brand + Name (unifying all SN units of the same model)
   const groupedStockMap = new Map<string, GroupedStock>();
   filteredItems.forEach((item) => {
-    const key = `${item.categoryId}_${item.brandId}_${item.locationId}_${item.name.toLowerCase().trim()}`;
+    const key = `${item.categoryId}_${item.brandId}_${item.name.toLowerCase().trim()}`;
     if (!groupedStockMap.has(key)) {
       groupedStockMap.set(key, {
         key,
@@ -486,7 +486,11 @@ export function ItemsClient({
                           <td className="p-4 text-center whitespace-nowrap">
                             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-slate-950 text-slate-100 border border-slate-700 font-mono text-sm font-bold shadow-inner">
                               <span className="text-blue-400">{group.totalStock}</span>
-                              <span className="text-[10px] text-slate-400 font-sans whitespace-nowrap">
+                              <span
+                                className={`text-[10px] font-sans whitespace-nowrap ${
+                                  group.availableStock === 0 ? 'text-rose-400 font-semibold' : 'text-slate-400'
+                                }`}
+                              >
                                 ({group.availableStock} Tersedia)
                               </span>
                             </div>
@@ -573,26 +577,36 @@ export function ItemsClient({
                                       {/* SN Action Buttons */}
                                       <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
                                         <div className="flex items-center space-x-1">
-                                          {/* Serah Terima Barang IT */}
-                                          <button
-                                            title="Serah Terima Barang IT"
-                                            onClick={() => {
-                                              setHandoverItem({
-                                                id: item.id,
-                                                serialNumber: item.serialNumber,
-                                                itemCode: item.itemCode,
-                                                name: item.name,
-                                                categoryName: group.category.name,
-                                                brandName: group.brand.name,
-                                                locationName: group.location.name,
-                                              });
-                                              setIsHandoverModalOpen(true);
-                                            }}
-                                            className="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer shadow-sm"
-                                          >
-                                            <Send className="w-3 h-3 text-blue-400" />
-                                            <span>Serah</span>
-                                          </button>
+                                          {/* Serah Terima Barang IT - Active only if status is TERSEDIA */}
+                                          {item.status === 'TERSEDIA' ? (
+                                            <button
+                                              title="Serah Terima Barang IT"
+                                              onClick={() => {
+                                                setHandoverItem({
+                                                  id: item.id,
+                                                  serialNumber: item.serialNumber,
+                                                  itemCode: item.itemCode,
+                                                  name: item.name,
+                                                  categoryName: group.category.name,
+                                                  brandName: group.brand.name,
+                                                  locationName: group.location.name,
+                                                });
+                                                setIsHandoverModalOpen(true);
+                                              }}
+                                              className="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer shadow-sm"
+                                            >
+                                              <Send className="w-3 h-3 text-blue-400" />
+                                              <span>Serah</span>
+                                            </button>
+                                          ) : (
+                                            <span className="text-[10px] font-medium text-slate-500 italic px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
+                                              {item.status === 'TERPAKAI'
+                                                ? 'Sudah Diserahkan'
+                                                : item.status === 'DIPINJAM'
+                                                ? 'Sedang Dipinjam'
+                                                : 'Unit Rusak'}
+                                            </span>
+                                          )}
 
                                           {/* Stock Opname / Audit Status */}
                                           <button
@@ -708,24 +722,34 @@ export function ItemsClient({
                       {/* Actions */}
                       <td className="p-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1">
-                          <button
-                            title="Serah Terima Barang IT"
-                            onClick={() => {
-                              setHandoverItem({
-                                id: item.id,
-                                serialNumber: item.serialNumber,
-                                itemCode: item.itemCode,
-                                name: item.name,
-                                categoryName: item.category.name,
-                                brandName: item.brand.name,
-                                locationName: item.location.name,
-                              });
-                              setIsHandoverModalOpen(true);
-                            }}
-                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition cursor-pointer"
-                          >
-                            <Send className="w-3.5 h-3.5" />
-                          </button>
+                          {item.status === 'TERSEDIA' ? (
+                            <button
+                              title="Serah Terima Barang IT"
+                              onClick={() => {
+                                setHandoverItem({
+                                  id: item.id,
+                                  serialNumber: item.serialNumber,
+                                  itemCode: item.itemCode,
+                                  name: item.name,
+                                  categoryName: item.category.name,
+                                  brandName: item.brand.name,
+                                  locationName: item.location.name,
+                                });
+                                setIsHandoverModalOpen(true);
+                              }}
+                              className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition cursor-pointer"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-slate-500 italic font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
+                              {item.status === 'TERPAKAI'
+                                ? 'Diserahkan'
+                                : item.status === 'DIPINJAM'
+                                ? 'Dipinjam'
+                                : 'Rusak'}
+                            </span>
+                          )}
 
                           <button
                             title="Audit Status"

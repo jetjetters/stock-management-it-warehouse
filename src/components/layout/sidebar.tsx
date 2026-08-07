@@ -32,13 +32,16 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col min-h-screen sticky top-0">
       {/* Brand Header */}
-      <div className="p-6 border-b border-slate-800 flex items-center space-x-3">
-        <div className="p-2.5 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20 text-white">
-          <Boxes className="w-6 h-6" />
-        </div>
-        <div>
-          <h1 className="font-bold text-slate-100 text-lg leading-tight tracking-tight">IT Warehouse</h1>
-          <p className="text-xs text-slate-400 font-medium">Stock Taking & Management</p>
+      <div className="p-4 border-b border-slate-800 flex items-center space-x-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Pertamina Trans Kontinental Logo"
+          className="h-10 w-auto object-contain bg-white p-1 rounded-lg shadow-sm flex-shrink-0"
+        />
+        <div className="min-w-0 flex-1">
+          <h1 className="font-bold text-slate-100 text-sm leading-tight truncate">IT Warehouse</h1>
+          <p className="text-[10px] text-slate-400 font-medium truncate">PTK Shore Base Tanjung Batu</p>
         </div>
       </div>
 

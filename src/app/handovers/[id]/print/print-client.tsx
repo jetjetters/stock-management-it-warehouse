@@ -36,7 +36,7 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
   };
 
   useEffect(() => {
-    // Optionally auto-trigger print dialog after short render delay
+    // Optionally auto-trigger print dialog
     const timer = setTimeout(() => {
       // window.print();
     }, 500);
@@ -48,11 +48,11 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
       {/* Top Action Bar - Hidden in Print */}
       <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
         <Link
-          href="/items"
+          href="/handovers"
           className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl transition"
         >
           <ArrowLeft className="w-4 h-4 text-blue-400" />
-          <span>Kembali ke Inventaris</span>
+          <span>Kembali ke Daftar Surat</span>
         </Link>
 
         <button
@@ -67,33 +67,25 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
 
       {/* Printable Paper Document Container */}
       <div className="max-w-4xl mx-auto bg-white text-black p-8 sm:p-12 shadow-2xl rounded-xl print:shadow-none print:p-0 print:max-w-none">
-        {/* Document Header with Pertamina Logo Styling */}
+        {/* Document Header matching physical scanned format */}
         <div className="flex items-start justify-between border-b-2 border-black pb-4 mb-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-black uppercase">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black">
               Form Serah Terima Barang IT
             </h1>
-            <p className="text-sm font-semibold text-gray-800 mt-1">
+            <p className="text-sm font-bold text-gray-900 mt-1">
               {handover.locationName || 'PTK Shore Base Tanjung Batu'}
-            </p>
-            <p className="text-xs text-gray-500 font-mono mt-0.5">
-              No. Dokumen: {handover.documentNo}
             </p>
           </div>
 
-          {/* PERTAMINA TRANS KONTINENTAL Header Branding */}
-          <div className="text-right flex flex-col items-end">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-red-600 rounded-sm flex items-center justify-center font-bold text-white text-xs">
-                P
-              </div>
-              <span className="font-extrabold text-base tracking-wider text-slate-900">
-                PERTAMINA
-              </span>
-            </div>
-            <span className="text-[10px] font-bold tracking-widest text-slate-600 uppercase mt-0.5">
-              TRANS KONTINENTAL
-            </span>
+          {/* PERTAMINA TRANS KONTINENTAL Header Logo */}
+          <div className="flex flex-col items-end">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="PERTAMINA TRANS KONTINENTAL"
+              className="h-14 sm:h-16 w-auto object-contain"
+            />
           </div>
         </div>
 
@@ -154,7 +146,7 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
           </table>
         </div>
 
-        {/* Bottom Signature Section matching scanned layout */}
+        {/* Bottom Signature Section matching scanned reference */}
         <div className="flex justify-end pt-4">
           <div className="text-center space-y-1 w-72">
             <p className="text-xs font-semibold text-black">
