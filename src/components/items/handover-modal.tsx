@@ -1,10 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Send, Printer, UserCheck, MapPin, FileText } from 'lucide-react';
+import { X, Send, Plus, Trash2, UserCheck, FileText, Package } from 'lucide-react';
 import { createHandover } from '@/app/actions/handovers';
 import { getOfficers } from '@/app/actions/officers';
 import { useRouter } from 'next/navigation';
+
+type AvailableItemUnit = {
+  id: string;
+  serialNumber: string;
+  itemCode: string;
+  name: string;
+  status: string;
+  category: { name: string };
+  brand: { name: string };
+  location: { name: string };
+};
 
 type HandoverItemTarget = {
   id: string;
@@ -19,7 +30,8 @@ type HandoverItemTarget = {
 type HandoverModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  targetItem: HandoverItemTarget | null;
+  targetItem?: HandoverItemTarget | null;
+  allItems: AvailableItemUnit[];
   officersList?: Array<{ id: string; name: string }>;
   onSuccess: (msg?: string) => void;
 };
@@ -27,7 +39,8 @@ type HandoverModalProps = {
 export function HandoverModal({
   isOpen,
   onClose,
-  targetItem,
+  targetItem = null,
+  allItems = [],
   officersList = [],
   onSuccess,
 }: HandoverModalProps) {
@@ -39,8 +52,21 @@ export function HandoverModal({
   const [locationName, setLocationName] = useState('PTK Shore Base Tanjung Batu');
   const [officers, setOfficers] = useState<Array<{ id: string; name: string }>>(officersList);
 
+  // List of items selected in this handover document
+  const [selectedItems, setSelectedItems] = useState<
+    Array<{
+      itemId: string;
+      deviceName: string;
+      serialNo: string;
+      brandName: string;
+    }>
+  >([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Filter available items with status TERSEDIA
+  const availableItems = allItems.filter((item) => item.status === 'TERSEDIA');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,15 +89,83 @@ export function HandoverModal({
       setError('');
       setRecipientName('');
       setRemarks('Untuk Pos 7');
-    }
-  }, [isOpen]);
 
-  if (!isOpen || !targetItem) return null;
+      if (targetItem) {
+        setSelectedItems([
+          {
+            itemId: targetItem.id,
+            deviceName: targetItem.name,
+            serialNo: targetItem.serialNumber,
+            brandName: targetItem.brandName,
+          },
+        ]);
+      } else if (availableItems.length > 0) {
+        setSelectedItems([
+          {
+            itemId: availableItems[0].id,
+            deviceName: availableItems[0].name,
+            serialNo: availableItems[0].serialNumber,
+            brandName: availableItems[0].brand.name,
+          },
+        ]);
+      } else {
+        setSelectedItems([]);
+      }
+    }
+  }, [isOpen, targetItem]);
+
+  if (!isOpen) return null;
+
+  const handleSelectItemChange = (index: number, selectedId: string) => {
+    const found = availableItems.find((i) => i.id === selectedId);
+    if (!found) return;
+
+    setSelectedItems((prev) => {
+      const copy = [...prev];
+      copy[index] = {
+        itemId: found.id,
+        deviceName: found.name,
+        serialNo: found.serialNumber,
+        brandName: found.brand.name,
+      };
+      return copy;
+    });
+  };
+
+  const handleAddAnotherItemRow = () => {
+    // Pick the first available item not already selected if possible
+    const unselected = availableItems.find(
+      (avail) => !selectedItems.some((sel) => sel.itemId === avail.id)
+    ) || availableItems[0];
+
+    if (unselected) {
+      setSelectedItems((prev) => [
+        ...prev,
+        {
+          itemId: unselected.id,
+          deviceName: unselected.name,
+          serialNo: unselected.serialNumber,
+          brandName: unselected.brand.name,
+        },
+      ]);
+    }
+  };
+
+  const handleRemoveItemRow = (index: number) => {
+    if (selectedItems.length <= 1) return;
+    setSelectedItems((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (selectedItems.length === 0 || selectedItems.some((i) => !i.itemId)) {
+      setError('Pilih setidaknya 1 unit barang yang tersedia untuk diserahkan.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const handover = await createHandover({
@@ -79,16 +173,14 @@ export function HandoverModal({
         recipientName,
         remarks,
         locationName,
-        items: [
-          {
-            itemId: targetItem.id,
-            deviceName: targetItem.name,
-            serialNo: targetItem.serialNumber,
-            brandName: targetItem.brandName,
-            recipient: recipientName,
-            remarks: remarks,
-          },
-        ],
+        items: selectedItems.map((i) => ({
+          itemId: i.itemId,
+          deviceName: i.deviceName,
+          serialNo: i.serialNo,
+          brandName: i.brandName,
+          recipient: recipientName,
+          remarks: remarks,
+        })),
       });
 
       onSuccess(`Dokumen Serah Terima (${handover.documentNo}) berhasil dibuat.`);
@@ -102,139 +194,181 @@ export function HandoverModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
+        {/* Modal Header */}
+        <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20">
+            <div className="p-2.5 bg-blue-600/20 border border-blue-500/30 rounded-xl text-blue-400">
               <Send className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100 flex items-center space-x-2">
-                <span>Form Serah Terima Barang IT</span>
-              </h2>
-              <p className="text-xs text-slate-400">Penerbitan surat serah terima fisik & cetak PDF</p>
+              <h3 className="font-bold text-slate-100 text-lg">Form Serah Terima Barang IT</h3>
+              <p className="text-xs text-slate-400">
+                Penerbitan surat serah terima fisik & cetak PDF resmi
+              </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition"
+            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Modal Body / Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl text-xs font-medium">
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs font-semibold">
               {error}
             </div>
           )}
 
-          {/* Target Item Summary Badge */}
-          <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+          {/* Selection of Available Items & Serial Numbers */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">
-                SN: {targetItem.serialNumber}
-              </span>
-              <span className="text-xs text-slate-400">SKU: {targetItem.itemCode}</span>
+              <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-1.5">
+                <Package className="w-4 h-4 text-blue-400" />
+                <span>Daftar Barang & SN Unit yang Diserahkan *</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleAddAnotherItemRow}
+                disabled={availableItems.length <= selectedItems.length}
+                className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Tambah Barang Lain</span>
+              </button>
             </div>
-            <div className="text-sm font-semibold text-slate-100">{targetItem.name}</div>
-            <div className="text-xs text-slate-400 flex items-center space-x-4">
-              <span>Merk: <strong className="text-slate-200">{targetItem.brandName}</strong></span>
-              <span>Lokasi: <strong className="text-slate-200">{targetItem.locationName}</strong></span>
-            </div>
+
+            {availableItems.length === 0 ? (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-xs">
+                Tidak ada unit Serial Number (SN) berstatus <strong>TERSEDIA</strong> untuk diserahkan saat ini.
+              </div>
+            ) : (
+              <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                {selectedItems.map((selItem, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center space-x-2 bg-slate-950 p-3 rounded-xl border border-slate-800"
+                  >
+                    <span className="text-xs font-bold text-slate-500 font-mono w-6 text-center">
+                      #{idx + 1}
+                    </span>
+                    <select
+                      value={selItem.itemId}
+                      onChange={(e) => handleSelectItemChange(idx, e.target.value)}
+                      className="flex-1 bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-medium"
+                    >
+                      {availableItems.map((item) => (
+                        <option
+                          key={item.id}
+                          value={item.id}
+                          disabled={
+                            selectedItems.some((s, sIdx) => sIdx !== idx && s.itemId === item.id)
+                          }
+                        >
+                          {item.name} — SN: {item.serialNumber} ({item.brand.name})
+                        </option>
+                      ))}
+                    </select>
+
+                    {selectedItems.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItemRow(idx)}
+                        className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition"
+                        title="Hapus Baris Ini"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Giver Name (Diberikan Oleh) Dropdown */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center space-x-1">
+          {/* Diberikan Oleh (Officer) Dropdown */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
               <UserCheck className="w-3.5 h-3.5 text-blue-400" />
-              <span>Diberikan Oleh (Officer) <span className="text-rose-400">*</span></span>
+              <span>Diberikan Oleh (Officer) *</span>
             </label>
             <select
-              required
               value={giverName}
               onChange={(e) => setGiverName(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
+              required
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition font-medium"
             >
-              {officers.length === 0 ? (
-                <>
-                  <option value="Robby Nainggolan">Robby Nainggolan</option>
-                  <option value="Muhammad Zosel Ridho Putra">Muhammad Zosel Ridho Putra</option>
-                </>
-              ) : (
-                officers.map((off) => (
-                  <option key={off.id} value={off.name}>
-                    {off.name}
-                  </option>
-                ))
-              )}
+              {officers.map((off) => (
+                <option key={off.id} value={off.name}>
+                  {off.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Recipient Name (PIC Penerima) */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Penerima (PIC) <span className="text-rose-400">*</span>
+          {/* Penerima (PIC) Text Input */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-300">
+              Penerima (PIC) *
             </label>
             <input
               type="text"
-              required
               value={recipientName}
               onChange={(e) => setRecipientName(e.target.value)}
               placeholder="Nama Lengkap Penerima (contoh: Donatus)"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              required
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
             />
           </div>
 
-          {/* Remarks (Catatan / Peruntukan) */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+          {/* Catatan / Peruntukan (Remarks) */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-300">
               Catatan / Peruntukan (Remarks)
             </label>
             <input
               type="text"
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
-              placeholder="Contoh: Untuk Pos 7 / Penugasan Staff"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              placeholder="Contoh: Untuk Pos 7"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
             />
           </div>
 
-          {/* Location Header */}
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center space-x-1">
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
-              <span>Lokasi Dokumen / Base</span>
+          {/* Lokasi Dokumen / Base */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-300">
+              Lokasi Dokumen / Base
             </label>
             <input
               type="text"
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
-              placeholder="PTK Shore Base Tanjung Batu"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
             />
           </div>
 
-          {/* Action Buttons */}
+          {/* Submit Actions */}
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-medium hover:bg-slate-700 transition"
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
             >
               Batal
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+              disabled={loading || availableItems.length === 0}
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <Printer className="w-4 h-4" />
+              <Send className="w-4 h-4" />
               <span>{loading ? 'Memproses...' : 'Proses & Cetak PDF'}</span>
             </button>
           </div>
