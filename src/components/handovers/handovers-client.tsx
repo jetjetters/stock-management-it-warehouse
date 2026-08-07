@@ -102,7 +102,7 @@ export function HandoversClient({ initialHandovers }: HandoversClientProps) {
         </div>
 
         <Link
-          href="/items"
+          href="/handovers/new"
           className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
