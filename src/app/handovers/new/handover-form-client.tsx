@@ -77,21 +77,27 @@ export function HandoverFormClient({
       }
     }
 
-    if (availableItems.length > 0) {
-      setSelectedItems([
-        {
-          itemId: availableItems[0].id,
-          deviceName: availableItems[0].name,
-          serialNo: availableItems[0].serialNumber,
-          brandName: availableItems[0].brand.name,
-        },
-      ]);
-    } else {
-      setSelectedItems([]);
-    }
+    // Default: Start with 1 empty row so user explicitly chooses item from dropdown
+    setSelectedItems([
+      {
+        itemId: '',
+        deviceName: '',
+        serialNo: '',
+        brandName: '',
+      },
+    ]);
   }, [presetItemId, availableItems]);
 
   const handleSelectItemChange = (index: number, selectedId: string) => {
+    if (!selectedId) {
+      setSelectedItems((prev) => {
+        const copy = [...prev];
+        copy[index] = { itemId: '', deviceName: '', serialNo: '', brandName: '' };
+        return copy;
+      });
+      return;
+    }
+
     const found = availableItems.find((i) => i.id === selectedId);
     if (!found) return;
 
@@ -108,21 +114,15 @@ export function HandoverFormClient({
   };
 
   const handleAddAnotherItemRow = () => {
-    const unselected = availableItems.find(
-      (avail) => !selectedItems.some((sel) => sel.itemId === avail.id)
-    ) || availableItems[0];
-
-    if (unselected) {
-      setSelectedItems((prev) => [
-        ...prev,
-        {
-          itemId: unselected.id,
-          deviceName: unselected.name,
-          serialNo: unselected.serialNumber,
-          brandName: unselected.brand.name,
-        },
-      ]);
-    }
+    setSelectedItems((prev) => [
+      ...prev,
+      {
+        itemId: '',
+        deviceName: '',
+        serialNo: '',
+        brandName: '',
+      },
+    ]);
   };
 
   const handleRemoveItemRow = (index: number) => {
@@ -233,8 +233,12 @@ export function HandoverFormClient({
                     <select
                       value={selItem.itemId}
                       onChange={(e) => handleSelectItemChange(idx, e.target.value)}
+                      required
                       className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-medium"
                     >
+                      <option value="" className="text-slate-500">
+                        -- Pilih Barang & SN Unit (Tersedia) --
+                      </option>
                       {availableItems.map((item) => (
                         <option
                           key={item.id}

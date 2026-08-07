@@ -99,17 +99,15 @@ export function HandoverModal({
             brandName: targetItem.brandName,
           },
         ]);
-      } else if (availableItems.length > 0) {
+      } else {
         setSelectedItems([
           {
-            itemId: availableItems[0].id,
-            deviceName: availableItems[0].name,
-            serialNo: availableItems[0].serialNumber,
-            brandName: availableItems[0].brand.name,
+            itemId: '',
+            deviceName: '',
+            serialNo: '',
+            brandName: '',
           },
         ]);
-      } else {
-        setSelectedItems([]);
       }
     }
   }, [isOpen, targetItem]);
@@ -117,6 +115,15 @@ export function HandoverModal({
   if (!isOpen) return null;
 
   const handleSelectItemChange = (index: number, selectedId: string) => {
+    if (!selectedId) {
+      setSelectedItems((prev) => {
+        const copy = [...prev];
+        copy[index] = { itemId: '', deviceName: '', serialNo: '', brandName: '' };
+        return copy;
+      });
+      return;
+    }
+
     const found = availableItems.find((i) => i.id === selectedId);
     if (!found) return;
 
@@ -133,22 +140,15 @@ export function HandoverModal({
   };
 
   const handleAddAnotherItemRow = () => {
-    // Pick the first available item not already selected if possible
-    const unselected = availableItems.find(
-      (avail) => !selectedItems.some((sel) => sel.itemId === avail.id)
-    ) || availableItems[0];
-
-    if (unselected) {
-      setSelectedItems((prev) => [
-        ...prev,
-        {
-          itemId: unselected.id,
-          deviceName: unselected.name,
-          serialNo: unselected.serialNumber,
-          brandName: unselected.brand.name,
-        },
-      ]);
-    }
+    setSelectedItems((prev) => [
+      ...prev,
+      {
+        itemId: '',
+        deviceName: '',
+        serialNo: '',
+        brandName: '',
+      },
+    ]);
   };
 
   const handleRemoveItemRow = (index: number) => {
@@ -261,8 +261,12 @@ export function HandoverModal({
                     <select
                       value={selItem.itemId}
                       onChange={(e) => handleSelectItemChange(idx, e.target.value)}
+                      required
                       className="flex-1 bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-medium"
                     >
+                      <option value="" className="text-slate-500">
+                        -- Pilih Barang & SN Unit (Tersedia) --
+                      </option>
                       {availableItems.map((item) => (
                         <option
                           key={item.id}
