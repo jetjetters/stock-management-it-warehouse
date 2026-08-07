@@ -88,7 +88,7 @@ export function HandoverModal({
     if (isOpen) {
       setError('');
       setRecipientName('');
-      setRemarks('Untuk Pos 7');
+      setRemarks('');
 
       if (targetItem) {
         setSelectedItems([

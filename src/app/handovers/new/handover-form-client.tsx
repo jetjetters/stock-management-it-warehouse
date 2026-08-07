@@ -46,7 +46,7 @@ export function HandoverFormClient({
 
   const [giverName, setGiverName] = useState(officers[0]?.name || '');
   const [recipientName, setRecipientName] = useState('');
-  const [remarks, setRemarks] = useState('Untuk Pos 7');
+  const [remarks, setRemarks] = useState('');
   const [locationName, setLocationName] = useState('PTK Shore Base Tanjung Batu');
 
   const [selectedItems, setSelectedItems] = useState<
