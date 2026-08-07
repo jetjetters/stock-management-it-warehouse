@@ -10,6 +10,7 @@ import {
   MapPin,
   History,
   Boxes,
+  UserCheck,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/categories', label: 'Kategori', icon: Tags },
   { href: '/brands', label: 'Merk / Brand', icon: Layers },
   { href: '/locations', label: 'Lokasi Storage', icon: MapPin },
+  { href: '/officers', label: 'Petugas (Giver)', icon: UserCheck },
   { href: '/logs', label: 'Audit Trail (Log)', icon: History },
 ];
 

@@ -274,6 +274,19 @@ async function main() {
     }
   }
 
+  // 5. Create Default Officers (Diberikan Oleh)
+  const officers = ['Robby Nainggolan', 'Muhammad Zosel Ridho Putra'];
+  for (const name of officers) {
+    await prisma.officer.upsert({
+      where: { name },
+      update: {},
+      create: {
+        name,
+        role: 'IT Officer / Penanggung Jawab',
+      },
+    });
+  }
+
   console.log('Seeding completed successfully!');
 }
 

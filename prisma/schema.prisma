@@ -108,3 +108,46 @@ model StockLog {
   @@index([itemId, createdAt])
   @@map("stock_logs")
 }
+
+model Officer {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  role      String?  @default("IT Staff")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("officers")
+}
+
+model Handover {
+  id            String   @id @default(uuid())
+  documentNo    String   @unique
+  locationName  String   @default("PTK Shore Base Tanjung Batu")
+  giverName     String
+  recipientName String
+  remarks       String?
+  handoverDate  DateTime @default(now())
+  
+  items         HandoverItem[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("handovers")
+}
+
+model HandoverItem {
+  id         String   @id @default(uuid())
+  handoverId String
+  handover   Handover @relation(fields: [handoverId], references: [id], onDelete: Cascade)
+  
+  itemId     String?
+  deviceName String
+  serialNo   String
+  brandName  String
+  recipient  String
+  remarks    String?
+
+  @@map("handover_items")
+}
+

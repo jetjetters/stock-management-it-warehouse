@@ -16,12 +16,14 @@ import {
   ChevronRight,
   QrCode,
   Layers,
+  Send,
 } from 'lucide-react';
 import Link from 'next/link';
 import { deleteItem, type ItemCategoryType } from '@/app/actions/items';
 import { type PresetItemData } from '@/components/items/item-form';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
+import { HandoverModal } from '@/components/items/handover-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { SuccessModal } from '@/components/ui/success-modal';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -87,6 +89,10 @@ export function ItemsClient({
   // Expanded Groups in Grouped View
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
+
+  // Handover (Serah Terima) modal state
+  const [isHandoverModalOpen, setIsHandoverModalOpen] = useState(false);
+  const [handoverItem, setHandoverItem] = useState<any | null>(null);
 
   // Modals state
   const [isOpnameModalOpen, setIsOpnameModalOpen] = useState(false);
@@ -566,17 +572,25 @@ export function ItemsClient({
                                       {/* SN Action Buttons */}
                                       <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
                                         <div className="flex items-center space-x-1">
-                                          {/* Mutasi Lokasi */}
+                                          {/* Serah Terima Barang IT */}
                                           <button
-                                            title="Mutasi / Pindah Lokasi"
+                                            title="Serah Terima Barang IT"
                                             onClick={() => {
-                                              setMutateItem(item);
-                                              setIsMutateModalOpen(true);
+                                              setHandoverItem({
+                                                id: item.id,
+                                                serialNumber: item.serialNumber,
+                                                itemCode: item.itemCode,
+                                                name: item.name,
+                                                categoryName: group.category.name,
+                                                brandName: group.brand.name,
+                                                locationName: group.location.name,
+                                              });
+                                              setIsHandoverModalOpen(true);
                                             }}
-                                            className="px-2 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded border border-blue-500/30 text-[11px] font-medium transition flex items-center space-x-1"
+                                            className="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer shadow-sm"
                                           >
-                                            <Repeat className="w-3 h-3" />
-                                            <span>Mutasi</span>
+                                            <Send className="w-3 h-3 text-blue-400" />
+                                            <span>Serah</span>
                                           </button>
 
                                           {/* Stock Opname / Audit Status */}
@@ -694,14 +708,22 @@ export function ItemsClient({
                       <td className="p-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1">
                           <button
-                            title="Mutasi Lokasi"
+                            title="Serah Terima Barang IT"
                             onClick={() => {
-                              setMutateItem(item);
-                              setIsMutateModalOpen(true);
+                              setHandoverItem({
+                                id: item.id,
+                                serialNumber: item.serialNumber,
+                                itemCode: item.itemCode,
+                                name: item.name,
+                                categoryName: item.category.name,
+                                brandName: item.brand.name,
+                                locationName: item.location.name,
+                              });
+                              setIsHandoverModalOpen(true);
                             }}
-                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition"
+                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition cursor-pointer"
                           >
-                            <Repeat className="w-3.5 h-3.5" />
+                            <Send className="w-3.5 h-3.5" />
                           </button>
 
                           <button
@@ -748,6 +770,14 @@ export function ItemsClient({
         </div>
       )}
 
+
+      {/* Handover (Serah Terima) Modal */}
+      <HandoverModal
+        isOpen={isHandoverModalOpen}
+        onClose={() => setIsHandoverModalOpen(false)}
+        targetItem={handoverItem}
+        onSuccess={handleSuccess}
+      />
 
       {/* Stock Opname Status Audit Modal */}
       <StockOpnameModal
