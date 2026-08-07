@@ -17,8 +17,9 @@ import {
   QrCode,
   Layers,
 } from 'lucide-react';
+import Link from 'next/link';
 import { deleteItem, type ItemCategoryType } from '@/app/actions/items';
-import { ItemModal, type PresetItemData } from '@/components/items/item-modal';
+import { type PresetItemData } from '@/components/items/item-form';
 import { StockOpnameModal } from '@/components/items/stock-opname-modal';
 import { QuickMutateModal } from '@/components/items/quick-mutate-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
@@ -86,10 +87,6 @@ export function ItemsClient({
   // Expanded Groups in Grouped View
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
-  // Item Modal state (For Add SN, Add Preset SN, or Edit SN)
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [modalPresetItem, setModalPresetItem] = useState<PresetItemData | null>(null);
-  const [modalEditItem, setModalEditItem] = useState<ItemType | null>(null);
 
   // Modals state
   const [isOpnameModalOpen, setIsOpnameModalOpen] = useState(false);
@@ -112,18 +109,24 @@ export function ItemsClient({
     }
   }, [searchParams, router]);
 
-  // Open Item Modal for Add New
+  // Open Item Page for Add New
   const handleOpenAddModal = (preset?: PresetItemData) => {
-    setModalEditItem(null);
-    setModalPresetItem(preset || null);
-    setIsItemModalOpen(true);
+    if (preset) {
+      const q = new URLSearchParams({
+        name: preset.name || '',
+        categoryId: preset.categoryId || '',
+        brandId: preset.brandId || '',
+        locationId: preset.locationId || '',
+      }).toString();
+      router.push(`/items/new?${q}`);
+    } else {
+      router.push('/items/new');
+    }
   };
 
-  // Open Item Modal for Edit Existing SN Item
+  // Open Item Page for Edit Existing SN Item
   const handleOpenEditModal = (item: ItemType) => {
-    setModalPresetItem(null);
-    setModalEditItem(item);
-    setIsItemModalOpen(true);
+    router.push(`/items/new?editId=${item.id}`);
   };
 
   // Filter raw items
@@ -251,13 +254,13 @@ export function ItemsClient({
           </p>
         </div>
 
-        <button
-          onClick={() => handleOpenAddModal()}
+        <Link
+          href="/items/new"
           className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Unit (SN Baru)</span>
-        </button>
+        </Link>
       </div>
 
       {/* Tabs & Filters Bar */}
@@ -303,24 +306,26 @@ export function ItemsClient({
           </div>
 
           {/* Mode Switcher Buttons */}
-          <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 self-stretch sm:self-auto justify-center">
+          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 self-stretch sm:self-auto justify-center space-x-1">
             <button
+              type="button"
               onClick={() => setViewMode('GROUPED')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold flex items-center space-x-1.5 transition ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
                 viewMode === 'GROUPED'
-                  ? 'bg-slate-800 text-blue-400 shadow'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
               <span>Stok Agregasi (Kategori/Merk/Lokasi)</span>
             </button>
             <button
+              type="button"
               onClick={() => setViewMode('FLAT_SN')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold flex items-center space-x-1.5 transition ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
                 viewMode === 'FLAT_SN'
-                  ? 'bg-slate-800 text-blue-400 shadow'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
               <QrCode className="w-3.5 h-3.5" />
@@ -484,21 +489,14 @@ export function ItemsClient({
                           <td className="p-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end space-x-2">
                               {/* + Tambah SN Button for specific product */}
-                              <button
-                                onClick={() =>
-                                  handleOpenAddModal({
-                                    name: group.name,
-                                    categoryId: group.categoryId,
-                                    brandId: group.brandId,
-                                    locationId: group.locationId,
-                                  })
-                                }
+                              <Link
+                                href={`/items/new?name=${encodeURIComponent(group.name)}&categoryId=${group.categoryId}&brandId=${group.brandId}&locationId=${group.locationId}`}
                                 className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow"
                                 title={`Tambah unit SN baru untuk ${group.name}`}
                               >
                                 <Plus className="w-3.5 h-3.5" />
                                 <span>Tambah SN</span>
-                              </button>
+                              </Link>
 
                               <button
                                 onClick={() => toggleGroupExpand(group.key)}
@@ -750,17 +748,6 @@ export function ItemsClient({
         </div>
       )}
 
-      {/* Item Modal (Create New, Add SN to Preset Product, or Edit SN Unit) */}
-      <ItemModal
-        isOpen={isItemModalOpen}
-        onClose={() => setIsItemModalOpen(false)}
-        categories={categories}
-        brands={brands}
-        locations={locations}
-        presetItem={modalPresetItem}
-        editItem={modalEditItem}
-        onSuccess={handleSuccess}
-      />
 
       {/* Stock Opname Status Audit Modal */}
       <StockOpnameModal
@@ -784,7 +771,8 @@ export function ItemsClient({
       <DeleteConfirmModal
         isOpen={!!deleteTarget}
         title="Hapus Unit Serial Number (SN)"
-        message={`Apakah Anda yakin ingin menghapus unit SN ${deleteTarget?.sn} (${deleteTarget?.name})? Seluruh riwayat mutasi unit ini akan dihapus.`}
+        itemName={deleteTarget ? `${deleteTarget.name} (SN: ${deleteTarget.sn})` : ''}
+        itemType="unit SN"
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
       />
