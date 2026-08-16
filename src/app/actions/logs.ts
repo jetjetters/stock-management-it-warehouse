@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/db';
+import { Prisma } from '@prisma/client';
 
 export type MutationType = 'IN' | 'OUT' | 'ADJUSTMENT';
 
@@ -12,9 +13,9 @@ export type LogFilterParams = {
 };
 
 export async function getStockLogs(params?: LogFilterParams) {
-  const { search, locationId, type, limit = 100 } = params || {};
+  const { search, locationId, type, limit = 1000 } = params || {};
 
-  const whereClause: any = {};
+  const whereClause: Prisma.StockLogWhereInput = {};
 
   if (search) {
     whereClause.OR = [
@@ -50,3 +51,4 @@ export async function getStockLogs(params?: LogFilterParams) {
 
   return logs;
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Filter, History, ArrowUpRight, ArrowDownRight, RefreshCw } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Filter, ArrowUpRight, ArrowDownRight, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MutationType } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 
@@ -26,27 +26,65 @@ type LogsClientProps = {
   locations: { id: string; name: string }[];
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export function LogsClient({ initialLogs, locations }: LogsClientProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredLogs = initialLogs.filter((log) => {
-    if (search) {
-      const q = search.toLowerCase();
-      const matchCode = log.item.itemCode.toLowerCase().includes(q);
-      const matchName = log.item.name.toLowerCase().includes(q);
-      const matchNotes = log.notes.toLowerCase().includes(q);
-      if (!matchCode && !matchName && !matchNotes) return false;
-    }
+  const filteredLogs = useMemo(() => {
+    return initialLogs.filter((log) => {
+      if (search) {
+        const q = search.toLowerCase();
+        const matchCode = log.item.itemCode.toLowerCase().includes(q);
+        const matchName = log.item.name.toLowerCase().includes(q);
+        const matchNotes = log.notes.toLowerCase().includes(q);
+        if (!matchCode && !matchName && !matchNotes) return false;
+      }
 
-    if (selectedLocation && log.location.name !== selectedLocation) return false;
+      if (selectedLocation && log.location.name !== selectedLocation) return false;
 
-    if (selectedType !== 'ALL' && log.type !== selectedType) return false;
+      if (selectedType !== 'ALL' && log.type !== selectedType) return false;
 
-    return true;
-  });
+      return true;
+    });
+  }, [initialLogs, search, selectedLocation, selectedType]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / ITEMS_PER_PAGE));
+  const validPage = Math.min(currentPage, totalPages);
+
+  const paginatedLogs = useMemo(() => {
+    const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+    return filteredLogs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredLogs, validPage]);
+
+  const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setCurrentPage(1);
+  };
+
+  const handleLocationChange = (val: string) => {
+    setSelectedLocation(val);
+    setCurrentPage(1);
+  };
+
+  const handleTypeChange = (val: string) => {
+    setSelectedType(val);
+    setCurrentPage(1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  };
 
   return (
     <div className="space-y-6">
@@ -63,7 +101,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
 
         <button
           onClick={() => router.refresh()}
-          className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-lg text-xs transition flex items-center space-x-1.5 border border-slate-700"
+          className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-lg text-xs transition flex items-center space-x-1.5 border border-slate-700 cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
           <span>Refresh Feed</span>
@@ -78,7 +116,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Cari kode SKU, barang, aktivitas..."
             className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
@@ -89,7 +127,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
           <Filter className="w-4 h-4 text-slate-500 shrink-0" />
           <select
             value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
+            onChange={(e) => handleLocationChange(e.target.value)}
             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
           >
             <option value="">Semua Lokasi Storage</option>
@@ -105,7 +143,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
         <div>
           <select
             value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
+            onChange={(e) => handleTypeChange(e.target.value)}
             className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
           >
             <option value="ALL">Semua Jenis Mutasi (IN / OUT / ADJUSTMENT)</option>
@@ -120,7 +158,14 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="p-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-400">
           <span>Formatted Audit Trail Feed</span>
-          <span className="font-mono">{filteredLogs.length} Catatan Ditemukan</span>
+          <div className="flex items-center space-x-2 font-mono">
+            <span>{filteredLogs.length} Catatan Ditemukan</span>
+            {filteredLogs.length > ITEMS_PER_PAGE && (
+              <span className="text-slate-500">
+                (Halaman {validPage} dari {totalPages})
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="divide-y divide-slate-800/80">
@@ -129,7 +174,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
               Tidak ada log mutasi yang cocok dengan filter.
             </div>
           ) : (
-            filteredLogs.map((log) => {
+            paginatedLogs.map((log) => {
               const d = new Date(log.createdAt);
               const dateStr = d.toLocaleDateString('id-ID', {
                 day: '2-digit',
@@ -202,6 +247,51 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
             })
           )}
         </div>
+
+        {/* Pagination Footer */}
+        {filteredLogs.length > 0 && (
+          <div className="p-4 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="text-slate-400">
+              Menampilkan{' '}
+              <span className="font-semibold text-slate-200">
+                {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filteredLogs.length)}
+              </span>{' '}
+              dari{' '}
+              <span className="font-semibold text-slate-200">{filteredLogs.length}</span>{' '}
+              catatan
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                onClick={handlePrevPage}
+                disabled={validPage <= 1}
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 disabled:cursor-not-allowed border border-slate-700 text-slate-200 transition flex items-center justify-center cursor-pointer"
+                title="Halaman Sebelumnya"
+                aria-label="Halaman Sebelumnya"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-mono text-xs flex items-center space-x-1">
+                <span className="font-bold text-blue-400">{validPage}</span>
+                <span className="text-slate-500">/</span>
+                <span>{totalPages}</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleNextPage}
+                disabled={validPage >= totalPages}
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 disabled:cursor-not-allowed border border-slate-700 text-slate-200 transition flex items-center justify-center cursor-pointer"
+                title="Halaman Selanjutnya"
+                aria-label="Halaman Selanjutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
