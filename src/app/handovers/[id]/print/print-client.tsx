@@ -78,12 +78,12 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
             </p>
           </div>
 
-          {/* PERTAMINA TRANS KONTINENTAL Header Logo */}
+          {/* PERTAMINA Header Logo */}
           <div className="absolute right-0 top-0 bottom-0 flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.png"
-              alt="PERTAMINA TRANS KONTINENTAL"
+              src="/pertamina-pl.jpeg"
+              alt="PERTAMINA"
               className="h-10 sm:h-12 w-auto object-contain"
             />
           </div>
