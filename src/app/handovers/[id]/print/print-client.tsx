@@ -82,9 +82,9 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
           <div className="absolute right-0 top-0 bottom-0 flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/pertamina-pl.jpeg"
+              src="/pertamina-pl.png"
               alt="PERTAMINA"
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-10 sm:h-12 w-auto object-contain mix-blend-multiply"
             />
           </div>
         </div>
