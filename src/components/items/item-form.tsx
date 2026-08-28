@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Sparkles, QrCode, CheckCircle2, AlertCircle, Trash2 } from 'lucide-react';
 import { createItem, updateItem, getItemNextSku, type ItemCategoryType } from '@/app/actions/items';
-import { createBrand } from '@/app/actions/master-data';
 
 type CategoryItem = {
   id: string;
@@ -77,10 +76,8 @@ export function ItemForm({
   const [description, setDescription] = useState(editItem?.description || '');
   const [skuPreview, setSkuPreview] = useState(editItem?.itemCode || '');
 
-  // Dynamic Brands state
+  // Brands list state
   const [brandsList, setBrandsList] = useState<BrandItem[]>(initialBrands);
-  const [showAddBrand, setShowAddBrand] = useState(false);
-  const [newBrandName, setNewBrandName] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -111,19 +108,6 @@ export function ItemForm({
   const availableBrands = categoryId
     ? brandsList.filter((b) => b.categoryId === categoryId)
     : brandsList;
-
-  const handleCreateInlineBrand = async () => {
-    if (!newBrandName.trim() || !categoryId) return;
-    try {
-      const created = await createBrand({ name: newBrandName, categoryId });
-      setBrandsList((prev) => [...prev, created]);
-      setBrandId(created.id);
-      setNewBrandName('');
-      setShowAddBrand(false);
-    } catch (err: any) {
-      setError(err.message || 'Gagal membuat brand baru');
-    }
-  };
 
   const handleSnChange = (index: number, value: string) => {
     setSerialNumbers((prev) => {
@@ -215,7 +199,7 @@ export function ItemForm({
       </div>
 
       {/* Main Form Card */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="bg-white border-2 border-[#b90051] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
         <div className="border-b border-gray-100 pb-6">
           <h1 className="text-xl font-bold text-gray-900 tracking-tight flex items-center space-x-2.5">
             <QrCode className="w-5 h-5 text-[#b90051]" />
@@ -258,8 +242,8 @@ export function ItemForm({
 
           {/* Auto SKU Preview Badge */}
           {categoryId && (
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-[#b90051] text-xs font-semibold">
+            <div className="p-4 bg-[#fdf2f6] border border-[#f5b8cc] rounded-xl flex items-center justify-between">
+              <div className="text-xs font-bold text-[#b90051] uppercase tracking-wider flex items-center space-x-2">
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {editItem && categoryId !== editItem.categoryId
@@ -281,52 +265,48 @@ export function ItemForm({
               </label>
               <input
                 type="text"
-                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Contoh: Mouse Wireless M170 / EcoTank L3210"
+                placeholder="Contoh: Mouse Wireless M170 / EcoTank L3210 / Kabel Belden Cat6"
                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] focus:ring-1 focus:ring-[#b90051] transition"
+                required
               />
             </div>
 
-            {/* Serial Number Dynamic Inputs */}
+            {/* Serial Numbers (SN) Multi-unit Inputs */}
             <div className="md:col-span-2 space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-700 flex items-center space-x-1.5">
+                <label className="text-xs font-bold text-gray-700 flex items-center space-x-2">
                   <QrCode className="w-4 h-4 text-[#b90051]" />
-                  <span>
-                    Serial Number (SN) <span className="text-rose-500">*</span>
-                  </span>
+                  <span>Serial Number (SN) <span className="text-rose-500">*</span></span>
                 </label>
-                {!editItem && (
-                  <span className="text-[11px] text-[#b90051] font-mono bg-[#fae2ea] px-2.5 py-0.5 rounded-full border border-[#f5b8cc]">
-                    Total Input: {serialNumbers.filter((s) => s.trim()).length} Unit
-                  </span>
-                )}
+                <span className="text-xs font-mono font-bold text-[#b90051] bg-[#fae2ea] px-2.5 py-0.5 rounded-full border border-[#f5b8cc]">
+                  Total Input: {serialNumbers.filter((s) => s.trim()).length} Unit
+                </span>
               </div>
 
-              {/* Dynamic SN Fields */}
+              {/* Dynamic SN rows */}
               <div className="space-y-2.5">
                 {serialNumbers.map((sn, idx) => (
                   <div key={idx} className="flex items-center space-x-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3.5 top-2.5 text-xs text-gray-400 font-mono font-semibold select-none">
+                      <span className="absolute left-3.5 top-2.5 font-mono text-xs font-bold text-gray-400 select-none">
                         SN #{idx + 1}
                       </span>
                       <input
                         type="text"
-                        required
                         value={sn}
                         onChange={(e) => handleSnChange(idx, e.target.value)}
-                        placeholder={`Masukkan Serial Number #${idx + 1} (contoh: SN-LOGI-${String(idx + 1).padStart(3, '0')})`}
-                        className="w-full bg-white border border-gray-200 rounded-xl pl-16 pr-4 py-2.5 text-sm text-gray-900 font-mono focus:outline-none focus:border-[#b90051] transition"
+                        placeholder={`Masukkan Serial Number #${idx + 1} (contoh: SN-LOGI-001)`}
+                        className="w-full bg-white border border-gray-200 rounded-xl pl-20 pr-4 py-2.5 text-xs font-mono text-gray-900 focus:outline-none focus:border-[#b90051] focus:ring-1 focus:ring-[#b90051] transition"
+                        required
                       />
                     </div>
                     {!editItem && serialNumbers.length > 1 && (
                       <button
                         type="button"
                         onClick={() => handleRemoveSnField(idx)}
-                        className="p-2.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-gray-200 transition shrink-0 cursor-pointer"
+                        className="p-2.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-gray-200 transition"
                         title="Hapus baris SN ini"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -336,12 +316,11 @@ export function ItemForm({
                 ))}
               </div>
 
-              {/* Add SN Row Button */}
               {!editItem && (
                 <button
                   type="button"
                   onClick={handleAddSnField}
-                  className="w-full py-2.5 border border-dashed border-[#f5b8cc] hover:border-[#b90051] bg-[#fae2ea]/30 hover:bg-[#fae2ea]/60 text-[#b90051] rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer"
+                  className="w-full py-2.5 border-2 border-dashed border-[#f5b8cc] hover:border-[#b90051] bg-[#fae2ea]/40 hover:bg-[#fae2ea] text-[#b90051] rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>+ Tambah Baris Input SN Baru</span>
@@ -369,52 +348,23 @@ export function ItemForm({
 
             {/* Brand Dropdown */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold text-gray-700">
-                  Merk / Brand <span className="text-rose-500">*</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowAddBrand(!showAddBrand)}
-                  className="text-[11px] text-[#b90051] hover:text-[#8a003b] flex items-center gap-1 font-semibold cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Tambah Brand
-                </button>
-              </div>
-
-              {showAddBrand ? (
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={newBrandName}
-                    onChange={(e) => setNewBrandName(e.target.value)}
-                    placeholder="Nama Merk Baru"
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleCreateInlineBrand}
-                    className="px-3 bg-[#b90051] text-white rounded-xl text-xs font-medium hover:bg-[#a00045] shrink-0 cursor-pointer"
-                  >
-                    Simpan
-                  </button>
-                </div>
-              ) : (
-                <select
-                  value={brandId}
-                  onChange={(e) => setBrandId(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#b90051] transition"
-                >
-                  <option value="" disabled>
-                    -- Pilih Merk --
+              <label className="block text-xs font-bold text-gray-700 mb-2">
+                Merk / Brand <span className="text-rose-500">*</span>
+              </label>
+              <select
+                value={brandId}
+                onChange={(e) => setBrandId(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#b90051] transition"
+              >
+                <option value="" disabled>
+                  -- Pilih Merk --
+                </option>
+                {availableBrands.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
                   </option>
-                  {availableBrands.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
-              )}
+                ))}
+              </select>
             </div>
 
             {/* Location */}

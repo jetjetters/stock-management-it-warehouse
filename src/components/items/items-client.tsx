@@ -533,11 +533,18 @@ export function ItemsClient({
                                     <span>Unit Fisik Terdaftar ({group.items.length} Unit SN)</span>
                                   </div>
                                   <button
-                                    onClick={() => handleBatchDeleteGroup(group.name, group.items)}
-                                    className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center space-x-1 hover:underline cursor-pointer"
+                                    onClick={() =>
+                                      handleOpenAddModal({
+                                        name: group.name,
+                                        categoryId: group.categoryId,
+                                        brandId: group.brandId,
+                                        locationId: group.locationId,
+                                      })
+                                    }
+                                    className="px-3 py-1 bg-[#b90051] hover:bg-[#8f003e] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-sm cursor-pointer"
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    <span>Hapus Semua Unit ({group.items.length})</span>
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>+ Tambah Unit SN ({group.name})</span>
                                   </button>
                                 </div>
 

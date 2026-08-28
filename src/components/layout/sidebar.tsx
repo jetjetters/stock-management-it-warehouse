@@ -30,7 +30,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen sticky top-0 z-20 select-none">
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 z-20 select-none shrink-0">
       {/* Brand Header */}
       <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}

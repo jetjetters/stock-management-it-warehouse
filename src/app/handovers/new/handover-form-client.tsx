@@ -189,7 +189,7 @@ export function HandoverFormClient({
       </div>
 
       {/* Main Form Container */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+      <div className="bg-white border-2 border-[#b90051] rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
         {error && (
           <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
             {error}

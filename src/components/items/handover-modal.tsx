@@ -195,7 +195,7 @@ export function HandoverModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
+      <div className="bg-white border-2 border-[#b90051] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
         {/* Modal Header */}
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div className="flex items-center space-x-3">
