@@ -71,14 +71,7 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Footer Info */}
-      <div className="p-4 border-t border-gray-200 bg-gray-50/50 text-xs text-gray-500 flex items-center justify-between">
-        <span className="font-medium text-[11px]">Localhost Engine</span>
-        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold border border-emerald-200">
-          ONLINE
-        </span>
-      </div>
     </aside>
   );
 }
+

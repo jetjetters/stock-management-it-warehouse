@@ -340,14 +340,14 @@ export function HandoverFormClient({
           <div className="pt-6 border-t border-gray-100 flex items-center justify-end space-x-3">
             <Link
               href="/handovers"
-              className="px-5 py-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-semibold transition"
+              className="px-5 py-2.5 bg-white hover:bg-[#b90051] border border-gray-200 hover:border-[#a00045] text-gray-700 hover:text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
             >
               Batal
             </Link>
             <button
               type="submit"
               disabled={loading || availableItems.length === 0}
-              className="px-7 py-3 bg-[#b90051] hover:bg-[#a00045] text-white font-bold rounded-xl text-xs shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="px-7 py-3 bg-[#b90051] hover:bg-[#8f003e] text-white font-bold rounded-xl text-xs shadow-md shadow-[#b90051]/20 hover:shadow-lg hover:shadow-[#b90051]/30 transition-all flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>{loading ? 'Memproses Dokumen...' : 'Proses & Cetak PDF Resmi'}</span>

@@ -87,85 +87,85 @@ export default async function DashboardPage() {
       {/* 5 Analytics Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* TOTAL ASET */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               TOTAL ASET
             </span>
-            <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
               <Monitor className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-2xl font-bold text-gray-900 font-mono">{totalSNUnits.toLocaleString()}</div>
-            <div className="text-xs text-gray-400 flex items-center space-x-1">
-              <span className="text-emerald-600 font-medium">↗ Terdaftar</span>
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-white font-mono transition-colors">{totalSNUnits.toLocaleString()}</div>
+            <div className="text-xs text-gray-400 group-hover:text-white/90 flex items-center space-x-1 transition-colors">
+              <span className="text-emerald-600 group-hover:text-white font-medium transition-colors">↗ Terdaftar</span>
               <span>di gudang</span>
             </div>
           </div>
         </div>
 
-        {/* ASET TERSEDIA (Featured Solid Magenta Card) */}
-        <div className="bg-[#b90051] text-white border border-[#a00045] rounded-2xl p-5 space-y-3 shadow-md shadow-[#b90051]/20 hover:shadow-lg transition">
+        {/* ASET TERSEDIA */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-white/80 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET TERSEDIA
             </span>
-            <div className="w-9 h-9 rounded-full bg-white/20 text-white flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-[#fae2ea] text-[#b90051] group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-2xl font-bold text-white font-mono">{availableCount.toLocaleString()}</div>
-            <div className="text-xs text-white/90">Siap di ruang IT</div>
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-white font-mono transition-colors">{availableCount.toLocaleString()}</div>
+            <div className="text-xs text-gray-400 group-hover:text-white/90 transition-colors">Siap di ruang IT</div>
           </div>
         </div>
 
         {/* ASET DIPAKAI */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET DIPAKAI
             </span>
-            <div className="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-purple-50 text-purple-600 group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
               <User className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-2xl font-bold text-gray-900 font-mono">{inUseCount.toLocaleString()}</div>
-            <div className="text-xs text-gray-400">Dipinjam Oleh Karyawan</div>
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-white font-mono transition-colors">{inUseCount.toLocaleString()}</div>
+            <div className="text-xs text-gray-400 group-hover:text-white/90 transition-colors">Dipinjam Oleh Karyawan</div>
           </div>
         </div>
 
         {/* ASET RUSAK */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET RUSAK
             </span>
-            <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-500 group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-2xl font-bold text-gray-900 font-mono">{damagedCount.toLocaleString()}</div>
-            <div className="text-xs text-rose-500 font-medium">Menunggu Perbaikan</div>
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-white font-mono transition-colors">{damagedCount.toLocaleString()}</div>
+            <div className="text-xs text-rose-500 group-hover:text-white font-medium transition-colors">Menunggu Perbaikan</div>
           </div>
         </div>
 
         {/* HABIS PAKAI (BARANG) */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               HABIS PAKAI (BARANG)
             </span>
-            <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 group-hover:bg-white/20 group-hover:text-white flex items-center justify-center transition-colors">
               <Package className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-0.5">
-            <div className="text-2xl font-bold text-gray-900 font-mono">{barangCount.toLocaleString()}</div>
-            <div className="text-xs text-emerald-600 font-medium">Consumables</div>
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-white font-mono transition-colors">{barangCount.toLocaleString()}</div>
+            <div className="text-xs text-emerald-600 group-hover:text-white font-medium transition-colors">Consumables</div>
           </div>
         </div>
       </div>
@@ -174,16 +174,16 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-end space-x-3 pt-2">
         <Link
           href="/items"
-          className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white text-sm font-semibold rounded-xl shadow-sm shadow-[#b90051]/20 transition flex items-center space-x-2"
+          className="px-4 py-2.5 bg-[#b90051] hover:bg-[#8f003e] text-white text-sm font-semibold rounded-xl shadow-sm shadow-[#b90051]/20 hover:shadow-md hover:shadow-[#b90051]/30 transition-all flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Kelola Inventaris SN</span>
         </Link>
         <Link
           href="/logs"
-          className="px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-sm font-semibold rounded-xl transition flex items-center space-x-2 shadow-sm"
+          className="px-4 py-2.5 bg-white hover:bg-[#b90051] text-gray-700 hover:text-white border border-gray-200 hover:border-[#a00045] text-sm font-semibold rounded-xl transition-all flex items-center space-x-2 shadow-sm group"
         >
-          <History className="w-4 h-4 text-[#b90051]" />
+          <History className="w-4 h-4 text-[#b90051] group-hover:text-white transition-colors" />
           <span>History</span>
         </Link>
       </div>
@@ -227,7 +227,7 @@ export default async function DashboardPage() {
                   >
                     <div className="space-y-1 min-w-0 flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-xs font-bold text-blue-600 shrink-0">
+                        <span className="font-mono text-xs font-bold text-[#b90051] shrink-0">
                           {item.itemCode}
                         </span>
                         <span className="text-xs font-semibold text-gray-900 truncate">
@@ -235,7 +235,7 @@ export default async function DashboardPage() {
                         </span>
                       </div>
                       <div className="text-[11px] text-gray-500 flex items-center space-x-1.5 font-mono truncate">
-                        <span className="text-gray-700 font-semibold">SN: {item.serialNumber}</span>
+                        <span className="text-[#b90051] font-semibold">SN: {item.serialNumber}</span>
                         <span>•</span>
                         <span className="text-gray-400">{item.location?.name || '-'}</span>
                       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Server, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function Navbar() {
@@ -27,13 +27,7 @@ export function Navbar() {
         <Clock className="w-4 h-4 text-[#b90051]" />
         <span>{timeString || 'IT Warehouse System'}</span>
       </div>
-
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-700">
-          <Server className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Prisma DB (Local)</span>
-        </div>
-      </div>
     </header>
   );
 }
+

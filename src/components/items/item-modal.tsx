@@ -274,7 +274,7 @@ export function ItemModal({
                     : 'Kode SKU Sekelompok'}
                 </span>
               </div>
-              <span className="font-mono text-sm font-bold tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded border border-blue-200">
+              <span className="font-mono text-sm font-bold tracking-wider text-[#b90051] bg-[#fae2ea] px-2.5 py-1 rounded border border-[#f5b8cc]">
                 {skuPreview || 'Generasi SKU...'}
               </span>
             </div>

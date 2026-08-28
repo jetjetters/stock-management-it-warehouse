@@ -66,11 +66,11 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
       </div>
 
       {/* Printable Paper Document Container */}
-      <div className="max-w-4xl mx-auto bg-white text-black p-8 sm:p-12 shadow-2xl rounded-xl print:shadow-none print:p-0 print:max-w-none">
+      <div className="print-clean-container max-w-4xl mx-auto bg-white text-black p-8 sm:p-12 shadow-2xl rounded-xl print:shadow-none print:p-0 print:max-w-none print:rounded-none">
         {/* Document Header with Perfectly Centered Title */}
-        <div className="relative flex items-center justify-center border-b-2 border-black pb-4 mb-6">
+        <div className="relative flex items-center justify-center border-b-2 border-black pb-3 mb-4">
           <div className="text-center">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-black uppercase">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-black uppercase">
               Form Serah Terima Barang IT
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">
@@ -84,45 +84,45 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
             <img
               src="/pertamina-pl.png"
               alt="PERTAMINA"
-              className="h-10 sm:h-12 w-auto object-contain mix-blend-multiply"
+              className="h-9 sm:h-11 w-auto object-contain mix-blend-multiply"
             />
           </div>
         </div>
 
         {/* Handover Data Table */}
-        <div className="mb-10">
+        <div className="mb-6 print:mb-4">
           <table className="w-full border-collapse border border-black text-center text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-black font-bold uppercase text-black text-center">
-                <th className="border border-black px-3 py-2 text-center w-12">NO</th>
-                <th className="border border-black px-3 py-2 text-center">Nama Perangkat</th>
-                <th className="border border-black px-3 py-2 text-center font-mono">SN</th>
-                <th className="border border-black px-3 py-2 text-center">Merk</th>
-                <th className="border border-black px-3 py-2 text-center">PIC</th>
-                <th className="border border-black px-3 py-2 text-center">Remarks</th>
-                <th className="border border-black px-3 py-2 text-center w-24">Sign</th>
+                <th className="border border-black px-3 py-1.5 text-center w-12">NO</th>
+                <th className="border border-black px-3 py-1.5 text-center">Nama Perangkat</th>
+                <th className="border border-black px-3 py-1.5 text-center font-mono">SN</th>
+                <th className="border border-black px-3 py-1.5 text-center">Merk</th>
+                <th className="border border-black px-3 py-1.5 text-center">PIC</th>
+                <th className="border border-black px-3 py-1.5 text-center">Remarks</th>
+                <th className="border border-black px-3 py-1.5 text-center w-24">Sign</th>
               </tr>
             </thead>
             <tbody>
               {handover.items.map((item, idx) => (
                 <tr key={item.id || idx} className="border-b border-black text-black text-center">
-                  <td className="border border-black px-3 py-2.5 text-center font-semibold">
+                  <td className="border border-black px-3 py-2 text-center font-semibold">
                     {idx + 1}
                   </td>
-                  <td className="border border-black px-3 py-2.5 text-center font-semibold">
+                  <td className="border border-black px-3 py-2 text-center font-semibold">
                     {item.deviceName}
                   </td>
-                  <td className="border border-black px-3 py-2.5 text-center font-mono font-bold">
+                  <td className="border border-black px-3 py-2 text-center font-mono font-bold">
                     {item.serialNo}
                   </td>
-                  <td className="border border-black px-3 py-2.5 text-center">{item.brandName}</td>
-                  <td className="border border-black px-3 py-2.5 text-center font-semibold">
+                  <td className="border border-black px-3 py-2 text-center">{item.brandName}</td>
+                  <td className="border border-black px-3 py-2 text-center font-semibold">
                     {item.recipient || handover.recipientName}
                   </td>
-                  <td className="border border-black px-3 py-2.5 text-center">
+                  <td className="border border-black px-3 py-2 text-center">
                     {item.remarks || handover.remarks || '-'}
                   </td>
-                  <td className="border border-black px-3 py-2.5 text-center text-gray-300 font-mono text-[10px]">
+                  <td className="border border-black px-3 py-2 text-center text-gray-300 font-mono text-[10px]">
                     [ Tanda Tangan ]
                   </td>
                 </tr>
@@ -131,15 +131,15 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
               {/* Empty placeholder rows if item count is less than 3 for spacious visual */}
               {Array.from({ length: Math.max(0, 3 - handover.items.length) }).map((_, idx) => (
                 <tr key={`empty-${idx}`} className="border-b border-black text-black text-center">
-                  <td className="border border-black px-3 py-3 text-center text-gray-400">
+                  <td className="border border-black px-3 py-2 text-center text-gray-400">
                     {handover.items.length + idx + 1}
                   </td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
-                  <td className="border border-black px-3 py-3 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
+                  <td className="border border-black px-3 py-2 text-center"></td>
                 </tr>
               ))}
             </tbody>
@@ -147,7 +147,7 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
         </div>
 
         {/* Bottom Signature Section matching scanned reference */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-2">
           <div className="text-center space-y-1 w-72">
             <p className="text-xs font-semibold text-black">
               Tanjung Batu, {formattedDate}
@@ -157,7 +157,7 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
             </p>
 
             {/* Signature Box Placeholder */}
-            <div className="h-20 flex items-center justify-center text-gray-300 font-mono text-xs italic">
+            <div className="h-16 print:h-14 flex items-center justify-center text-gray-300 font-mono text-xs italic">
               ( Tanda Tangan / Paraf )
             </div>
 
@@ -170,13 +170,31 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
 
       {/* Print Specific CSS Styles */}
       <style jsx global>{`
+        @page {
+          size: landscape;
+          margin: 0mm;
+        }
         @media print {
-          body {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
             background-color: white !important;
             color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            width: 100% !important;
+            height: auto !important;
           }
           aside, nav, header {
             display: none !important;
+          }
+          .print-clean-container {
+            padding: 10mm 15mm !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            box-shadow: none !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
         }
       `}</style>

@@ -475,7 +475,7 @@ export function ItemsClient({
                             <div className="text-xs font-semibold text-gray-900">
                               {group.category.name}
                             </div>
-                            <div className="text-[11px] text-blue-600 font-medium">{group.brand.name}</div>
+                            <div className="text-[11px] text-[#b90051] font-medium">{group.brand.name}</div>
                           </td>
 
                           {/* Location */}
@@ -505,7 +505,7 @@ export function ItemsClient({
                               {/* + Tambah SN Button for specific product */}
                               <Link
                                 href={`/items/new?name=${encodeURIComponent(group.name)}&categoryId=${group.categoryId}&brandId=${group.brandId}&locationId=${group.locationId}`}
-                                className="px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm"
+                                className="px-3 py-1.5 border border-gray-200 bg-white hover:bg-[#fae2ea] hover:border-[#f5b8cc] text-gray-700 hover:text-[#b90051] text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm cursor-pointer"
                                 title={`Tambah unit SN baru untuk ${group.name}`}
                               >
                                 <Plus className="w-3.5 h-3.5" />
@@ -514,7 +514,7 @@ export function ItemsClient({
 
                               <button
                                 onClick={() => toggleGroupExpand(group.key)}
-                                className="px-3 py-1.5 bg-[#b90051] hover:bg-[#a00045] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm"
+                                className="px-3 py-1.5 bg-[#b90051] hover:bg-[#a00045] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm cursor-pointer"
                               >
                                 <span>{isExpanded ? 'Tutup' : 'Lihat'}</span>
                               </button>
@@ -522,31 +522,22 @@ export function ItemsClient({
                           </td>
                         </tr>
 
-                        {/* Expanded Serial Numbers Nested Row */}
+                        {/* Collapsible Child Rows (Physical SN Units) */}
                         {isExpanded && (
-                          <tr className="bg-[#fafbfc]">
-                            <td colSpan={7} className="p-4 sm:p-5 border-t border-gray-200">
-                              <div className="space-y-3 pl-4 pr-2">
-                                <div className="flex items-center justify-between text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                  <span className="flex items-center space-x-1.5 text-[#b90051]">
-                                    <QrCode className="w-4 h-4" />
-                                    <span>Daftar Serial Number Unit ({group.items.length} Registered SN)</span>
-                                  </span>
-
-                                  {/* Direct + Tambah SN Produk Ini button inside expanded header */}
+                          <tr className="bg-gray-50/70 border-b border-gray-200">
+                            <td colSpan={7} className="p-4 pl-12">
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-2">
+                                    <Boxes className="w-4 h-4 text-[#b90051]" />
+                                    <span>Unit Fisik Terdaftar ({group.items.length} Unit SN)</span>
+                                  </div>
                                   <button
-                                    onClick={() =>
-                                      handleOpenAddModal({
-                                        name: group.name,
-                                        categoryId: group.categoryId,
-                                        brandId: group.brandId,
-                                        locationId: group.locationId,
-                                      })
-                                    }
-                                    className="px-3 py-1 bg-[#b90051] hover:bg-[#a00045] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-sm"
+                                    onClick={() => handleBatchDeleteGroup(group.name, group.items)}
+                                    className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center space-x-1 hover:underline cursor-pointer"
                                   >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    <span>+ Tambah Unit SN ({group.name})</span>
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span>Hapus Semua Unit ({group.items.length})</span>
                                   </button>
                                 </div>
 
@@ -557,14 +548,14 @@ export function ItemsClient({
                                       className="p-3.5 bg-white border border-gray-200 hover:border-[#f5b8cc] rounded-xl space-y-2 relative group shadow-sm transition"
                                     >
                                       <div className="flex items-center justify-between">
-                                        <span className="font-mono text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+                                        <span className="font-mono text-xs font-bold text-[#b90051] bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
                                           SN: {item.serialNumber}
                                         </span>
                                         {getStatusBadge(item.status)}
                                       </div>
 
                                       <div className="text-xs text-gray-500 flex items-center justify-between font-mono">
-                                        <span>SKU: <strong className="text-blue-600">{item.itemCode}</strong></span>
+                                        <span>SKU: <strong className="text-[#b90051]">{item.itemCode}</strong></span>
                                         <span className="text-[10px] text-gray-400">
                                           {new Date(item.createdAt).toLocaleDateString('id-ID')}
                                         </span>
@@ -606,7 +597,7 @@ export function ItemsClient({
                                               setOpnameItem(item);
                                               setIsOpnameModalOpen(true);
                                             }}
-                                            className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 text-[11px] font-medium transition flex items-center space-x-1"
+                                            className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 text-[11px] font-medium transition flex items-center space-x-1 cursor-pointer"
                                           >
                                             <ClipboardCheck className="w-3 h-3" />
                                             <span>Audit</span>
@@ -617,7 +608,7 @@ export function ItemsClient({
                                           <button
                                             onClick={() => handleOpenEditModal(item)}
                                             title="Edit SN Unit"
-                                            className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition"
+                                            className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition cursor-pointer"
                                           >
                                             <Pencil className="w-3.5 h-3.5" />
                                           </button>
@@ -630,7 +621,7 @@ export function ItemsClient({
                                                 sn: item.serialNumber,
                                               })
                                             }
-                                            className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition"
+                                            className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer"
                                           >
                                             <Trash2 className="w-3.5 h-3.5" />
                                           </button>
@@ -677,8 +668,8 @@ export function ItemsClient({
                   filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-[#fff5f8] transition">
                       {/* Serial Number */}
-                      <td className="p-4 font-mono font-bold text-gray-900 whitespace-nowrap">
-                        <span className="bg-gray-100 px-2.5 py-1 rounded border border-gray-200">
+                      <td className="p-4 font-mono font-bold whitespace-nowrap">
+                        <span className="bg-[#fae2ea] border border-[#f5b8cc] text-[#b90051] px-2.5 py-1 rounded-lg">
                           {item.serialNumber}
                         </span>
                       </td>
@@ -686,7 +677,7 @@ export function ItemsClient({
                       {/* Item Code & Model Name */}
                       <td className="p-4">
                         <div className="font-semibold text-gray-900">{item.name}</div>
-                        <div className="text-xs font-mono text-blue-600 font-medium">SKU: {item.itemCode}</div>
+                        <div className="text-xs font-mono text-[#b90051] font-medium">SKU: {item.itemCode}</div>
                       </td>
 
                       {/* Category & Brand */}
@@ -694,7 +685,7 @@ export function ItemsClient({
                         <div className="text-xs font-medium text-gray-900">
                           {item.category.name} ({item.type})
                         </div>
-                        <div className="text-[11px] text-gray-500">{item.brand.name}</div>
+                        <div className="text-[11px] text-[#b90051] font-medium">{item.brand.name}</div>
                       </td>
 
                       {/* Location */}

@@ -213,7 +213,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
                         <span className="font-mono text-xs text-gray-400 font-normal">
                           {dateStr}:
                         </span>
-                        <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        <span className="font-mono text-xs font-bold text-[#b90051] bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
                           {log.item.itemCode}
                         </span>
                         <span className="text-gray-900 font-bold">{log.item.name}</span>

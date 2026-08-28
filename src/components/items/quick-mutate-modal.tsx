@@ -99,10 +99,10 @@ export function QuickMutateModal({
           )}
 
           {/* Item Info Summary */}
-          <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+          <div className="p-3.5 bg-[#fff8fa] border border-[#f5b8cc] rounded-xl space-y-1">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs text-blue-600 font-bold">{item.itemCode}</span>
-              <span className="font-mono text-xs text-gray-900 font-bold bg-white px-2 py-0.5 rounded border border-gray-200">
+              <span className="font-mono text-xs text-[#b90051] font-bold">SKU: {item.itemCode}</span>
+              <span className="font-mono text-xs text-[#b90051] font-bold bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
                 SN: {item.serialNumber}
               </span>
             </div>

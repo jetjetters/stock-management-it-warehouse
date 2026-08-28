@@ -267,7 +267,7 @@ export function ItemForm({
                     : 'Kode SKU Sekelompok Automatic'}
                 </span>
               </div>
-              <span className="font-mono text-sm font-bold tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+              <span className="font-mono text-sm font-bold tracking-wider text-[#b90051] bg-[#fae2ea] px-3 py-1 rounded-lg border border-[#f5b8cc]">
                 {skuPreview || 'Generasi SKU...'}
               </span>
             </div>

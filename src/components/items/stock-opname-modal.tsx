@@ -97,15 +97,15 @@ export function StockOpnameModal({
           )}
 
           {/* Item details banner */}
-          <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+          <div className="p-3.5 bg-[#fff8fa] border border-[#f5b8cc] rounded-xl space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-blue-600 font-bold">{item.itemCode}</span>
-              <span className="font-mono text-gray-900 font-bold bg-white px-2 py-0.5 rounded border border-gray-200">
+              <span className="font-mono text-[#b90051] font-bold">SKU: {item.itemCode}</span>
+              <span className="font-mono text-[#b90051] font-bold bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
                 SN: {item.serialNumber}
               </span>
             </div>
             <div className="text-sm font-bold text-gray-900">{item.name}</div>
-            <div className="text-xs text-gray-500 pt-1 border-t border-gray-200 flex justify-between">
+            <div className="text-xs text-gray-500 pt-1 border-t border-[#f5b8cc]/50 flex justify-between">
               <span>Lokasi Storage:</span>
               <span className="font-semibold text-[#b90051]">{item.location.name}</span>
             </div>

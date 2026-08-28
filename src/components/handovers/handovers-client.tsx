@@ -180,7 +180,7 @@ export function HandoversClient({ initialHandovers }: HandoversClientProps) {
 
                         {/* Document No & Date */}
                         <td className="py-4 px-4 whitespace-nowrap">
-                          <div className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 inline-block mb-1">
+                          <div className="font-mono text-xs font-bold text-[#b90051] bg-[#fae2ea] px-2.5 py-1 rounded-md border border-[#f5b8cc] inline-block mb-1">
                             {doc.documentNo}
                           </div>
                           <div className="text-[11px] text-gray-500 flex items-center space-x-1">
@@ -263,7 +263,7 @@ export function HandoversClient({ initialHandovers }: HandoversClientProps) {
                                       <span>{item.deviceName}</span>
                                       <span className="text-[10px] text-gray-400 font-normal">#{idx + 1}</span>
                                     </div>
-                                    <div className="font-mono text-blue-600 font-semibold text-[11px]">
+                                    <div className="font-mono text-[#b90051] font-semibold text-[11px]">
                                       SN: {item.serialNo}
                                     </div>
                                     <div className="text-gray-500 text-[11px] flex justify-between">
