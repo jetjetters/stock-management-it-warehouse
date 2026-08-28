@@ -63,11 +63,11 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center space-x-2.5">
-            <UserCheck className="w-6 h-6 text-blue-400" />
-            <span>Manajemen Petugas (Diberikan Oleh)</span>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center space-x-2.5">
+            <UserCheck className="w-6 h-6 text-[#b90051]" />
+            <span>Petugas (Giver)</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             Kelola daftar petugas penyerah barang IT yang tercantum pada dokumen Form Serah Terima.
           </p>
         </div>
@@ -75,7 +75,7 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
         <button
           type="button"
           onClick={handleOpenAddModal}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-blue-600/25 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-semibold rounded-xl text-sm shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Petugas Baru</span>
@@ -83,65 +83,65 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
         <div className="relative w-full max-w-md">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama petugas atau jabatan..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] transition"
           />
         </div>
-        <span className="text-xs text-slate-400 font-mono">
-          Total: <strong className="text-slate-100">{filteredOfficers.length}</strong> Petugas
+        <span className="text-xs text-gray-500 font-mono">
+          Total: <strong className="text-gray-900 font-bold">{filteredOfficers.length}</strong> Petugas
         </span>
       </div>
 
       {/* Officers List Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                <th className="p-4">Nama Petugas (Giver)</th>
-                <th className="p-4">Jabatan / Role</th>
-                <th className="p-4">Status Hak Akses</th>
-                <th className="p-4 text-right">Aksi</th>
+              <tr className="bg-[#b90051] text-white text-xs font-bold uppercase tracking-wider">
+                <th className="py-3.5 px-4">Nama Petugas (Giver)</th>
+                <th className="py-3.5 px-4">Jabatan / Role</th>
+                <th className="py-3.5 px-4">Status Hak Akses</th>
+                <th className="py-3.5 px-4 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80">
+            <tbody className="divide-y divide-gray-100">
               {filteredOfficers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-12 text-center text-slate-500 text-sm">
+                  <td colSpan={4} className="p-12 text-center text-gray-400 text-sm">
                     Tidak ada petugas yang ditemukan.
                   </td>
                 </tr>
               ) : (
                 filteredOfficers.map((officer) => (
-                  <tr key={officer.id} className="hover:bg-slate-800/40 transition">
-                    <td className="p-4 font-semibold text-slate-100 flex items-center space-x-3">
-                      <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">
+                  <tr key={officer.id} className="hover:bg-[#fff5f8] transition">
+                    <td className="py-4 px-4 font-semibold text-gray-900 flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-[#fae2ea] text-[#b90051] font-bold text-xs flex items-center justify-center shrink-0">
                         <UserCheck className="w-4 h-4" />
                       </div>
                       <span>{officer.name}</span>
                     </td>
-                    <td className="p-4 text-xs text-slate-300">
+                    <td className="py-4 px-4 text-xs text-gray-600 font-medium">
                       {officer.role || 'IT Staff'}
                     </td>
-                    <td className="p-4">
-                      <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <td className="py-4 px-4">
+                      <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         <ShieldCheck className="w-3 h-3" />
                         <span>Penyerah Resmi</span>
                       </span>
                     </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end space-x-2">
+                    <td className="py-4 px-4 text-right">
+                      <div className="flex items-center justify-end space-x-1.5">
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(officer)}
-                          className="p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition"
+                          className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
                           title="Edit Petugas"
                         >
                           <Pencil className="w-4 h-4" />
@@ -149,7 +149,7 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(officer)}
-                          className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition"
+                          className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                           title="Hapus Petugas"
                         >
                           <Trash2 className="w-4 h-4" />

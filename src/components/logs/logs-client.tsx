@@ -87,48 +87,48 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Page Title */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-            Audit Trail — Log Mutasi & Opname
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+            Audit Trail (Log)
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
             Jejak historis tidak terbatas untuk semua penambahan, pengurangan, dan penyesuaian stok
           </p>
         </div>
 
         <button
           onClick={() => router.refresh()}
-          className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-lg text-xs transition flex items-center space-x-1.5 border border-slate-700 cursor-pointer"
+          className="px-3.5 py-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl text-xs transition flex items-center space-x-1.5 border border-gray-200 shadow-sm cursor-pointer self-start sm:self-auto"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
+          <RefreshCw className="w-3.5 h-3.5 text-[#b90051]" />
           <span>Refresh Feed</span>
         </button>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-3 shadow-sm">
         {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
             type="text"
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Cari kode SKU, barang, aktivitas..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] focus:ring-1 focus:ring-[#b90051]"
           />
         </div>
 
         {/* Location Select */}
         <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-slate-500 shrink-0" />
+          <Filter className="w-4 h-4 text-gray-400 shrink-0" />
           <select
             value={selectedLocation}
             onChange={(e) => handleLocationChange(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
           >
             <option value="">Semua Lokasi Storage</option>
             {locations.map((loc) => (
@@ -144,7 +144,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
           <select
             value={selectedType}
             onChange={(e) => handleTypeChange(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
           >
             <option value="ALL">Semua Jenis Mutasi (IN / OUT / ADJUSTMENT)</option>
             <option value="IN">Stok Masuk (IN)</option>
@@ -155,22 +155,22 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
       </div>
 
       {/* Audit Log Card Feed */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-        <div className="p-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-400">
-          <span>Formatted Audit Trail Feed</span>
-          <div className="flex items-center space-x-2 font-mono">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-4 bg-[#b90051] text-white flex items-center justify-between text-xs font-bold uppercase tracking-wider">
+          <span>Riwayat Mutasi & Audit Trail</span>
+          <div className="flex items-center space-x-2 font-mono text-white/90">
             <span>{filteredLogs.length} Catatan Ditemukan</span>
             {filteredLogs.length > ITEMS_PER_PAGE && (
-              <span className="text-slate-500">
-                (Halaman {validPage} dari {totalPages})
+              <span className="text-white/80">
+                (Hal {validPage}/{totalPages})
               </span>
             )}
           </div>
         </div>
 
-        <div className="divide-y divide-slate-800/80">
+        <div className="divide-y divide-gray-100">
           {filteredLogs.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 text-sm">
+            <div className="p-12 text-center text-gray-400 text-sm">
               Tidak ada log mutasi yang cocok dengan filter.
             </div>
           ) : (
@@ -191,14 +191,14 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
               return (
                 <div
                   key={log.id}
-                  className="p-4 hover:bg-slate-800/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 hover:bg-[#fff5f8] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-start space-x-3.5">
                     <div
-                      className={`p-2 rounded-lg border mt-0.5 shrink-0 ${
+                      className={`p-2 rounded-xl border mt-0.5 shrink-0 ${
                         isPositive
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                          : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                          : 'bg-rose-50 border-rose-200 text-rose-600'
                       }`}
                     >
                       {isPositive ? (
@@ -209,38 +209,35 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
                     </div>
 
                     <div className="space-y-1">
-                      {/* Formatted Audit String as specified in Product Context:
-                          DD-MM-YYYY: [Kode Item] dari [Lokasi] [Aktivitas/Keterangan] ([+|-][Jumlah])
-                      */}
-                      <div className="text-sm font-semibold text-slate-100 flex flex-wrap items-center gap-1.5">
-                        <span className="font-mono text-xs text-slate-400 font-normal">
+                      <div className="text-sm font-semibold text-gray-900 flex flex-wrap items-center gap-1.5">
+                        <span className="font-mono text-xs text-gray-400 font-normal">
                           {dateStr}:
                         </span>
-                        <span className="font-mono text-xs font-bold text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800">
+                        <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                           {log.item.itemCode}
                         </span>
-                        <span className="text-slate-300">({log.item.name})</span>
-                        <span className="text-slate-400 text-xs">dari</span>
-                        <span className="text-xs font-semibold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800">
+                        <span className="text-gray-900 font-bold">{log.item.name}</span>
+                        <span className="text-gray-400 text-xs">dari</span>
+                        <span className="text-xs font-semibold text-[#b90051] bg-[#fae2ea] px-2.5 py-0.5 rounded-md border border-[#f5b8cc]">
                           {log.location.name}
                         </span>
                       </div>
 
-                      <div className="text-xs text-slate-400 flex items-center space-x-2">
-                        <span>Aktivitas: <strong className="text-slate-200">{log.notes}</strong></span>
+                      <div className="text-xs text-gray-500 flex items-center space-x-2">
+                        <span>Keterangan: <strong className="text-gray-700 font-semibold">{log.notes}</strong></span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center sm:flex-col sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
+                  <div className="flex items-center sm:flex-col sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0 border-gray-100">
                     <span
                       className={`font-mono text-base font-bold ${
-                        isPositive ? 'text-emerald-400' : 'text-rose-400'
+                        isPositive ? 'text-emerald-600' : 'text-rose-600'
                       }`}
                     >
                       ({isPositive ? `+${log.mutation}` : log.mutation})
                     </span>
-                    <span className="text-[11px] text-slate-500 font-mono">Pukul {timeStr}</span>
+                    <span className="text-[11px] text-gray-400 font-mono">Pukul {timeStr}</span>
                   </div>
                 </div>
               );
@@ -250,14 +247,14 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
 
         {/* Pagination Footer */}
         {filteredLogs.length > 0 && (
-          <div className="p-4 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="text-slate-400">
+          <div className="p-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="text-gray-500">
               Menampilkan{' '}
-              <span className="font-semibold text-slate-200">
+              <span className="font-semibold text-gray-900">
                 {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filteredLogs.length)}
               </span>{' '}
               dari{' '}
-              <span className="font-semibold text-slate-200">{filteredLogs.length}</span>{' '}
+              <span className="font-semibold text-gray-900">{filteredLogs.length}</span>{' '}
               catatan
             </div>
 
@@ -266,16 +263,16 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
                 type="button"
                 onClick={handlePrevPage}
                 disabled={validPage <= 1}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 disabled:cursor-not-allowed border border-slate-700 text-slate-200 transition flex items-center justify-center cursor-pointer"
+                className="p-2 rounded-xl bg-white hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed border border-gray-200 text-gray-700 transition flex items-center justify-center cursor-pointer shadow-sm"
                 title="Halaman Sebelumnya"
                 aria-label="Halaman Sebelumnya"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-mono text-xs flex items-center space-x-1">
-                <span className="font-bold text-blue-400">{validPage}</span>
-                <span className="text-slate-500">/</span>
+              <div className="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-mono text-xs flex items-center space-x-1 shadow-sm">
+                <span className="font-bold text-[#b90051]">{validPage}</span>
+                <span className="text-gray-400">/</span>
                 <span>{totalPages}</span>
               </div>
 
@@ -283,7 +280,7 @@ export function LogsClient({ initialLogs, locations }: LogsClientProps) {
                 type="button"
                 onClick={handleNextPage}
                 disabled={validPage >= totalPages}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-slate-800 disabled:cursor-not-allowed border border-slate-700 text-slate-200 transition flex items-center justify-center cursor-pointer"
+                className="p-2 rounded-xl bg-white hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed border border-gray-200 text-gray-700 transition flex items-center justify-center cursor-pointer shadow-sm"
                 title="Halaman Selanjutnya"
                 aria-label="Halaman Selanjutnya"
               >

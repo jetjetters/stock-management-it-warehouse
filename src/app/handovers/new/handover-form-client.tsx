@@ -171,44 +171,44 @@ export function HandoverFormClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <Link
-            href="/items"
-            className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl transition mb-2"
+            href="/handovers"
+            className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 px-3.5 py-2 rounded-xl transition mb-2 shadow-sm"
           >
-            <ArrowLeft className="w-4 h-4 text-blue-400" />
-            <span>Kembali ke Inventaris</span>
+            <ArrowLeft className="w-4 h-4 text-[#b90051]" />
+            <span>Kembali ke Surat Serah Terima</span>
           </Link>
 
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center space-x-2.5">
-            <Send className="w-6 h-6 text-blue-400" />
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center space-x-2.5">
+            <Send className="w-6 h-6 text-[#b90051]" />
             <span>Form Serah Terima Barang IT</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             Penerbitan surat serah terima fisik & cetak PDF resmi PTK Shore Base Tanjung Batu
           </p>
         </div>
       </div>
 
       {/* Main Form Container */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl p-6 sm:p-8 space-y-6">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
         {error && (
-          <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs font-semibold">
+          <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Barang & SN Selection */}
-          <div className="space-y-3 bg-slate-950 p-5 rounded-2xl border border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <label className="block text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center space-x-2">
-                <Package className="w-4 h-4 text-blue-400" />
+          <div className="space-y-3 bg-[#fce7ee]/60 p-5 rounded-2xl border border-[#f5b8cc]">
+            <div className="flex items-center justify-between border-b border-[#f5b8cc]/80 pb-3">
+              <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center space-x-2">
+                <Package className="w-4 h-4 text-[#b90051]" />
                 <span>Daftar Barang & Serial Number (SN) Unit yang Diserahkan *</span>
               </label>
               <button
                 type="button"
                 onClick={handleAddAnotherItemRow}
                 disabled={availableItems.length <= selectedItems.length}
-                className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                className="text-xs text-[#b90051] hover:text-[#8a003b] font-bold flex items-center space-x-1 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Tambah Barang / SN Lain</span>
@@ -216,7 +216,7 @@ export function HandoverFormClient({
             </div>
 
             {availableItems.length === 0 ? (
-              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-xs font-medium">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs font-medium">
                 Tidak ada unit Serial Number (SN) berstatus <strong>TERSEDIA</strong> untuk diserahkan saat ini. Silakan tambahkan unit baru atau ubah status melalui Audit.
               </div>
             ) : (
@@ -224,9 +224,9 @@ export function HandoverFormClient({
                 {selectedItems.map((selItem, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center space-x-3 bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+                    className="flex items-center space-x-3 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm"
                   >
-                    <span className="text-xs font-bold text-slate-400 font-mono w-7 text-center bg-slate-950 py-1.5 rounded border border-slate-800">
+                    <span className="text-xs font-bold text-gray-600 font-mono w-7 text-center bg-gray-100 py-1.5 rounded border border-gray-200">
                       #{idx + 1}
                     </span>
 
@@ -234,9 +234,9 @@ export function HandoverFormClient({
                       value={selItem.itemId}
                       onChange={(e) => handleSelectItemChange(idx, e.target.value)}
                       required
-                      className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-medium"
+                      className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#b90051] font-medium"
                     >
-                      <option value="" className="text-slate-500">
+                      <option value="" className="text-gray-400">
                         -- Pilih Barang & SN Unit (Tersedia) --
                       </option>
                       {availableItems.map((item) => (
@@ -256,7 +256,7 @@ export function HandoverFormClient({
                       <button
                         type="button"
                         onClick={() => handleRemoveItemRow(idx)}
-                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition border border-slate-800"
+                        className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition border border-gray-200"
                         title="Hapus Baris Ini"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -272,15 +272,15 @@ export function HandoverFormClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Diberikan Oleh (Officer) Dropdown */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-200 flex items-center space-x-1.5">
-                <UserCheck className="w-4 h-4 text-blue-400" />
+              <label className="block text-xs font-bold text-gray-900 flex items-center space-x-1.5">
+                <UserCheck className="w-4 h-4 text-[#b90051]" />
                 <span>Diberikan Oleh (Officer) *</span>
               </label>
               <select
                 value={giverName}
                 onChange={(e) => setGiverName(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition font-medium"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#b90051] transition font-medium"
               >
                 {officers.map((off) => (
                   <option key={off.id} value={off.name}>
@@ -292,7 +292,7 @@ export function HandoverFormClient({
 
             {/* Penerima (PIC) Text Input */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-200">
+              <label className="block text-xs font-bold text-gray-900">
                 Penerima (PIC) *
               </label>
               <input
@@ -301,7 +301,7 @@ export function HandoverFormClient({
                 onChange={(e) => setRecipientName(e.target.value)}
                 placeholder="Nama Lengkap Penerima (contoh: Donatus)"
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] transition"
               />
             </div>
           </div>
@@ -310,7 +310,7 @@ export function HandoverFormClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Catatan / Peruntukan (Remarks) */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300">
+              <label className="block text-xs font-semibold text-gray-700">
                 Catatan / Peruntukan (Remarks)
               </label>
               <input
@@ -318,36 +318,36 @@ export function HandoverFormClient({
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="Contoh: Untuk Pos 7"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] transition"
               />
             </div>
 
             {/* Lokasi Dokumen / Base */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300">
+              <label className="block text-xs font-semibold text-gray-700">
                 Lokasi Dokumen / Base
               </label>
               <input
                 type="text"
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 transition"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#b90051] transition"
               />
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="pt-6 border-t border-slate-800 flex items-center justify-end space-x-3">
+          <div className="pt-6 border-t border-gray-100 flex items-center justify-end space-x-3">
             <Link
-              href="/items"
-              className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+              href="/handovers"
+              className="px-5 py-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-semibold transition"
             >
               Batal
             </Link>
             <button
               type="submit"
               disabled={loading || availableItems.length === 0}
-              className="px-7 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="px-7 py-3 bg-[#b90051] hover:bg-[#a00045] text-white font-bold rounded-xl text-xs shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>{loading ? 'Memproses Dokumen...' : 'Proses & Cetak PDF Resmi'}</span>

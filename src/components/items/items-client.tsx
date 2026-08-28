@@ -219,31 +219,31 @@ export function ItemsClient({
     switch (status) {
       case 'TERSEDIA':
         return (
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-[#fae2ea] border border-[#f5b8cc] text-[#b90051]">
             TERSEDIA
           </span>
         );
       case 'TERPAKAI':
         return (
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400">
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-purple-50 border border-purple-200 text-purple-700">
             TERPAKAI
           </span>
         );
       case 'DIPINJAM':
         return (
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-400">
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700">
             DIPINJAM
           </span>
         );
       case 'RUSAK':
         return (
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400">
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-rose-700">
             RUSAK
           </span>
         );
       default:
         return (
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-gray-700">
             {status}
           </span>
         );
@@ -251,98 +251,98 @@ export function ItemsClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Inventaris Stok IT (SN)</h1>
-          <p className="text-xs text-slate-400">
-            Kelola stok otomatis per Kategori, Merk, & Lokasi Storage berbasis Unit Serial Number (SN)
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Inventaris Stok Ruangan IT</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            Kelola stok per Kategori, Merk, & Lokasi Storage
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 self-start sm:self-auto">
+        <div className="flex items-center space-x-3 self-start sm:self-auto">
           <Link
             href="/handovers/new"
-            className="px-4 py-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center space-x-2 cursor-pointer shadow-sm"
+            className="px-4 py-2.5 bg-[#fad2df] hover:bg-[#f8c0d3] text-[#b90051] font-semibold rounded-xl text-xs sm:text-sm transition flex items-center space-x-2 cursor-pointer shadow-sm"
           >
-            <Send className="w-4 h-4 text-blue-400" />
+            <Send className="w-4 h-4 text-[#b90051]" />
             <span>Form Serah Terima (PDF)</span>
           </Link>
 
           <Link
             href="/items/new"
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-lg shadow-blue-600/25 transition flex items-center space-x-2 cursor-pointer"
+            className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Tambah Unit (SN Baru)</span>
+            <span>Tambah Unit</span>
           </Link>
         </div>
       </div>
 
       {/* Tabs & Filters Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
         {/* Type Tabs & View Switcher */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-3 gap-3">
-          <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-4 gap-3">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setActiveTab('ALL')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
                 activeTab === 'ALL'
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-[#b90051] text-white shadow-sm'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Boxes className="w-4 h-4" />
+              <Boxes className="w-3.5 h-3.5" />
               <span>SEMUA INVENTARIS</span>
             </button>
 
             <button
               onClick={() => setActiveTab('DEVICE')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
                 activeTab === 'DEVICE'
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-[#b90051] text-white shadow-sm'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Monitor className="w-4 h-4" />
+              <Monitor className="w-3.5 h-3.5" />
               <span>PERANGKAT (DEVICE)</span>
             </button>
 
             <button
               onClick={() => setActiveTab('BARANG')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
                 activeTab === 'BARANG'
-                  ? 'bg-purple-600 text-white shadow'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-[#b90051] text-white shadow-sm'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              <Package className="w-4 h-4" />
-              <span>CONSUMABLES (BARANG)</span>
+              <Package className="w-3.5 h-3.5" />
+              <span>COMSUMABLES (BARANG)</span>
             </button>
           </div>
 
           {/* Mode Switcher Buttons */}
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 self-stretch sm:self-auto justify-center space-x-1">
+          <div className="flex bg-gray-100 p-1 rounded-xl self-stretch sm:self-auto justify-center space-x-1">
             <button
               type="button"
               onClick={() => setViewMode('GROUPED')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
                 viewMode === 'GROUPED'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-[#b90051] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Stok Agregasi (Kategori/Merk/Lokasi)</span>
+              <span>Stok (Kategori/Merk/Lokasi)</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('FLAT_SN')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
                 viewMode === 'FLAT_SN'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-[#b90051] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <QrCode className="w-3.5 h-3.5" />
@@ -355,23 +355,23 @@ export function ItemsClient({
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           {/* Search */}
           <div className="relative sm:col-span-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari SN, SKU, nama, merk..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] focus:ring-1 focus:ring-[#b90051]"
             />
           </div>
 
           {/* Category Filter */}
           <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-slate-500 shrink-0" />
+            <Filter className="w-4 h-4 text-gray-400 shrink-0" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
             >
               <option value="">Semua Kategori</option>
               {categories.map((c) => (
@@ -387,7 +387,7 @@ export function ItemsClient({
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
             >
               <option value="">Semua Lokasi Storage</option>
               {locations.map((l) => (
@@ -403,7 +403,7 @@ export function ItemsClient({
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
             >
               <option value="">Semua Status Unit</option>
               <option value="TERSEDIA">TERSEDIA (Available)</option>
@@ -417,102 +417,95 @@ export function ItemsClient({
 
       {/* Grouped Stock View Table */}
       {viewMode === 'GROUPED' ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  <th className="p-4 w-10"></th>
-                  <th className="p-4">Nama Barang / Model</th>
-                  <th className="p-4 whitespace-nowrap">Tipe</th>
-                  <th className="p-4 whitespace-nowrap">Kategori & Brand</th>
-                  <th className="p-4 whitespace-nowrap">Lokasi Storage</th>
-                  <th className="p-4 text-center whitespace-nowrap">Total Stok Unit (SN)</th>
-                  <th className="p-4 text-right whitespace-nowrap">Aksi</th>
+                <tr className="bg-[#b90051] text-white text-xs font-bold uppercase tracking-wider">
+                  <th className="py-3.5 pl-4 pr-2 w-10"></th>
+                  <th className="py-3.5 px-4">Nama Barang / Model</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Tipe</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Kategori & Brand</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Lokasi Storage</th>
+                  <th className="py-3.5 px-4 text-center whitespace-nowrap">Total Stok Unit (SN)</th>
+                  <th className="py-3.5 pr-4 pl-2 text-right whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-gray-100">
                 {groupedStockList.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-slate-500 text-sm">
+                    <td colSpan={7} className="p-12 text-center text-gray-400 text-sm">
                       Tidak ada data stok yang sesuai dengan filter pencarian.
                     </td>
                   </tr>
                 ) : (
                   groupedStockList.map((group) => {
                     const isExpanded = !!expandedGroups[group.key];
-                    const isDevice = group.type === 'DEVICE';
 
                     return (
                       <Fragment key={group.key}>
                         <tr
                           onClick={() => toggleGroupExpand(group.key)}
-                          className="hover:bg-slate-800/40 transition cursor-pointer select-none"
+                          className="hover:bg-[#fff5f8] transition cursor-pointer select-none"
                         >
-                          <td className="p-4 text-slate-500 w-10">
+                          <td className="py-4 pl-4 pr-2 text-gray-400 w-10">
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-blue-400" />
+                              <ChevronDown className="w-4 h-4 text-[#b90051]" />
                             ) : (
                               <ChevronRight className="w-4 h-4" />
                             )}
                           </td>
 
                           {/* Model Name */}
-                          <td className="p-4">
-                            <div className="font-semibold text-slate-100 text-sm flex items-center space-x-2">
-                              <span>{group.name}</span>
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-gray-900 text-sm">
+                              {group.name}
                             </div>
                           </td>
 
                           {/* Type */}
-                          <td className="p-4 whitespace-nowrap">
-                            <span
-                              className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
-                                isDevice
-                                  ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                                  : 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-                              }`}
-                            >
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-[#fae2ea] border border-[#f5b8cc] text-[#b90051] uppercase">
                               {group.type}
                             </span>
                           </td>
 
                           {/* Category & Brand */}
-                          <td className="p-4 whitespace-nowrap">
-                            <div className="text-xs font-medium text-slate-200">
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            <div className="text-xs font-semibold text-gray-900">
                               {group.category.name}
                             </div>
-                            <div className="text-[11px] text-slate-400">{group.brand.name}</div>
+                            <div className="text-[11px] text-blue-600 font-medium">{group.brand.name}</div>
                           </td>
 
                           {/* Location */}
-                          <td className="p-4 whitespace-nowrap">
-                            <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-medium">
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            <span className="text-xs bg-[#fae2ea] text-gray-700 px-3 py-1 rounded-lg border border-[#e8b5c4] font-medium">
                               {group.location.name}
                             </span>
                           </td>
 
                           {/* Total Stock Count Badge */}
-                          <td className="p-4 text-center whitespace-nowrap">
-                            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-slate-950 text-slate-100 border border-slate-700 font-mono text-sm font-bold shadow-inner">
-                              <span className="text-blue-400">{group.totalStock}</span>
+                          <td className="py-4 px-4 text-center whitespace-nowrap">
+                            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-[#fae2ea] text-[#b90051] border border-[#f5b8cc] font-mono text-xs font-bold">
+                              <span>{group.totalStock}</span>
                               <span
-                                className={`text-[10px] font-sans whitespace-nowrap ${
-                                  group.availableStock === 0 ? 'text-rose-400 font-semibold' : 'text-slate-400'
+                                className={`font-sans font-semibold ${
+                                  group.availableStock === 0 ? 'text-rose-600' : 'text-[#b90051]'
                                 }`}
                               >
-                                ({group.availableStock} Tersedia)
+                                ({group.availableStock > 0 ? `${group.availableStock} Tersedia` : 'Tidak Tersedia'})
                               </span>
                             </div>
                           </td>
 
                           {/* Action Buttons */}
-                          <td className="p-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                          <td className="py-4 pr-4 pl-2 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end space-x-2">
                               {/* + Tambah SN Button for specific product */}
                               <Link
                                 href={`/items/new?name=${encodeURIComponent(group.name)}&categoryId=${group.categoryId}&brandId=${group.brandId}&locationId=${group.locationId}`}
-                                className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow"
+                                className="px-3 py-1.5 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm"
                                 title={`Tambah unit SN baru untuk ${group.name}`}
                               >
                                 <Plus className="w-3.5 h-3.5" />
@@ -521,10 +514,9 @@ export function ItemsClient({
 
                               <button
                                 onClick={() => toggleGroupExpand(group.key)}
-                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition flex items-center space-x-1 whitespace-nowrap"
+                                className="px-3 py-1.5 bg-[#b90051] hover:bg-[#a00045] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 whitespace-nowrap shadow-sm"
                               >
-                                <QrCode className="w-3.5 h-3.5 text-blue-400" />
-                                <span>{isExpanded ? 'Sembunyikan SN' : `Lihat ${group.totalStock} SN`}</span>
+                                <span>{isExpanded ? 'Tutup' : 'Lihat'}</span>
                               </button>
                             </div>
                           </td>
@@ -532,11 +524,11 @@ export function ItemsClient({
 
                         {/* Expanded Serial Numbers Nested Row */}
                         {isExpanded && (
-                          <tr className="bg-slate-950/60">
-                            <td colSpan={7} className="p-4 border-t border-slate-800/80">
-                              <div className="space-y-3 pl-6 pr-2">
-                                <div className="flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                  <span className="flex items-center space-x-1.5 text-blue-400">
+                          <tr className="bg-[#fafbfc]">
+                            <td colSpan={7} className="p-4 sm:p-5 border-t border-gray-200">
+                              <div className="space-y-3 pl-4 pr-2">
+                                <div className="flex items-center justify-between text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                  <span className="flex items-center space-x-1.5 text-[#b90051]">
                                     <QrCode className="w-4 h-4" />
                                     <span>Daftar Serial Number Unit ({group.items.length} Registered SN)</span>
                                   </span>
@@ -551,54 +543,54 @@ export function ItemsClient({
                                         locationId: group.locationId,
                                       })
                                     }
-                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow"
+                                    className="px-3 py-1 bg-[#b90051] hover:bg-[#a00045] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-sm"
                                   >
                                     <Plus className="w-3.5 h-3.5" />
                                     <span>+ Tambah Unit SN ({group.name})</span>
                                   </button>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
                                   {group.items.map((item) => (
                                     <div
                                       key={item.id}
-                                      className="p-3 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg space-y-2 relative group shadow transition"
+                                      className="p-3.5 bg-white border border-gray-200 hover:border-[#f5b8cc] rounded-xl space-y-2 relative group shadow-sm transition"
                                     >
                                       <div className="flex items-center justify-between">
-                                        <span className="font-mono text-xs font-bold text-slate-100 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                                        <span className="font-mono text-xs font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
                                           SN: {item.serialNumber}
                                         </span>
                                         {getStatusBadge(item.status)}
                                       </div>
 
-                                      <div className="text-xs text-slate-400 flex items-center justify-between font-mono">
-                                        <span>SKU: {item.itemCode}</span>
-                                        <span className="text-[10px] text-slate-500">
+                                      <div className="text-xs text-gray-500 flex items-center justify-between font-mono">
+                                        <span>SKU: <strong className="text-blue-600">{item.itemCode}</strong></span>
+                                        <span className="text-[10px] text-gray-400">
                                           {new Date(item.createdAt).toLocaleDateString('id-ID')}
                                         </span>
                                       </div>
 
                                       {item.description && (
-                                        <p className="text-[11px] text-slate-400 truncate border-t border-slate-800/60 pt-1.5">
+                                        <p className="text-[11px] text-gray-500 truncate border-t border-gray-100 pt-1.5">
                                           {item.description}
                                         </p>
                                       )}
 
                                       {/* SN Action Buttons */}
-                                      <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-                                        <div className="flex items-center space-x-1">
-                                          {/* Serah Terima Barang IT - Active only if status is TERSEDIA */}
+                                      <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                                        <div className="flex items-center space-x-1.5">
+                                          {/* Serah Terima Barang IT */}
                                           {item.status === 'TERSEDIA' ? (
                                             <Link
                                               href={`/handovers/new?itemId=${item.id}`}
                                               title="Serah Terima Barang IT"
-                                              className="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer shadow-sm"
+                                              className="px-2.5 py-1 bg-[#fae2ea] hover:bg-[#f8c0d3] text-[#b90051] rounded-lg border border-[#f5b8cc] text-[11px] font-semibold transition flex items-center space-x-1 cursor-pointer shadow-sm"
                                             >
-                                              <Send className="w-3 h-3 text-blue-400" />
+                                              <Send className="w-3 h-3 text-[#b90051]" />
                                               <span>Serah</span>
                                             </Link>
                                           ) : (
-                                            <span className="text-[10px] font-medium text-slate-500 italic px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
+                                            <span className="text-[10px] font-medium text-gray-400 italic px-2 py-0.5 rounded bg-gray-50 border border-gray-200">
                                               {item.status === 'TERPAKAI'
                                                 ? 'Sudah Diserahkan'
                                                 : item.status === 'DIPINJAM'
@@ -614,7 +606,7 @@ export function ItemsClient({
                                               setOpnameItem(item);
                                               setIsOpnameModalOpen(true);
                                             }}
-                                            className="px-2 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded border border-amber-500/30 text-[11px] font-medium transition flex items-center space-x-1"
+                                            className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg border border-amber-200 text-[11px] font-medium transition flex items-center space-x-1"
                                           >
                                             <ClipboardCheck className="w-3 h-3" />
                                             <span>Audit</span>
@@ -622,11 +614,10 @@ export function ItemsClient({
                                         </div>
 
                                         <div className="flex items-center space-x-1">
-                                          {/* Edit Modal trigger - Opens ItemModal directly without needing Enter or page reload */}
                                           <button
                                             onClick={() => handleOpenEditModal(item)}
                                             title="Edit SN Unit"
-                                            className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition"
+                                            className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition"
                                           >
                                             <Pencil className="w-3.5 h-3.5" />
                                           </button>
@@ -639,7 +630,7 @@ export function ItemsClient({
                                                 sn: item.serialNumber,
                                               })
                                             }
-                                            className="p-1 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded transition"
+                                            className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition"
                                           >
                                             <Trash2 className="w-3.5 h-3.5" />
                                           </button>
@@ -662,11 +653,11 @@ export function ItemsClient({
         </div>
       ) : (
         /* Flat Serial Number Table View */
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="bg-slate-950/80 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-[#b90051] text-white text-xs font-bold uppercase tracking-wider">
                   <th className="p-4 whitespace-nowrap">Serial Number (SN)</th>
                   <th className="p-4 whitespace-nowrap">Kode SKU & Model</th>
                   <th className="p-4 whitespace-nowrap">Kategori & Brand</th>
@@ -675,40 +666,40 @@ export function ItemsClient({
                   <th className="p-4 text-right whitespace-nowrap">Aksi Unit</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-gray-100">
                 {filteredItems.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-12 text-center text-slate-500 text-sm">
+                    <td colSpan={6} className="p-12 text-center text-gray-400 text-sm">
                       Tidak ada Serial Number (SN) yang cocok.
                     </td>
                   </tr>
                 ) : (
                   filteredItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-800/40 transition">
+                    <tr key={item.id} className="hover:bg-[#fff5f8] transition">
                       {/* Serial Number */}
-                      <td className="p-4 font-mono font-bold text-slate-100 whitespace-nowrap">
-                        <span className="bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
+                      <td className="p-4 font-mono font-bold text-gray-900 whitespace-nowrap">
+                        <span className="bg-gray-100 px-2.5 py-1 rounded border border-gray-200">
                           {item.serialNumber}
                         </span>
                       </td>
 
                       {/* Item Code & Model Name */}
                       <td className="p-4">
-                        <div className="font-semibold text-slate-100">{item.name}</div>
-                        <div className="text-xs font-mono text-blue-400">SKU: {item.itemCode}</div>
+                        <div className="font-semibold text-gray-900">{item.name}</div>
+                        <div className="text-xs font-mono text-blue-600 font-medium">SKU: {item.itemCode}</div>
                       </td>
 
                       {/* Category & Brand */}
                       <td className="p-4 whitespace-nowrap">
-                        <div className="text-xs font-medium text-slate-200">
+                        <div className="text-xs font-medium text-gray-900">
                           {item.category.name} ({item.type})
                         </div>
-                        <div className="text-[11px] text-slate-400">{item.brand.name}</div>
+                        <div className="text-[11px] text-gray-500">{item.brand.name}</div>
                       </td>
 
                       {/* Location */}
                       <td className="p-4 whitespace-nowrap">
-                        <span className="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700">
+                        <span className="text-xs bg-[#fae2ea] text-gray-700 px-2.5 py-1 rounded border border-[#e8b5c4]">
                           {item.location.name}
                         </span>
                       </td>
@@ -720,17 +711,17 @@ export function ItemsClient({
 
                       {/* Actions */}
                       <td className="p-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end space-x-1">
+                        <div className="flex items-center justify-end space-x-1.5">
                           {item.status === 'TERSEDIA' ? (
                             <Link
                               href={`/handovers/new?itemId=${item.id}`}
                               title="Serah Terima Barang IT"
-                              className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded border border-blue-500/20 transition cursor-pointer"
+                              className="p-1.5 text-[#b90051] hover:bg-[#fae2ea] rounded-lg border border-[#f5b8cc] transition cursor-pointer"
                             >
                               <Send className="w-3.5 h-3.5" />
                             </Link>
                           ) : (
-                            <span className="text-[10px] text-slate-500 italic font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800">
+                            <span className="text-[10px] text-gray-400 italic font-mono px-2 py-0.5 rounded bg-gray-50 border border-gray-200">
                               {item.status === 'TERPAKAI'
                                 ? 'Diserahkan'
                                 : item.status === 'DIPINJAM'
@@ -745,7 +736,7 @@ export function ItemsClient({
                               setOpnameItem(item);
                               setIsOpnameModalOpen(true);
                             }}
-                            className="p-1.5 text-amber-400 hover:bg-amber-500/10 rounded border border-amber-500/20 transition"
+                            className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg border border-amber-200 transition"
                           >
                             <ClipboardCheck className="w-3.5 h-3.5" />
                           </button>
@@ -754,7 +745,7 @@ export function ItemsClient({
                           <button
                             onClick={() => handleOpenEditModal(item)}
                             title="Edit SN Unit"
-                            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition"
+                            className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -768,7 +759,7 @@ export function ItemsClient({
                                 sn: item.serialNumber,
                               })
                             }
-                            className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded transition"
+                            className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

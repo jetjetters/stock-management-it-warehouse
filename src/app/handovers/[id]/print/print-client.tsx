@@ -44,21 +44,21 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-8 print:p-0 print:bg-white print:text-black">
+    <div className="min-h-screen bg-[#f8fafc] text-gray-900 p-4 sm:p-8 print:p-0 print:bg-white print:text-black">
       {/* Top Action Bar - Hidden in Print */}
       <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
         <Link
           href="/handovers"
-          className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl transition"
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 px-3.5 py-2 rounded-xl transition shadow-sm"
         >
-          <ArrowLeft className="w-4 h-4 text-blue-400" />
+          <ArrowLeft className="w-4 h-4 text-[#b90051]" />
           <span>Kembali ke Daftar Surat</span>
         </Link>
 
         <button
           type="button"
           onClick={handlePrint}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center space-x-2 cursor-pointer"
+          className="px-5 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-bold rounded-xl text-xs shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 cursor-pointer"
         >
           <Printer className="w-4 h-4" />
           <span>Cetak PDF / Print Dokumen</span>

@@ -74,23 +74,23 @@ export function BrandModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">
+            <div className="p-2.5 bg-[#fae2ea] text-[#b90051] rounded-xl border border-[#f5b8cc]">
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-100">
+              <h2 className="text-lg font-bold text-gray-900">
                 {editBrand ? 'Edit Master Merk' : 'Tambah Master Merk Baru'}
               </h2>
-              <p className="text-xs text-slate-400">Atur merk / produsen barang IT</p>
+              <p className="text-xs text-gray-500">Atur merk / produsen barang IT</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -98,14 +98,14 @@ export function BrandModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg text-sm">
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-medium">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Nama Merk / Brand <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">
+              Nama Merk / Brand <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -113,18 +113,18 @@ export function BrandModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Logitech, Epson, Dell, Belden"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] focus:ring-1 focus:ring-[#b90051]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Kategori Terkait <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">
+              Kategori Terkait <span className="text-rose-500">*</span>
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#b90051]"
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -134,18 +134,18 @@ export function BrandModal({
             </select>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex justify-end space-x-3">
+          <div className="pt-4 border-t border-gray-100 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition"
+              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm hover:bg-gray-50 font-semibold transition"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition disabled:opacity-50"
+              className="px-5 py-2 bg-[#b90051] hover:bg-[#a00045] text-white rounded-xl text-sm font-semibold shadow-md shadow-[#b90051]/20 transition disabled:opacity-50 cursor-pointer"
             >
               {loading ? 'Menyimpan...' : 'Simpan Merk'}
             </button>

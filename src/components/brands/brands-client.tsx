@@ -43,11 +43,12 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Master Merk / Brand</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Merk / Brand</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
             Daftar produsen & merk terintegrasi dengan kategori barang
           </p>
         </div>
@@ -57,27 +58,28 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
             setEditBrand(null);
             setIsModalOpen(true);
           }}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-sm shadow-lg shadow-blue-600/20 transition flex items-center space-x-2"
+          className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-semibold rounded-xl text-sm shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Merk Baru</span>
         </button>
       </div>
 
+      {/* Brands Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {initialBrands.map((brand) => (
           <div
             key={brand.id}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3 hover:border-slate-700 transition shadow-lg"
+            className="bg-[#fce7ee] border border-[#f5b8cc] rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
+                <div className="w-9 h-9 rounded-xl bg-[#f5b8cc]/60 text-[#b90051] flex items-center justify-center shrink-0">
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-sm">{brand.name}</h3>
-                  <span className="text-xs text-slate-400">{brand.category.name}</span>
+                  <h3 className="font-bold text-gray-900 text-sm">{brand.name}</h3>
+                  <span className="text-xs text-[#b90051] font-semibold block">{brand.category.name}</span>
                 </div>
               </div>
 
@@ -87,22 +89,24 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                     setEditBrand(brand);
                     setIsModalOpen(true);
                   }}
-                  className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
+                  title="Edit Merk"
+                  className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setDeleteTarget({ id: brand.id, name: brand.name })}
-                  className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition"
+                  title="Hapus Merk"
+                  className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between">
+            <div className="pt-2.5 border-t border-[#f0a8bf]/70 text-[11px] text-gray-600 flex justify-between items-center">
               <span>Digunakan oleh:</span>
-              <strong className="text-slate-300 font-mono">{brand._count.items} Barang</strong>
+              <strong className="text-gray-900 font-mono font-bold">{brand._count.items} Barang</strong>
             </div>
           </div>
         ))}

@@ -4,19 +4,35 @@ import {
   Boxes,
   Monitor,
   Package,
-  CheckCircle,
+  CheckCircle2,
   AlertTriangle,
   History,
-  ArrowUpRight,
-  ArrowDownRight,
   Plus,
   ArrowRight,
-  BellRing,
+  Bell,
   ExternalLink,
-  QrCode,
+  User,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Wrench,
 } from 'lucide-react';
 
 export const revalidate = 0;
+
+function formatRelativeTime(date: Date | string): string {
+  const now = new Date();
+  const past = new Date(date);
+  const diffMs = now.getTime() - past.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMinutes < 1) return 'Baru saja';
+  if (diffMinutes < 60) return `${diffMinutes} mnt lalu`;
+  if (diffHours < 24) return `${diffHours} jam lalu`;
+  if (diffDays < 30) return `${diffDays} hari lalu`;
+  return past.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+}
 
 export default async function DashboardPage() {
   const [
@@ -24,6 +40,7 @@ export default async function DashboardPage() {
     devicesCount,
     barangCount,
     availableCount,
+    inUseCount,
     damagedCount,
     recentLogs,
     recentUnits,
@@ -32,6 +49,7 @@ export default async function DashboardPage() {
     prisma.item.count({ where: { type: 'DEVICE' } }),
     prisma.item.count({ where: { type: 'BARANG' } }),
     prisma.item.count({ where: { status: 'TERSEDIA' } }),
+    prisma.item.count({ where: { status: { in: ['TERPAKAI', 'DIPINJAM'] } } }),
     prisma.item.count({ where: { status: 'RUSAK' } }),
     prisma.stockLog.findMany({
       take: 6,
@@ -53,155 +71,151 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div className="space-y-8">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-slate-900 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden">
-        <div className="relative z-10 max-w-2xl space-y-2">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
-            <QrCode className="w-3.5 h-3.5" />
-            <span>Control Center & Stock Audit SN</span>
-          </div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-            IT Warehouse Management & Stock Taking (SN)
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Hero Banner with Pertamina Crimson / Rose Gradient */}
+      <div className="bg-gradient-to-r from-[#d84d7d] via-[#bd245a] to-[#a80e4b] rounded-3xl p-6 sm:p-8 text-white shadow-sm relative overflow-hidden">
+        <div className="relative z-10 max-w-3xl space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            IT Warehouse Management & Stock Taking
           </h1>
-          <p className="text-sm text-slate-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-white/90 leading-relaxed max-w-2xl">
             Sistem pengawasan inventaris berbasis Serial Number (SN). Pengelompokan stok otomatis per Kategori, Merk, dan Lokasi dengan mutasi real-time & audit trail lengkap.
           </p>
         </div>
       </div>
 
-      {/* Analytics Metric Cards (5 Grid Columns) */}
+      {/* 5 Analytics Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Total Unit SN */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 relative overflow-hidden shadow-lg">
+        {/* TOTAL ASET */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              Total Unit SN
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              TOTAL ASET
             </span>
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
-              <Boxes className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-slate-100">{totalSNUnits}</span>
-            <span className="text-[11px] text-slate-500">Physical Units</span>
-          </div>
-        </div>
-
-        {/* Devices */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">
-              Perangkat (Devices)
-            </span>
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
               <Monitor className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-blue-400">{devicesCount}</span>
-            <span className="text-[11px] text-slate-500">Unit SN Aset</span>
-          </div>
-        </div>
-
-        {/* Consumables */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider">
-              Habis Pakai (Barang)
-            </span>
-            <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
-              <Package className="w-4 h-4" />
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold text-gray-900 font-mono">{totalSNUnits.toLocaleString()}</div>
+            <div className="text-xs text-gray-400 flex items-center space-x-1">
+              <span className="text-emerald-600 font-medium">↗ Terdaftar</span>
+              <span>di gudang</span>
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-purple-400">{barangCount}</span>
-            <span className="text-[11px] text-slate-500">Consumables</span>
-          </div>
         </div>
 
-        {/* Unit Tersedia (Available) */}
-        <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-4 space-y-3 shadow-lg">
+        {/* ASET TERSEDIA (Featured Solid Magenta Card) */}
+        <div className="bg-[#b90051] text-white border border-[#a00045] rounded-2xl p-5 space-y-3 shadow-md shadow-[#b90051]/20 hover:shadow-lg transition">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
-              Unit Tersedia
+            <span className="text-[11px] font-bold text-white/80 uppercase tracking-wider">
+              ASET TERSEDIA
             </span>
-            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
-              <CheckCircle className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-full bg-white/20 text-white flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-emerald-400">{availableCount}</span>
-            <span className="text-[11px] text-slate-400">Available</span>
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold text-white font-mono">{availableCount.toLocaleString()}</div>
+            <div className="text-xs text-white/90">Siap di ruang IT</div>
           </div>
         </div>
 
-        {/* Unit Rusak / Perlu Perhatian */}
-        <div className="bg-slate-900 border border-rose-500/40 rounded-xl p-4 space-y-3 shadow-xl bg-rose-950/10">
+        {/* ASET DIPAKAI */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">
-              Unit Rusak / Defect
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              ASET DIPAKAI
             </span>
-            <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/30">
+            <div className="w-9 h-9 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+              <User className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold text-gray-900 font-mono">{inUseCount.toLocaleString()}</div>
+            <div className="text-xs text-gray-400">Dipinjam Oleh Karyawan</div>
+          </div>
+        </div>
+
+        {/* ASET RUSAK */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              ASET RUSAK
+            </span>
+            <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-mono text-rose-400">{damagedCount}</span>
-            <span className="text-[11px] font-semibold text-rose-400/90">Perlu Service</span>
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold text-gray-900 font-mono">{damagedCount.toLocaleString()}</div>
+            <div className="text-xs text-rose-500 font-medium">Menunggu Perbaikan</div>
+          </div>
+        </div>
+
+        {/* HABIS PAKAI (BARANG) */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow transition">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              HABIS PAKAI (BARANG)
+            </span>
+            <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Package className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold text-gray-900 font-mono">{barangCount.toLocaleString()}</div>
+            <div className="text-xs text-emerald-600 font-medium">Consumables</div>
           </div>
         </div>
       </div>
 
       {/* Quick Action Shortcuts */}
-      <div className="flex items-center justify-between pt-2">
-        <h2 className="text-lg font-bold text-slate-100 flex items-center space-x-2">
-          <span>Tindakan & Pengawasan</span>
-        </h2>
-        <div className="flex space-x-3">
-          <Link
-            href="/items"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-blue-600/20 transition flex items-center space-x-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Kelola Inventaris SN</span>
-          </Link>
-          <Link
-            href="/logs"
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg transition flex items-center space-x-2"
-          >
-            <History className="w-4 h-4 text-blue-400" />
-            <span>Jejak Audit</span>
-          </Link>
-        </div>
+      <div className="flex items-center justify-end space-x-3 pt-2">
+        <Link
+          href="/items"
+          className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white text-sm font-semibold rounded-xl shadow-sm shadow-[#b90051]/20 transition flex items-center space-x-2"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Kelola Inventaris SN</span>
+        </Link>
+        <Link
+          href="/logs"
+          className="px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-sm font-semibold rounded-xl transition flex items-center space-x-2 shadow-sm"
+        >
+          <History className="w-4 h-4 text-[#b90051]" />
+          <span>History</span>
+        </Link>
       </div>
 
-      {/* Reminder Panel & Recent Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Unit Registrasi Terbaru */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl lg:col-span-1 flex flex-col">
-          <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+      {/* Bottom Grid: 2 Columns (Terbaru & Aktivitas Terakhir) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: "Terbaru" Card (5 cols on lg) */}
+        <div className="lg:col-span-5 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          {/* Header Bar Solid Magenta */}
+          <div className="p-4 bg-[#b90051] text-white flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
-              <div className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
-                <BellRing className="w-4 h-4" />
+              <div className="p-1.5 bg-white/20 rounded-lg text-white">
+                <Bell className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-100 text-sm">Registrasi SN Terbaru</h3>
-                <p className="text-[11px] text-slate-400">Daftar unit SN terdaftar terbaru</p>
+                <h3 className="font-bold text-white text-sm">Terbaru</h3>
+                <p className="text-[11px] text-white/80">Daftar unit terdaftar terbaru</p>
               </div>
             </div>
             <Link
               href="/items"
-              className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1 font-semibold"
+              className="text-xs font-semibold text-white/90 hover:text-white flex items-center space-x-1 bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-lg transition"
             >
-              <span>Semua SN</span>
+              <span>Semua</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
           </div>
 
-          <div className="divide-y divide-slate-800/80 flex-1">
+          {/* List of Recent Items */}
+          <div className="divide-y divide-gray-100 flex-1 p-2">
             {recentUnits.length === 0 ? (
-              <div className="p-6 text-center text-slate-500 text-xs">
+              <div className="p-8 text-center text-gray-400 text-xs">
                 Belum ada unit Serial Number terdaftar.
               </div>
             ) : (
@@ -209,26 +223,26 @@ export default async function DashboardPage() {
                 return (
                   <div
                     key={item.id}
-                    className="p-3.5 hover:bg-slate-800/40 transition flex items-center justify-between"
+                    className="p-3 hover:bg-gray-50 rounded-xl transition flex items-center justify-between gap-2"
                   >
-                    <div className="space-y-1 pr-2">
+                    <div className="space-y-1 min-w-0 flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-[11px] font-bold text-blue-400">
+                        <span className="font-mono text-xs font-bold text-blue-600 shrink-0">
                           {item.itemCode}
                         </span>
-                        <span className="text-xs font-semibold text-slate-200 truncate max-w-[140px]">
+                        <span className="text-xs font-semibold text-gray-900 truncate">
                           {item.name}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 flex items-center space-x-1.5 font-mono">
-                        <span className="text-slate-300 font-bold">SN: {item.serialNumber}</span>
+                      <div className="text-[11px] text-gray-500 flex items-center space-x-1.5 font-mono truncate">
+                        <span className="text-gray-700 font-semibold">SN: {item.serialNumber}</span>
                         <span>•</span>
-                        <span className="text-slate-500">{item.location.name}</span>
+                        <span className="text-gray-400">{item.location?.name || '-'}</span>
                       </div>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                    <div className="shrink-0">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono bg-[#fae2ea] border border-[#f5b8cc] text-[#b90051]">
                         {item.status}
                       </span>
                     </div>
@@ -239,88 +253,96 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Stock Audit Feed (Right 2 cols on large screens) */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl lg:col-span-2 flex flex-col">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <History className="w-5 h-5 text-blue-400" />
-              <h3 className="font-bold text-slate-200 text-base">Riwayat Mutasi & Audit Terbaru</h3>
-            </div>
+        {/* Right Column: "Aktivitas Terakhir" Card (7 cols on lg) */}
+        <div className="lg:col-span-7 bg-white border border-gray-200 rounded-2xl shadow-sm p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-gray-900 text-base">Aktivitas Terakhir</h3>
             <Link
               href="/logs"
-              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center space-x-1"
+              className="text-xs font-semibold text-[#b90051] bg-[#fae2ea] hover:bg-[#f8c0d3] px-3.5 py-1.5 rounded-full transition flex items-center space-x-1"
             >
-              <span>Lihat Semua Audit Trail</span>
+              <span>Lihat Semua</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="divide-y divide-slate-800/80 flex-1">
-            {recentLogs.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-sm">
-                Belum ada riwayat mutasi stok recorded.
-              </div>
-            ) : (
-              recentLogs.map((log: any) => {
-                const formattedDate = new Date(log.createdAt).toLocaleDateString('id-ID', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                });
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-gray-200 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  <th className="pb-3 pr-4">ACTIVITY</th>
+                  <th className="pb-3 px-4">ACTION</th>
+                  <th className="pb-3 px-4">ASSET</th>
+                  <th className="pb-3 pl-4 text-right">TIME</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-gray-400 text-xs">
+                      Belum ada riwayat mutasi recorded.
+                    </td>
+                  </tr>
+                ) : (
+                  recentLogs.map((log: any) => {
+                    const isPositive = log.mutation > 0;
+                    const isDamage = log.type === 'ADJUSTMENT' && log.notes?.toLowerCase().includes('rusak');
 
-                const isPositive = log.mutation > 0;
+                    // Determine activity label (Pencatatan / Serah / etc.)
+                    const activityName = log.notes?.toLowerCase().startsWith('serah')
+                      ? 'Serah'
+                      : log.notes?.toLowerCase().startsWith('pencatatan') || log.notes?.toLowerCase().startsWith('registrasi')
+                      ? 'Pencatatan'
+                      : log.notes?.split(' ')[0] || 'Pencatatan';
 
-                return (
-                  <div
-                    key={log.id}
-                    className="p-4 hover:bg-slate-800/40 transition flex items-center justify-between"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={`p-2 rounded-lg border ${
-                          isPositive
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                            : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                        }`}
-                      >
-                        {isPositive ? (
-                          <ArrowUpRight className="w-4 h-4" />
-                        ) : (
-                          <ArrowDownRight className="w-4 h-4" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-mono text-xs font-bold text-blue-400">
-                            {log.item.itemCode}
+                    const relativeTime = formatRelativeTime(log.createdAt);
+
+                    return (
+                      <tr key={log.id} className="hover:bg-gray-50 transition">
+                        {/* ACTIVITY */}
+                        <td className="py-3.5 pr-4 whitespace-nowrap">
+                          <span className="font-semibold text-xs text-gray-900">
+                            {activityName}
                           </span>
-                          <span className="text-xs font-semibold text-slate-300">
+                        </td>
+
+                        {/* ACTION */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          {isDamage ? (
+                            <span className="inline-flex items-center space-x-1 text-xs font-semibold text-rose-600">
+                              <Wrench className="w-3.5 h-3.5" />
+                              <span>Melaporkan Rusak</span>
+                            </span>
+                          ) : isPositive ? (
+                            <span className="inline-flex items-center space-x-1 text-xs font-semibold text-gray-600">
+                              <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Mengembalikan</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center space-x-1 text-xs font-semibold text-[#b90051]">
+                              <ArrowUpRight className="w-3.5 h-3.5" />
+                              <span>Meminjam</span>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* ASSET */}
+                        <td className="py-3.5 px-4">
+                          <div className="text-xs font-medium text-gray-800 max-w-[180px] truncate">
                             {log.item.name}
-                          </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
-                            {log.location.name}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-0.5">{log.notes}</p>
-                      </div>
-                    </div>
+                          </div>
+                        </td>
 
-                    <div className="text-right">
-                      <span
-                        className={`font-mono text-sm font-bold ${
-                          isPositive ? 'text-emerald-400' : 'text-rose-400'
-                        }`}
-                      >
-                        {isPositive ? `+${log.mutation}` : log.mutation}
-                      </span>
-                      <div className="text-[11px] text-slate-500">{formattedDate}</div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
+                        {/* TIME */}
+                        <td className="py-3.5 pl-4 text-right whitespace-nowrap text-xs text-gray-400">
+                          {relativeTime}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
