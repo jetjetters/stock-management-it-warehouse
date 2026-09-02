@@ -45,6 +45,7 @@ type ItemFormProps = {
     brandId: string;
     locationId: string;
     status: string;
+    ownershipStatus?: string | null;
     description?: string | null;
   } | null;
 };
@@ -73,6 +74,9 @@ export function ItemForm({
   );
 
   const [status, setStatus] = useState(editItem?.status || 'TERSEDIA');
+  const [ownershipStatus, setOwnershipStatus] = useState(
+    editItem?.ownershipStatus || 'MILIK_IT'
+  );
   const [description, setDescription] = useState(editItem?.description || '');
   const [skuPreview, setSkuPreview] = useState(editItem?.itemCode || '');
 
@@ -81,6 +85,9 @@ export function ItemForm({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const selectedCategoryObj = categories.find((c) => c.id === categoryId);
+  const isDevice = selectedCategoryObj?.type === 'DEVICE';
 
   useEffect(() => {
     setBrandsList(initialBrands);
@@ -157,6 +164,7 @@ export function ItemForm({
           brandId,
           locationId,
           status,
+          ownershipStatus: isDevice ? ownershipStatus : undefined,
           description,
         });
         router.push('/items?success=' + encodeURIComponent(`Unit SN ${cleanSns[0]} berhasil diperbarui.`));
@@ -168,6 +176,7 @@ export function ItemForm({
           locationId,
           serialNumberInput: cleanSns.join('\n'),
           status,
+          ownershipStatus: isDevice ? ownershipStatus : undefined,
           description,
         });
         router.push(
@@ -366,6 +375,67 @@ export function ItemForm({
                 ))}
               </select>
             </div>
+
+            {/* Status Kepemilikan (Khusus Jenis Perangkat / DEVICE) */}
+            {isDevice && (
+              <div className="md:col-span-2 p-4 bg-[#fff8fa] border border-[#f5b8cc] rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-800 flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-[#b90051]"></span>
+                    <span>Status Kepemilikan Perangkat <span className="text-rose-500">*</span></span>
+                  </label>
+                  <span className="text-[10px] uppercase font-bold text-[#b90051] bg-[#fae2ea] px-2.5 py-0.5 rounded-full border border-[#f5b8cc]">
+                    Khusus Device
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Option 1: Milik IT */}
+                  <button
+                    type="button"
+                    onClick={() => setOwnershipStatus('MILIK_IT')}
+                    className={`p-3.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                      ownershipStatus === 'MILIK_IT'
+                        ? 'border-[#b90051] bg-white shadow-sm ring-2 ring-[#b90051]/20'
+                        : 'border-gray-200 bg-white/70 hover:bg-white text-gray-600'
+                    }`}
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        <span className="text-xs font-bold text-gray-900">Milik IT</span>
+                      </div>
+                      <p className="text-[11px] text-gray-500">Aset inventaris internal milik IT / Kantor</p>
+                    </div>
+                    {ownershipStatus === 'MILIK_IT' && (
+                      <CheckCircle2 className="w-4 h-4 text-[#b90051] shrink-0" />
+                    )}
+                  </button>
+
+                  {/* Option 2: Sewa */}
+                  <button
+                    type="button"
+                    onClick={() => setOwnershipStatus('SEWA')}
+                    className={`p-3.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                      ownershipStatus === 'SEWA'
+                        ? 'border-[#b90051] bg-white shadow-sm ring-2 ring-[#b90051]/20'
+                        : 'border-gray-200 bg-white/70 hover:bg-white text-gray-600'
+                    }`}
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                        <span className="text-xs font-bold text-gray-900">Sewa (Rental)</span>
+                      </div>
+                      <p className="text-[11px] text-gray-500">Perangkat vendor sewa operasional</p>
+                    </div>
+                    {ownershipStatus === 'SEWA' && (
+                      <CheckCircle2 className="w-4 h-4 text-[#b90051] shrink-0" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Location */}
             <div>

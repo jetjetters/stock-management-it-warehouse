@@ -47,6 +47,7 @@ type ItemModalProps = {
     brandId: string;
     locationId: string;
     status: string;
+    ownershipStatus?: string | null;
     description?: string | null;
   } | null;
   onSuccess: (msg?: string) => void;
@@ -70,6 +71,7 @@ export function ItemModal({
   const [locationId, setLocationId] = useState('');
   const [serialNumberInput, setSerialNumberInput] = useState('');
   const [status, setStatus] = useState('TERSEDIA');
+  const [ownershipStatus, setOwnershipStatus] = useState('MILIK_IT');
   const [description, setDescription] = useState('');
   const [skuPreview, setSkuPreview] = useState('');
 
@@ -78,6 +80,9 @@ export function ItemModal({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const selectedCategoryObj = categories.find((c) => c.id === categoryId);
+  const isDevice = selectedCategoryObj?.type === 'DEVICE';
 
   useEffect(() => {
     setBrandsList(initialBrands);
@@ -91,6 +96,7 @@ export function ItemModal({
       setLocationId(editItem.locationId);
       setSerialNumberInput(editItem.serialNumber);
       setStatus(editItem.status || 'TERSEDIA');
+      setOwnershipStatus(editItem.ownershipStatus || 'MILIK_IT');
       setDescription(editItem.description || '');
       setSkuPreview(editItem.itemCode);
     } else if (presetItem) {
@@ -100,6 +106,7 @@ export function ItemModal({
       setLocationId(presetItem.locationId);
       setSerialNumberInput('');
       setStatus('TERSEDIA');
+      setOwnershipStatus('MILIK_IT');
       setDescription('');
       setSkuPreview('');
     } else {
@@ -109,6 +116,7 @@ export function ItemModal({
       setLocationId(locations[0]?.id || '');
       setSerialNumberInput('');
       setStatus('TERSEDIA');
+      setOwnershipStatus('MILIK_IT');
       setDescription('');
       setSkuPreview('');
     }
@@ -167,6 +175,7 @@ export function ItemModal({
           brandId,
           locationId,
           status,
+          ownershipStatus: isDevice ? ownershipStatus : undefined,
           description,
         });
         onSuccess(`Unit SN (${serialNumberInput.trim()}) berhasil diperbarui.`);
@@ -178,6 +187,7 @@ export function ItemModal({
           locationId,
           serialNumberInput,
           status,
+          ownershipStatus: isDevice ? ownershipStatus : undefined,
           description,
         });
         onSuccess(
@@ -357,6 +367,55 @@ export function ItemModal({
               </select>
             </div>
           </div>
+
+          {/* Status Kepemilikan (Khusus Perangkat / DEVICE) */}
+          {isDevice && (
+            <div className="p-3 bg-[#fff8fa] border border-[#f5b8cc] rounded-xl space-y-2">
+              <label className="text-xs font-bold text-gray-800 flex items-center justify-between">
+                <span>Status Kepemilikan Perangkat <span className="text-rose-500">*</span></span>
+                <span className="text-[10px] uppercase font-bold text-[#b90051] bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
+                  Khusus Device
+                </span>
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOwnershipStatus('MILIK_IT')}
+                  className={`p-2.5 rounded-lg border text-left transition flex items-center justify-between cursor-pointer ${
+                    ownershipStatus === 'MILIK_IT'
+                      ? 'border-[#b90051] bg-white shadow-xs ring-1 ring-[#b90051]'
+                      : 'border-gray-200 bg-white/60 hover:bg-white text-gray-600'
+                  }`}
+                >
+                  <div className="flex items-center space-x-1.5">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span className="text-xs font-bold text-gray-900">Milik IT</span>
+                  </div>
+                  {ownershipStatus === 'MILIK_IT' && (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#b90051]" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setOwnershipStatus('SEWA')}
+                  className={`p-2.5 rounded-lg border text-left transition flex items-center justify-between cursor-pointer ${
+                    ownershipStatus === 'SEWA'
+                      ? 'border-[#b90051] bg-white shadow-xs ring-1 ring-[#b90051]'
+                      : 'border-gray-200 bg-white/60 hover:bg-white text-gray-600'
+                  }`}
+                >
+                  <div className="flex items-center space-x-1.5">
+                    <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                    <span className="text-xs font-bold text-gray-900">Sewa</span>
+                  </div>
+                  {ownershipStatus === 'SEWA' && (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#b90051]" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Location & Status */}
           <div className="grid grid-cols-2 gap-4">

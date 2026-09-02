@@ -36,6 +36,7 @@ type ItemType = {
   type: ItemCategoryType;
   description?: string | null;
   status: string;
+  ownershipStatus?: string | null;
   categoryId: string;
   brandId: string;
   locationId: string;
@@ -85,6 +86,7 @@ export function ItemsClient({
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedOwnership, setSelectedOwnership] = useState('');
 
   // Expanded Groups in Grouped View
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -140,6 +142,11 @@ export function ItemsClient({
   const filteredItems = initialItems.filter((item) => {
     // Type tab filter
     if (activeTab !== 'ALL' && item.type !== activeTab) return false;
+
+    // Ownership status filter (applied when viewing devices or filter selected)
+    if (selectedOwnership && item.ownershipStatus !== selectedOwnership) {
+      return false;
+    }
 
     // Search query (SN, SKU, Name, Brand, Description)
     if (search) {
@@ -213,6 +220,56 @@ export function ItemsClient({
       setSuccessMsg(`Unit SN ${deleteTarget.sn} berhasil dihapus dari sistem.`);
       router.refresh();
     }
+  };
+
+  const getOwnershipBadge = (ownershipStatus?: string | null) => {
+    if (!ownershipStatus) return null;
+    if (ownershipStatus === 'SEWA') {
+      return (
+        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-700 inline-flex items-center space-x-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span>Sewa</span>
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 inline-flex items-center space-x-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>Milik IT</span>
+      </span>
+    );
+  };
+
+  const getGroupOwnershipBadge = (items: ItemType[]) => {
+    const sewaCount = items.filter((i) => i.ownershipStatus === 'SEWA').length;
+    const milikCount = items.filter((i) => i.ownershipStatus === 'MILIK_IT' || (!i.ownershipStatus && i.type === 'DEVICE')).length;
+
+    if (sewaCount > 0 && milikCount > 0) {
+      return (
+        <div className="flex flex-wrap gap-1">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700">
+            {milikCount} Milik IT
+          </span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-700">
+            {sewaCount} Sewa
+          </span>
+        </div>
+      );
+    }
+    if (sewaCount > 0) {
+      return (
+        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-700 inline-flex items-center space-x-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span>Sewa ({sewaCount})</span>
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 inline-flex items-center space-x-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>Milik IT ({milikCount})</span>
+      </span>
+    );
   };
 
   const getStatusBadge = (status: string) => {
@@ -352,7 +409,7 @@ export function ItemsClient({
         </div>
 
         {/* Search & Select Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div className={`grid grid-cols-1 ${activeTab === 'DEVICE' ? 'sm:grid-cols-2 md:grid-cols-5' : 'sm:grid-cols-4'} gap-3`}>
           {/* Search */}
           <div className="relative sm:col-span-1">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
@@ -381,6 +438,21 @@ export function ItemsClient({
               ))}
             </select>
           </div>
+
+          {/* Status Kepemilikan Filter (Exclusive for DEVICE) */}
+          {activeTab === 'DEVICE' && (
+            <div>
+              <select
+                value={selectedOwnership}
+                onChange={(e) => setSelectedOwnership(e.target.value)}
+                className="w-full bg-white border border-[#f5b8cc] text-[#b90051] font-semibold rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#b90051]"
+              >
+                <option value="">Semua Status Kepemilikan</option>
+                <option value="MILIK_IT">Milik IT</option>
+                <option value="SEWA">Sewa</option>
+              </select>
+            </div>
+          )}
 
           {/* Location Filter */}
           <div>
@@ -426,6 +498,9 @@ export function ItemsClient({
                   <th className="py-3.5 px-4">Nama Barang / Model</th>
                   <th className="py-3.5 px-4 whitespace-nowrap">Tipe</th>
                   <th className="py-3.5 px-4 whitespace-nowrap">Kategori & Brand</th>
+                  {activeTab === 'DEVICE' && (
+                    <th className="py-3.5 px-4 whitespace-nowrap">Status Kepemilikan</th>
+                  )}
                   <th className="py-3.5 px-4 whitespace-nowrap">Lokasi Storage</th>
                   <th className="py-3.5 px-4 text-center whitespace-nowrap">Total Stok Unit (SN)</th>
                   <th className="py-3.5 pr-4 pl-2 text-right whitespace-nowrap">Aksi</th>
@@ -434,7 +509,7 @@ export function ItemsClient({
               <tbody className="divide-y divide-gray-100">
                 {groupedStockList.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-400 text-sm">
+                    <td colSpan={activeTab === 'DEVICE' ? 8 : 7} className="p-12 text-center text-gray-400 text-sm">
                       Tidak ada data stok yang sesuai dengan filter pencarian.
                     </td>
                   </tr>
@@ -477,6 +552,13 @@ export function ItemsClient({
                             </div>
                             <div className="text-[11px] text-[#b90051] font-medium">{group.brand.name}</div>
                           </td>
+
+                          {/* Status Kepemilikan (Exclusive for DEVICE) */}
+                          {activeTab === 'DEVICE' && (
+                            <td className="py-4 px-4 whitespace-nowrap">
+                              {getGroupOwnershipBadge(group.items)}
+                            </td>
+                          )}
 
                           {/* Location */}
                           <td className="py-4 px-4 whitespace-nowrap">
@@ -525,7 +607,7 @@ export function ItemsClient({
                         {/* Collapsible Child Rows (Physical SN Units) */}
                         {isExpanded && (
                           <tr className="bg-gray-50/70 border-b border-gray-200">
-                            <td colSpan={7} className="p-4 pl-12">
+                            <td colSpan={activeTab === 'DEVICE' ? 8 : 7} className="p-4 pl-12">
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <div className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-2">
@@ -558,7 +640,10 @@ export function ItemsClient({
                                         <span className="font-mono text-xs font-bold text-[#b90051] bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
                                           SN: {item.serialNumber}
                                         </span>
-                                        {getStatusBadge(item.status)}
+                                        <div className="flex items-center space-x-1.5">
+                                          {item.type === 'DEVICE' && getOwnershipBadge(item.ownershipStatus)}
+                                          {getStatusBadge(item.status)}
+                                        </div>
                                       </div>
 
                                       <div className="text-xs text-gray-500 flex items-center justify-between font-mono">
@@ -659,6 +744,9 @@ export function ItemsClient({
                   <th className="p-4 whitespace-nowrap">Serial Number (SN)</th>
                   <th className="p-4 whitespace-nowrap">Kode SKU & Model</th>
                   <th className="p-4 whitespace-nowrap">Kategori & Brand</th>
+                  {activeTab === 'DEVICE' && (
+                    <th className="p-4 whitespace-nowrap">Status Kepemilikan</th>
+                  )}
                   <th className="p-4 whitespace-nowrap">Lokasi Storage</th>
                   <th className="p-4 text-center whitespace-nowrap">Status Unit</th>
                   <th className="p-4 text-right whitespace-nowrap">Aksi Unit</th>
@@ -667,7 +755,7 @@ export function ItemsClient({
               <tbody className="divide-y divide-gray-100">
                 {filteredItems.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-12 text-center text-gray-400 text-sm">
+                    <td colSpan={activeTab === 'DEVICE' ? 7 : 6} className="p-12 text-center text-gray-400 text-sm">
                       Tidak ada Serial Number (SN) yang cocok.
                     </td>
                   </tr>
@@ -694,6 +782,13 @@ export function ItemsClient({
                         </div>
                         <div className="text-[11px] text-[#b90051] font-medium">{item.brand.name}</div>
                       </td>
+
+                      {/* Status Kepemilikan (Exclusive for DEVICE) */}
+                      {activeTab === 'DEVICE' && (
+                        <td className="p-4 whitespace-nowrap">
+                          {getOwnershipBadge(item.ownershipStatus)}
+                        </td>
+                      )}
 
                       {/* Location */}
                       <td className="p-4 whitespace-nowrap">

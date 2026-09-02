@@ -75,6 +75,7 @@ model Item {
   type         ItemCategoryType
   description  String?
   status       String           @default("TERSEDIA")
+  ownershipStatus String?       @default("MILIK_IT")
 
   categoryId   String
   category     Category         @relation(fields: [categoryId], references: [id])

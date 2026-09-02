@@ -18,6 +18,7 @@ type StockOpnameModalProps = {
     itemCode: string;
     name: string;
     status: string;
+    ownershipStatus?: string | null;
     locationId: string;
     location: { name: string };
   } | null;
@@ -100,9 +101,20 @@ export function StockOpnameModal({
           <div className="p-3.5 bg-[#fff8fa] border border-[#f5b8cc] rounded-xl space-y-1">
             <div className="flex items-center justify-between text-xs">
               <span className="font-mono text-[#b90051] font-bold">SKU: {item.itemCode}</span>
-              <span className="font-mono text-[#b90051] font-bold bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
-                SN: {item.serialNumber}
-              </span>
+              <div className="flex items-center space-x-1.5">
+                {item.ownershipStatus === 'SEWA' ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-700">
+                    Sewa
+                  </span>
+                ) : item.ownershipStatus === 'MILIK_IT' ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700">
+                    Milik IT
+                  </span>
+                ) : null}
+                <span className="font-mono text-[#b90051] font-bold bg-[#fae2ea] px-2 py-0.5 rounded border border-[#f5b8cc]">
+                  SN: {item.serialNumber}
+                </span>
+              </div>
             </div>
             <div className="text-sm font-bold text-gray-900">{item.name}</div>
             <div className="text-xs text-gray-500 pt-1 border-t border-[#f5b8cc]/50 flex justify-between">

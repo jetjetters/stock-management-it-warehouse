@@ -14,10 +14,11 @@ export type ItemFilterParams = {
   brandId?: string;
   locationId?: string;
   status?: string;
+  ownershipStatus?: string;
 };
 
 export async function getItems(params?: ItemFilterParams) {
-  const { search, type, categoryId, brandId, locationId, status } = params || {};
+  const { search, type, categoryId, brandId, locationId, status, ownershipStatus } = params || {};
 
   const whereClause: any = {};
 
@@ -49,6 +50,10 @@ export async function getItems(params?: ItemFilterParams) {
 
   if (status && status !== 'ALL') {
     whereClause.status = status;
+  }
+
+  if (ownershipStatus && ownershipStatus !== 'ALL') {
+    whereClause.ownershipStatus = ownershipStatus;
   }
 
   const items = await prisma.item.findMany({
@@ -83,6 +88,7 @@ export type GroupedStockItem = {
     itemCode: string;
     name: string;
     status: string;
+    ownershipStatus: string | null;
     description: string | null;
     createdAt: Date;
   }>;
@@ -123,6 +129,7 @@ export async function getGroupedStock(params?: ItemFilterParams): Promise<Groupe
       itemCode: item.itemCode,
       name: item.name,
       status: item.status,
+      ownershipStatus: item.ownershipStatus,
       description: item.description,
       createdAt: item.createdAt,
     });
@@ -147,9 +154,10 @@ export async function createItem(data: {
   locationId: string;
   serialNumberInput: string; // single or multi-line / comma separated
   status?: string;
+  ownershipStatus?: string;
   description?: string;
 }) {
-  const { name, categoryId, brandId, locationId, serialNumberInput, status = 'TERSEDIA', description } = data;
+  const { name, categoryId, brandId, locationId, serialNumberInput, status = 'TERSEDIA', ownershipStatus, description } = data;
 
   const category = await prisma.category.findUnique({
     where: { id: categoryId },
@@ -202,6 +210,7 @@ export async function createItem(data: {
           brandId,
           locationId,
           status,
+          ownershipStatus: category.type === 'DEVICE' ? (ownershipStatus || 'MILIK_IT') : null,
           description: description?.trim() || null,
         },
       });
@@ -237,6 +246,7 @@ export async function updateItem(
     brandId: string;
     locationId: string;
     status: string;
+    ownershipStatus?: string;
     description?: string;
   }
 ) {
@@ -281,6 +291,7 @@ export async function updateItem(
         brandId: data.brandId,
         locationId: data.locationId,
         status: data.status,
+        ownershipStatus: newCategory.type === 'DEVICE' ? (data.ownershipStatus || 'MILIK_IT') : null,
         type: newCategory.type,
         description: data.description?.trim() || null,
       },
