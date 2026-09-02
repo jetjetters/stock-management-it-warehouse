@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Package,
@@ -14,7 +14,6 @@ import {
   UserCheck,
   History,
   Plus,
-  Boxes,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Suspense } from 'react';
@@ -56,52 +55,57 @@ const navSections: NavSection[] = [
     sectionTitle: 'KATEGORI',
     items: [
       { href: '/categories', label: 'Daftar Kategori', icon: Tags },
-      { href: '/categories?action=new', label: 'Tambah Kategori', icon: Plus },
+      { href: '/categories/new', label: 'Tambah Kategori', icon: Plus },
     ],
   },
   {
     sectionTitle: 'MERK / BRAND',
     items: [
       { href: '/brands', label: 'Daftar Merk / Brand', icon: Layers },
-      { href: '/brands?action=new', label: 'Tambah Merk Baru', icon: Plus },
+      { href: '/brands/new', label: 'Tambah Merk Baru', icon: Plus },
     ],
   },
   {
     sectionTitle: 'LOKASI STORAGE',
     items: [
       { href: '/locations', label: 'Daftar Lokasi', icon: MapPin },
-      { href: '/locations?action=new', label: 'Tambah Lokasi Baru', icon: Plus },
+      { href: '/locations/new', label: 'Tambah Lokasi Baru', icon: Plus },
     ],
   },
   {
     sectionTitle: 'PETUGAS (GIVER)',
     items: [
       { href: '/officers', label: 'Daftar Petugas', icon: UserCheck },
-      { href: '/officers?action=new', label: 'Tambah Petugas Baru', icon: Plus },
+      { href: '/officers/new', label: 'Tambah Petugas Baru', icon: Plus },
     ],
   },
 ];
 
 function SidebarContent() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const isItemActive = (itemHref: string) => {
-    const [targetPath, targetQuery] = itemHref.split('?');
-
-    if (targetQuery) {
-      const targetParams = new URLSearchParams(targetQuery);
-      const targetAction = targetParams.get('action');
-      return pathname === targetPath && searchParams.get('action') === targetAction;
+    if (pathname === itemHref) {
+      return true;
     }
 
-    // Exact path check
-    if (pathname === targetPath) {
-      return !searchParams.get('action');
+    // Sub-routes match (excluding /new routes which have their own nav buttons)
+    if (itemHref === '/items' && pathname.startsWith('/items/') && pathname !== '/items/new') {
+      return true;
     }
-
-    // Sub-routes for items like /items/[id]/edit (excluding /items/new which has its own menu)
-    if (targetPath === '/items' && pathname.startsWith('/items/') && pathname !== '/items/new') {
+    if (itemHref === '/categories' && pathname.startsWith('/categories/') && pathname !== '/categories/new') {
+      return true;
+    }
+    if (itemHref === '/brands' && pathname.startsWith('/brands/') && pathname !== '/brands/new') {
+      return true;
+    }
+    if (itemHref === '/locations' && pathname.startsWith('/locations/') && pathname !== '/locations/new') {
+      return true;
+    }
+    if (itemHref === '/officers' && pathname.startsWith('/officers/') && pathname !== '/officers/new') {
+      return true;
+    }
+    if (itemHref === '/handovers' && pathname.startsWith('/handovers/') && pathname !== '/handovers/new') {
       return true;
     }
 
@@ -113,7 +117,7 @@ function SidebarContent() {
       {navSections.map((section, idx) => (
         <div key={idx} className="space-y-1">
           {/* Section Header */}
-          <div className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          <div className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400 select-none">
             {section.sectionTitle}
           </div>
 

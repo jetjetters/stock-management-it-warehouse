@@ -299,7 +299,7 @@ export function ItemForm({
                 {serialNumbers.map((sn, idx) => (
                   <div key={idx} className="flex items-center space-x-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3.5 top-2.5 font-mono text-xs font-bold text-gray-400 select-none">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-xs font-bold text-gray-400 select-none pointer-events-none">
                         SN #{idx + 1}
                       </span>
                       <input

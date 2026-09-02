@@ -11,6 +11,13 @@ export async function getCategories() {
   return await prisma.category.findMany({
     include: {
       brands: true,
+      items: {
+        include: {
+          brand: true,
+          location: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       _count: {
         select: { items: true },
       },
@@ -119,6 +126,12 @@ export async function getBrands(categoryId?: string) {
     where: whereClause,
     include: {
       category: true,
+      items: {
+        include: {
+          location: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       _count: {
         select: { items: true },
       },
@@ -215,6 +228,13 @@ export async function deleteBrand(id: string) {
 export async function getLocations() {
   return await prisma.location.findMany({
     include: {
+      items: {
+        include: {
+          brand: true,
+          category: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       _count: {
         select: { items: true, stockLogs: true },
       },

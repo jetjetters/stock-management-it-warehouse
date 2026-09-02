@@ -83,14 +83,24 @@ export function ItemsClient({
   // Filters
   const [activeTab, setActiveTab] = useState<'ALL' | 'DEVICE' | 'BARANG'>('ALL');
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('categoryId') || '');
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brandId') || '');
+  const [selectedLocation, setSelectedLocation] = useState(searchParams.get('locationId') || '');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedOwnership, setSelectedOwnership] = useState('');
 
   // Expanded Groups in Grouped View
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
+  // Sync state with URL params if they change
+  useEffect(() => {
+    const cat = searchParams.get('categoryId');
+    const br = searchParams.get('brandId');
+    const loc = searchParams.get('locationId');
+    if (cat !== null) setSelectedCategory(cat);
+    if (br !== null) setSelectedBrand(br);
+    if (loc !== null) setSelectedLocation(loc);
+  }, [searchParams]);
 
   // Handover (Serah Terima) modal state
   const [isHandoverModalOpen, setIsHandoverModalOpen] = useState(false);
@@ -161,6 +171,9 @@ export function ItemsClient({
 
     // Category filter
     if (selectedCategory && item.categoryId !== selectedCategory) return false;
+
+    // Brand filter
+    if (selectedBrand && item.brandId !== selectedBrand) return false;
 
     // Location filter
     if (selectedLocation && item.locationId !== selectedLocation) return false;
@@ -409,10 +422,10 @@ export function ItemsClient({
         </div>
 
         {/* Search & Select Filters */}
-        <div className={`grid grid-cols-1 ${activeTab === 'DEVICE' ? 'sm:grid-cols-2 md:grid-cols-5' : 'sm:grid-cols-4'} gap-3`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Search */}
-          <div className="relative sm:col-span-1">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+          <div className="relative">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
@@ -439,20 +452,21 @@ export function ItemsClient({
             </select>
           </div>
 
-          {/* Status Kepemilikan Filter (Exclusive for DEVICE) */}
-          {activeTab === 'DEVICE' && (
-            <div>
-              <select
-                value={selectedOwnership}
-                onChange={(e) => setSelectedOwnership(e.target.value)}
-                className="w-full bg-white border border-[#f5b8cc] text-[#b90051] font-semibold rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#b90051]"
-              >
-                <option value="">Semua Status Kepemilikan</option>
-                <option value="MILIK_IT">Milik IT</option>
-                <option value="SEWA">Sewa</option>
-              </select>
-            </div>
-          )}
+          {/* Brand Filter */}
+          <div>
+            <select
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#b90051]"
+            >
+              <option value="">Semua Merk</option>
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Location Filter */}
           <div>
@@ -484,6 +498,39 @@ export function ItemsClient({
               <option value="RUSAK">RUSAK (Damaged)</option>
             </select>
           </div>
+
+          {/* Status Kepemilikan Filter (Exclusive for DEVICE) */}
+          {activeTab === 'DEVICE' ? (
+            <div>
+              <select
+                value={selectedOwnership}
+                onChange={(e) => setSelectedOwnership(e.target.value)}
+                className="w-full bg-white border border-[#f5b8cc] text-[#b90051] font-semibold rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#b90051]"
+              >
+                <option value="">Semua Kepemilikan</option>
+                <option value="MILIK_IT">Milik IT</option>
+                <option value="SEWA">Sewa</option>
+              </select>
+            </div>
+          ) : (
+            /* Reset Filters Button if any filter active */
+            (selectedCategory || selectedBrand || selectedLocation || selectedStatus || search) ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategory('');
+                  setSelectedBrand('');
+                  setSelectedLocation('');
+                  setSelectedStatus('');
+                  setSearch('');
+                  window.history.replaceState(null, '', '/items');
+                }}
+                className="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition"
+              >
+                Reset Filter
+              </button>
+            ) : null
+          )}
         </div>
       </div>
 

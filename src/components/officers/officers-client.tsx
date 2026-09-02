@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Plus, Search, UserCheck, Pencil, Trash2, ShieldCheck } from 'lucide-react';
 import { deleteOfficer } from '@/app/actions/officers';
 import { OfficerModal } from './officer-modal';
@@ -89,26 +90,25 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleOpenAddModal}
+        <Link
+          href="/officers/new"
           className="px-4 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-semibold rounded-xl text-sm shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Petugas Baru</span>
-        </button>
+        </Link>
       </div>
 
       {/* Search Bar */}
       <div className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
         <div className="relative w-full max-w-md">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama petugas atau jabatan..."
-            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] transition"
+            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#b90051] transition"
           />
         </div>
         <span className="text-xs text-gray-500 font-mono">
