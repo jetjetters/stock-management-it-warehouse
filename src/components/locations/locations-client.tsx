@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { deleteLocation } from '@/app/actions/master-data';
 import { LocationModal } from '@/components/locations/location-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { SuccessModal } from '@/components/ui/success-modal';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type LocationType = {
   id: string;
@@ -21,10 +21,27 @@ type LocationsClientProps = {
 
 export function LocationsClient({ initialLocations }: LocationsClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const actionParam = searchParams.get('action');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editLocation, setEditLocation] = useState<LocationType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    if (actionParam === 'new') {
+      setEditLocation(null);
+      setIsModalOpen(true);
+    }
+  }, [actionParam]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    if (actionParam) {
+      window.history.replaceState(null, '', '/locations');
+    }
+  };
 
   const handleConfirmDelete = async () => {
     if (deleteTarget) {
@@ -37,6 +54,7 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
 
   const handleSuccess = (msg?: string) => {
     setSuccessMsg(msg || 'Data berhasil disimpan!');
+    handleCloseModal();
     router.refresh();
   };
 
@@ -114,7 +132,7 @@ export function LocationsClient({ initialLocations }: LocationsClientProps) {
 
       <LocationModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         editLocation={editLocation}
         onSuccess={handleSuccess}
       />

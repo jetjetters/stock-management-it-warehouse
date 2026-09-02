@@ -1,38 +1,163 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard,
   Package,
+  PlusCircle,
+  FileText,
+  Send,
   Tags,
   Layers,
   MapPin,
-  History,
-  Boxes,
   UserCheck,
-  FileText,
+  History,
+  Plus,
+  Boxes,
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Suspense } from 'react';
 
-const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/items', label: 'Inventaris Stok', icon: Package },
-  { href: '/handovers', label: 'Surat Serah Terima', icon: FileText },
-  { href: '/categories', label: 'Kategori', icon: Tags },
-  { href: '/brands', label: 'Merk / Brand', icon: Layers },
-  { href: '/locations', label: 'Lokasi Storage', icon: MapPin },
-  { href: '/officers', label: 'Petugas (Giver)', icon: UserCheck },
-  { href: '/logs', label: 'Audit Trail (Log)', icon: History },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+type NavSection = {
+  sectionTitle: string;
+  items: NavItem[];
+};
+
+const navSections: NavSection[] = [
+  {
+    sectionTitle: 'MENU UTAMA',
+    items: [
+      { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/logs', label: 'Audit Trail (Log)', icon: History },
+    ],
+  },
+  {
+    sectionTitle: 'INVENTARIS STOK',
+    items: [
+      { href: '/items', label: 'Daftar Inventaris Stok', icon: Package },
+      { href: '/items/new', label: 'Tambah Unit (SN Baru)', icon: PlusCircle },
+    ],
+  },
+  {
+    sectionTitle: 'SURAT SERAH TERIMA',
+    items: [
+      { href: '/handovers', label: 'Daftar Serah Terima', icon: FileText },
+      { href: '/handovers/new', label: 'Form Serah Terima (PDF)', icon: Send },
+    ],
+  },
+  {
+    sectionTitle: 'KATEGORI',
+    items: [
+      { href: '/categories', label: 'Daftar Kategori', icon: Tags },
+      { href: '/categories?action=new', label: 'Tambah Kategori', icon: Plus },
+    ],
+  },
+  {
+    sectionTitle: 'MERK / BRAND',
+    items: [
+      { href: '/brands', label: 'Daftar Merk / Brand', icon: Layers },
+      { href: '/brands?action=new', label: 'Tambah Merk Baru', icon: Plus },
+    ],
+  },
+  {
+    sectionTitle: 'LOKASI STORAGE',
+    items: [
+      { href: '/locations', label: 'Daftar Lokasi', icon: MapPin },
+      { href: '/locations?action=new', label: 'Tambah Lokasi Baru', icon: Plus },
+    ],
+  },
+  {
+    sectionTitle: 'PETUGAS (GIVER)',
+    items: [
+      { href: '/officers', label: 'Daftar Petugas', icon: UserCheck },
+      { href: '/officers?action=new', label: 'Tambah Petugas Baru', icon: Plus },
+    ],
+  },
 ];
 
-export function Sidebar() {
+function SidebarContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isItemActive = (itemHref: string) => {
+    const [targetPath, targetQuery] = itemHref.split('?');
+
+    if (targetQuery) {
+      const targetParams = new URLSearchParams(targetQuery);
+      const targetAction = targetParams.get('action');
+      return pathname === targetPath && searchParams.get('action') === targetAction;
+    }
+
+    // Exact path check
+    if (pathname === targetPath) {
+      return !searchParams.get('action');
+    }
+
+    // Sub-routes for items like /items/[id]/edit (excluding /items/new which has its own menu)
+    if (targetPath === '/items' && pathname.startsWith('/items/') && pathname !== '/items/new') {
+      return true;
+    }
+
+    return false;
+  };
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 z-20 select-none shrink-0">
+    <nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto">
+      {navSections.map((section, idx) => (
+        <div key={idx} className="space-y-1">
+          {/* Section Header */}
+          <div className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            {section.sectionTitle}
+          </div>
+
+          {/* Section Items */}
+          <div className="space-y-0.5">
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const isActive = isItemActive(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={clsx(
+                    'group flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs transition-all duration-150',
+                    isActive
+                      ? 'bg-[#b90051] text-white font-bold shadow-sm shadow-[#b90051]/20'
+                      : 'text-gray-600 hover:text-[#b90051] hover:bg-[#fff0f4] font-medium'
+                  )}
+                >
+                  <Icon
+                    className={clsx(
+                      'w-4 h-4 shrink-0 transition-colors',
+                      isActive
+                        ? 'text-white'
+                        : 'text-gray-400 group-hover:text-[#b90051]'
+                    )}
+                  />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 z-20 select-none shrink-0 shadow-xs">
       {/* Brand Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
+      <div className="p-4 border-b border-gray-200 flex items-center space-x-3 bg-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.png"
@@ -45,33 +170,15 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
-        <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-          MENU UTAMA
-        </div>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+      {/* Navigation Links with Suspense */}
+      <Suspense fallback={<div className="flex-1 p-4 text-xs text-gray-400">Memuat menu...</div>}>
+        <SidebarContent />
+      </Suspense>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={clsx(
-                'flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-150',
-                isActive
-                  ? 'bg-[#b90051] text-white font-semibold shadow-sm shadow-[#b90051]/20'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 font-medium'
-              )}
-            >
-              <Icon className={clsx('w-4 h-4 shrink-0', isActive ? 'text-white' : 'text-gray-500')} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Footer Info */}
+      <div className="p-3 border-t border-gray-100 bg-gray-50/50 text-[10px] text-gray-400 text-center select-none font-mono">
+        IT Warehouse Management • 2026
+      </div>
     </aside>
   );
 }
-

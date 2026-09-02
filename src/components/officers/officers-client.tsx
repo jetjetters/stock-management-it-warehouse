@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, UserCheck, Pencil, Trash2, ShieldCheck } from 'lucide-react';
 import { deleteOfficer } from '@/app/actions/officers';
 import { OfficerModal } from './officer-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { SuccessModal } from '@/components/ui/success-modal';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type OfficerType = {
   id: string;
@@ -21,12 +21,28 @@ type OfficersClientProps = {
 
 export function OfficersClient({ initialOfficers }: OfficersClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const actionParam = searchParams.get('action');
 
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editOfficer, setEditOfficer] = useState<OfficerType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<OfficerType | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    if (actionParam === 'new') {
+      setEditOfficer(null);
+      setIsModalOpen(true);
+    }
+  }, [actionParam]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    if (actionParam) {
+      window.history.replaceState(null, '', '/officers');
+    }
+  };
 
   const filteredOfficers = initialOfficers.filter((off) => {
     if (!search) return true;
@@ -55,6 +71,7 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
 
   const handleSuccess = (msg?: string) => {
     setSuccessMsg(msg || 'Data petugas berhasil disimpan!');
+    handleCloseModal();
     router.refresh();
   };
 
@@ -167,7 +184,7 @@ export function OfficersClient({ initialOfficers }: OfficersClientProps) {
       {/* Modals */}
       <OfficerModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         editOfficer={editOfficer}
         onSuccess={handleSuccess}
       />

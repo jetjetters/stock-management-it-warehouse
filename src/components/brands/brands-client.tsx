@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Layers, Pencil, Trash2 } from 'lucide-react';
 import { deleteBrand } from '@/app/actions/master-data';
 import { BrandModal } from '@/components/brands/brand-modal';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 import { SuccessModal } from '@/components/ui/success-modal';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type BrandType = {
   id: string;
@@ -23,10 +23,27 @@ type BrandsClientProps = {
 
 export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const actionParam = searchParams.get('action');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editBrand, setEditBrand] = useState<BrandType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    if (actionParam === 'new') {
+      setEditBrand(null);
+      setIsModalOpen(true);
+    }
+  }, [actionParam]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    if (actionParam) {
+      window.history.replaceState(null, '', '/brands');
+    }
+  };
 
   const handleConfirmDelete = async () => {
     if (deleteTarget) {
@@ -39,6 +56,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
 
   const handleSuccess = (msg?: string) => {
     setSuccessMsg(msg || 'Data berhasil disimpan!');
+    handleCloseModal();
     router.refresh();
   };
 
@@ -114,7 +132,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
 
       <BrandModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         categories={categories}
         editBrand={editBrand}
         onSuccess={handleSuccess}
