@@ -14,6 +14,7 @@ import {
   UserCheck,
   History,
   Plus,
+  BookOpen,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Suspense } from 'react';
@@ -34,6 +35,7 @@ const navSections: NavSection[] = [
     sectionTitle: 'MENU UTAMA',
     items: [
       { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/procedure', label: 'Prosedur Input Barang', icon: BookOpen },
       { href: '/logs', label: 'Audit Trail (Log)', icon: History },
     ],
   },
@@ -170,7 +172,7 @@ export function Sidebar() {
         />
         <div className="min-w-0 flex-1">
           <h1 className="font-bold text-gray-900 text-sm leading-tight truncate">IT Warehouse</h1>
-          <p className="text-[10px] text-gray-500 font-medium truncate">PTK Shore Base Tanjung Batu</p>
+          <p className="text-[10px] text-gray-500 font-medium truncate">PSTB</p>
         </div>
       </div>
 
