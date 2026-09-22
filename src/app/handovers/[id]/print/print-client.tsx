@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Printer } from 'lucide-react';
+import { useCustomization } from '@/components/providers/customization-provider';
 
 type HandoverPrintClientProps = {
   handover: {
@@ -25,43 +26,36 @@ type HandoverPrintClientProps = {
 };
 
 export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
+  const { config } = useCustomization();
   const formattedDate = new Date(handover.handoverDate).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   useEffect(() => {
-    // Optionally auto-trigger print dialog
-    const timer = setTimeout(() => {
-      // window.print();
-    }, 500);
-    return () => clearTimeout(timer);
+    // Optional automatic print trigger could be placed here if desired
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-gray-900 p-4 sm:p-8 print:p-0 print:bg-white print:text-black">
-      {/* Top Action Bar - Hidden in Print */}
+    <div className="min-h-screen bg-slate-900 py-8 px-4 sm:px-6 print:bg-white print:p-0">
+      {/* Top Action Bar - Hidden during Printing */}
       <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
         <Link
-          href="/handovers"
-          className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 px-3.5 py-2 rounded-xl transition shadow-sm"
+          href={`/handovers/${handover.id}`}
+          className="inline-flex items-center space-x-2 text-sm text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 text-[#b90051]" />
-          <span>Kembali ke Daftar Surat</span>
+          <ArrowLeft className="w-4 h-4" />
+          <span>Kembali ke Detail</span>
         </Link>
 
         <button
-          type="button"
-          onClick={handlePrint}
-          className="px-5 py-2.5 bg-[#b90051] hover:bg-[#a00045] text-white font-bold rounded-xl text-xs shadow-md shadow-[#b90051]/20 transition flex items-center space-x-2 cursor-pointer"
+          onClick={() => window.print()}
+          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl font-semibold text-white shadow-lg transition-all transform active:scale-95 cursor-pointer"
+          style={{ backgroundColor: config.primaryColor }}
         >
           <Printer className="w-4 h-4" />
-          <span>Cetak PDF / Print Dokumen</span>
+          <span>Cetak Dokumen Sekarang</span>
         </button>
       </div>
 
@@ -71,20 +65,20 @@ export function HandoverPrintClient({ handover }: HandoverPrintClientProps) {
         <div className="relative flex items-center justify-center border-b-2 border-black pb-3 mb-4">
           <div className="text-center">
             <h1 className="text-base sm:text-lg font-bold tracking-tight text-black uppercase">
-              Form Serah Terima Barang IT
+              {config.handoverTitle || 'Form Serah Terima Barang IT'}
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">
-              {handover.locationName || 'PTK Shore Base Tanjung Batu'}
+              {handover.locationName || config.handoverLocation || 'PTK Shore Base Tanjung Batu'}
             </p>
           </div>
 
-          {/* PERTAMINA Header Logo */}
+          {/* Header Logo */}
           <div className="absolute right-0 top-0 bottom-0 flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/pertamina-pl.png"
-              alt="PERTAMINA"
-              className="h-9 sm:h-11 w-auto object-contain mix-blend-multiply"
+              src={config.handoverLogo || '/pertamina-pl.png'}
+              alt="Logo Serah Terima"
+              className="h-9 sm:h-11 w-auto object-contain mix-blend-multiply max-w-[140px]"
             />
           </div>
         </div>
