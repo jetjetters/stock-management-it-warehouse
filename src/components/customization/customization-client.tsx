@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AppConfigData, DEFAULT_CONFIG } from '@/app/actions/config';
+import { AppConfigData, DEFAULT_CONFIG } from '@/lib/config';
 import { useCustomization } from '@/components/providers/customization-provider';
 import {
   Palette,

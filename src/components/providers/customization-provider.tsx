@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AppConfigData, DEFAULT_CONFIG, updateAppConfig, resetAppConfig } from '@/app/actions/config';
+import { updateAppConfig, resetAppConfig } from '@/app/actions/config';
+import { AppConfigData, DEFAULT_CONFIG } from '@/lib/config';
 
 type CustomizationContextType = {
   config: AppConfigData;
