@@ -1,15 +1,11 @@
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "../docs/ERD.svg"
 }
 
 enum ItemCategoryType {
@@ -155,5 +151,23 @@ model HandoverItem {
   remarks    String?
 
   @@map("handover_items")
+}
+
+model AppConfig {
+  id                     String   @id @default("default")
+  appTitle               String   @default("IT Warehouse")
+  appSubtitle            String   @default("PSTB")
+  appLogo                String?
+  handoverLogo           String?
+  handoverTitle          String   @default("BERITA ACARA SERAH TERIMA BARANG")
+  handoverLocation       String   @default("PTK Shore Base Tanjung Batu")
+  primaryColor           String   @default("#b90051")
+  backgroundColor        String   @default("#f8fafc")
+  cardBackgroundColor    String   @default("#ffffff")
+  cardBorderColor        String   @default("#e2e8f0")
+  sidebarBackgroundColor String   @default("#ffffff")
+  updatedAt              DateTime @updatedAt
+
+  @@map("app_config")
 }
 

@@ -14,8 +14,9 @@ Sistem ini dibangun menggunakan arsitektur modern Next.js App Router full-stack 
 | **Bahasa Pemrograman** | **TypeScript 5.6** | Pengetikan statis (*static typing*) pada seluruh lapisan kode client & server untuk mencegah runtime error. |
 | **UI Components & Styling** | **Tailwind CSS v3** & **Lucide React** | Utility-first CSS framework untuk styling responsif & modern visual icon system. |
 | **Forms & Validasi** | **React Hook Form v7** & **Zod v3** | Manajemen state formulir ringan dengan validasi skema tipe data ketat pada modal input. |
-| **Database** | **SQLite** (`dev.db`) | Database relasional lokal zero-config yang ringan dan cepat untuk deployment localhost. |
-| **ORM Layer** | **Prisma ORM v6.2** | Type-safe ORM untuk migrasi skema database, pemutakhiran relasi data, dan *seed data*. |
+| **Database** | **Supabase (PostgreSQL)** | Cloud Relational Database gratis dengan Supavisor Connection Pooling & high availability. |
+| **Hosting & Deployment** | **Netlify** (Free Tier) | Platform deployment serverless Next.js App Router dengan automated SSL & edge network. |
+| **ORM Layer** | **Prisma ORM v6.2** | Type-safe ORM untuk sinkronisasi skema database, pemutakhiran relasi data, dan *seed data*. |
 | **State & Cache Invalidation** | **Next.js `revalidatePath`** | Sinkronisasi data real-time dan pembaruan cache otomatis pada seluruh halaman setelah aksi server (*mutations*). |
 
 ---
@@ -189,30 +190,69 @@ erDiagram
    npm install
    ```
 
-3. **Konfigurasi Environment**:
-   Pastikan file `.env` sudah tersedia di root proyek dengan konfigurasi SQLite:
+3. **Konfigurasi Environment (Supabase)**:
+   Buat atau sesuaikan file `.env` di root proyek dengan kredensial PostgreSQL dari project [Supabase](https://supabase.com) Anda (lihat template pada [`.env.example`](file:///c:/Users/Jetro/Documents/GitHub/stock-management-it-warehouse/.env.example)):
    ```env
-   DATABASE_URL="file:./dev.db"
+   # 1. DATABASE_URL: Transaction Pooler via Supavisor (Port 6543)
+   DATABASE_URL="postgresql://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[YOUR-REGION].pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+   # 2. DIRECT_URL: Direct Connection / Session Mode (Port 5432)
+   DIRECT_URL="postgresql://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[YOUR-REGION].pooler.supabase.com:5432/postgres"
    ```
 
-4. **Inisialisasi Database SQLite & Tipe Prisma Client**:
+4. **Inisialisasi Database Supabase & Tipe Prisma Client**:
    ```bash
    # Generasi Prisma Client
    npm run prisma:generate
 
-   # Buat tabel dan skema database SQLite lokal
+   # Dorong (push) skema tabel ke cloud database Supabase PostgreSQL
    npm run prisma:push
    ```
 
-5. **Isi Data Awal / Seed Demo Data**:
+5. **Isi Data Awal / Seed Demo Data ke Supabase**:
    ```bash
    npm run prisma:seed
    ```
-   *Perintah ini akan memasukkan data awal Kategori (Mouse, Keyboard, Printer, Tinta, Kabel), Merk (Logitech, Epson, Belden), Lokasi Storage, serta beberapa sampel unit fisik lengkap dengan Serial Number dan Log Mutasi awal.*
+   *Perintah ini akan memasukkan data awal Kategori (Mouse, Keyboard, Printer, Tinta, Kabel), Merk (Logitech, Epson, Belden), Lokasi Storage, Petugas, serta unit sampel lengkap dengan Serial Number dan Log Mutasi awal langsung ke database Supabase.*
 
 ---
 
-## 🖥️ Cara Menjalankan Aplikasi
+## 🚀 Panduan Deploy Gratis ke Netlify
+
+Proyek ini sudah dilengkapi dengan konfigurasi [`netlify.toml`](file:///c:/Users/Jetro/Documents/GitHub/stock-management-it-warehouse/netlify.toml) yang mengoptimalkan runtime Next.js 14 App Router.
+
+### Langkah-langkah Deploy:
+1. **Push Branch ke Repository GitHub**:
+   Pastikan branch `deploy-netlify-supabase` sudah di-push ke GitHub:
+   ```bash
+   git add .
+   git commit -m "feat: configure Supabase PostgreSQL and Netlify deployment"
+   git push origin deploy-netlify-supabase
+   ```
+
+2. **Hubungkan ke Netlify**:
+   - Buka [Netlify Dashboard](https://app.netlify.com/) dan login.
+   - Klik **"Add new site"** > **"Import an existing project"**.
+   - Pilih **GitHub**, lalu pilih repository `stock-management-it-warehouse`.
+   - Pilih Branch to deploy: `deploy-netlify-supabase`.
+
+3. **Konfigurasi Build Settings**:
+   Netlify akan otomatis mendeteksi pengaturan dari `netlify.toml`:
+   - **Build command**: `prisma generate && next build`
+   - **Publish directory**: `.next`
+
+4. **Tambahkan Environment Variables di Netlify**:
+   Masuk ke **Site configuration** > **Environment variables** > **Add a variable**, lalu masukkan:
+   - `DATABASE_URL`: *(Connection string Supabase Port 6543 pooler)*
+   - `DIRECT_URL`: *(Connection string Supabase Port 5432 direct)*
+
+5. **Deploy Site**:
+   - Klik **"Deploy site"**.
+   - Netlify akan menginstal dependensi, menghasilkan Prisma Client, membangun Next.js App Router, dan menerbitkan web app Anda ke URL `https://[nama-aplikasi].netlify.app`.
+
+---
+
+## 🖥️ Cara Menjalankan Aplikasi di Lokal
 
 ### Mode Pengembangan (Development)
 
@@ -226,43 +266,33 @@ Buka browser Anda dan akses aplikasi di:
 
 ---
 
-### Mode Produksi (Production Build)
-
-Untuk membuat build produksi dan menjalankannya:
-```bash
-# 1. Build aplikasi
-npm run build
-
-# 2. Jalankan server produksi
-npm run start
-```
-
----
-
 ## 📂 Struktur Direktori Proyek
 
 ```text
 ├── .agent/               # Spesifikasi desain & konteks produk (DESIGN.md, PRODUCT_CONTEXT.md, dll)
 ├── prisma/
-│   ├── schema.prisma     # Skema Prisma (Category, Brand, Location, Item, StockLog)
-│   ├── seed.ts           # Script seeding data demo awal (Unit SN & Master Data)
-│   └── dev.db            # Database SQLite lokal (otomatis dibuat & diabaikan oleh git)
+│   ├── schema.prisma     # Skema Prisma PostgreSQL (Category, Brand, Location, Item, StockLog, Handover)
+│   └── seed.ts           # Script seeding data demo awal ke Supabase
 ├── src/
 │   ├── app/
-│   │   ├── actions/      # Server Actions Next.js (items.ts, master-data.ts, logs.ts)
+│   │   ├── actions/      # Server Actions Next.js (items.ts, master-data.ts, logs.ts, handovers.ts, officers.ts)
 │   │   ├── items/        # Halaman Inventaris, Management Unit SN & Opname
 │   │   ├── categories/   # Halaman Master Kategori & Prefix SKU
 │   │   ├── brands/       # Halaman Master Merk / Brand
 │   │   ├── locations/    # Halaman Master Lokasi Storage
 │   │   ├── logs/         # Halaman Complete Audit Trail Mutasi Stok
+│   │   ├── officers/     # Halaman Master Petugas / Penanggung Jawab
+│   │   ├── handovers/    # Halaman Berita Acara Serah Terima Barang (Form & Cetak PDF)
 │   │   ├── globals.css   # Theme & styling Tailwind global
 │   │   ├── layout.tsx    # Root Layout (Sidebar Navigation + Header)
 │   │   └── page.tsx      # Dashboard Utama & Analytics Center
-│   ├── components/       # Component UI (Item Modal, Status Modal, Mutasi Modal, Master Data Form)
+│   ├── components/       # Component UI (Modal, Client Views, Form)
 │   └── lib/
 │       ├── db.ts         # Singleton client instance Prisma Client
 │       └── sku.ts        # Helper logika generator otomatisasi SKU
-├── .env                  # File environment konfigurasi database
+├── netlify.toml          # Konfigurasi automated build & runtime Netlify Next.js
+├── .env.example          # Template kredensial Supabase PostgreSQL
+├── .env                  # File environment lokal
 ├── .gitignore            # Pengabaian secrets & build artifacts
 ├── package.json          # Dependency & script npm
 └── README.md             # Dokumentasi panduan proyek
@@ -276,10 +306,10 @@ npm run start
 | :--- | :--- |
 | `npm run dev` | Menjalankan Next.js dev server pada `http://localhost:3000` |
 | `npm run prisma:generate` | Memperbarui tipe Prisma Client setelah perubahan skema |
-| `npm run prisma:push` | Menyinkronkan `schema.prisma` ke database SQLite (`dev.db`) |
-| `npm run prisma:seed` | Mengisi data master awal dan unit sampel Serial Number |
+| `npm run prisma:push` | Menyinkronkan `schema.prisma` ke cloud database Supabase PostgreSQL |
+| `npm run prisma:seed` | Mengisi data master awal dan unit sampel Serial Number ke Supabase |
 | `npx prisma studio` | Membuka GUI database browser di `http://localhost:5555` |
-| `npx prisma db push --force-reset` | Melakukan reset total database SQLite jika skema rusak |
+| `npx prisma db push --force-reset` | Melakukan reset total database Supabase jika skema perlu direset ulang |
 
 ---
 
