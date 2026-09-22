@@ -19,9 +19,9 @@ export async function getStockLogs(params?: LogFilterParams) {
 
   if (search) {
     whereClause.OR = [
-      { notes: { contains: search } },
-      { item: { name: { contains: search } } },
-      { item: { itemCode: { contains: search } } },
+      { notes: { contains: search, mode: 'insensitive' } },
+      { item: { name: { contains: search, mode: 'insensitive' } } },
+      { item: { itemCode: { contains: search, mode: 'insensitive' } } },
     ];
   }
 

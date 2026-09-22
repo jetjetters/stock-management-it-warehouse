@@ -24,11 +24,11 @@ export async function getItems(params?: ItemFilterParams) {
 
   if (search) {
     whereClause.OR = [
-      { name: { contains: search } },
-      { itemCode: { contains: search } },
-      { serialNumber: { contains: search } },
-      { description: { contains: search } },
-      { brand: { name: { contains: search } } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { itemCode: { contains: search, mode: 'insensitive' } },
+      { serialNumber: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
+      { brand: { name: { contains: search, mode: 'insensitive' } } },
     ];
   }
 
