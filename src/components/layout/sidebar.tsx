@@ -190,7 +190,7 @@ export function Sidebar() {
     >
       {/* Brand Header */}
       <div
-        className="p-4 border-b flex items-center space-x-3 transition-colors duration-150"
+        className="p-4 border-b flex items-center space-x-3 bg-transparent transition-colors duration-150"
         style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -216,7 +216,7 @@ export function Sidebar() {
 
       {/* Footer Info */}
       <div
-        className="p-3 border-t text-[10px] text-gray-400 text-center select-none font-mono transition-colors duration-150"
+        className="p-3 border-t bg-transparent text-[10px] text-gray-400 text-center select-none font-mono transition-colors duration-150"
         style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
       >
         {config.appTitle || 'IT Warehouse'} • 2026

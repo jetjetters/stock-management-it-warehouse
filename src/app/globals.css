@@ -411,6 +411,24 @@ main .dashboard-metric-card:hover .group-hover\:bg-white\/20 {
   color: #ffffff !important;
 }
 
+/* Sidebar Header & Footer seamless blend (no gray overlays) */
+aside > div:first-child,
+aside > div:last-child {
+  background-color: transparent !important;
+}
+
+/* ==============================================================================
+   8. PRESET THEME CARDS CONTRAST PROTECTION
+   Prevents theme labels from disappearing when switching dark/light themes
+   ============================================================================== */
+.preset-card-title.dark-text {
+  color: #0f172a !important;
+}
+
+.preset-card-title.light-text {
+  color: #ffffff !important;
+}
+
 /* Ensure official print documents remain pristine black on white */
 .print-clean-container,
 .print-clean-container * {

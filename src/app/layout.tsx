@@ -24,9 +24,20 @@ export default async function RootLayout({
   const isDark =
     getLuminance(initialConfig.cardBackgroundColor || '#ffffff') < 0.45 ||
     getLuminance(initialConfig.backgroundColor || '#f8fafc') < 0.45;
+  const sidebarLum = getLuminance(initialConfig.sidebarBackgroundColor || '#ffffff');
+  const isSidebarDark = sidebarLum < 0.45;
+  const sidebarHoverBg = isSidebarDark
+    ? (sidebarLum < 0.02
+        ? 'rgba(255, 255, 255, 0.08)'
+        : adjustBrightness(initialConfig.sidebarBackgroundColor || '#ffffff', -45))
+    : 'rgba(0, 0, 0, 0.05)';
+
+  const htmlClasses = [isDark && 'dark-theme', isSidebarDark && 'dark-sidebar']
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <html lang="id" className={isDark ? 'dark-theme' : undefined}>
+    <html lang="id" className={htmlClasses || undefined}>
       <head>
         <style
           id="theme-server-variables"
@@ -46,6 +57,7 @@ export default async function RootLayout({
                 --card-bg: ${initialConfig.cardBackgroundColor};
                 --card-border: ${initialConfig.cardBorderColor};
                 --sidebar-bg: ${initialConfig.sidebarBackgroundColor};
+                --sidebar-hover-bg: ${sidebarHoverBg};
               }
             `,
           }}

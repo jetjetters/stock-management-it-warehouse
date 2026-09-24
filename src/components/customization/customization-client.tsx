@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AppConfigData, DEFAULT_CONFIG } from '@/lib/config';
 import { useCustomization } from '@/components/providers/customization-provider';
+import { getLuminance } from '@/lib/color-utils';
 import {
   Palette,
   Image as ImageIcon,
@@ -449,33 +450,52 @@ export function CustomizationClient({ initialConfig }: CustomizationClientProps)
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-              {THEME_PRESETS.map((preset) => (
-                <button
-                  key={preset.name}
-                  type="button"
-                  onClick={() => applyPreset(preset)}
-                  className={`p-3 rounded-xl border text-left transition hover:scale-105 cursor-pointer flex flex-col justify-between h-24 ${
-                    formData.primaryColor === preset.primary
-                      ? 'ring-2 ring-blue-500 shadow-md'
-                      : 'border-gray-200'
-                  }`}
-                  style={{ backgroundColor: preset.background }}
-                >
-                  <div className="flex items-center space-x-1.5">
+              {THEME_PRESETS.map((preset) => {
+                const isDarkCard = getLuminance(preset.background) < 0.45;
+                const isSelected =
+                  formData.primaryColor.toLowerCase() === preset.primary.toLowerCase() &&
+                  formData.backgroundColor.toLowerCase() === preset.background.toLowerCase();
+
+                return (
+                  <button
+                    key={preset.name}
+                    type="button"
+                    onClick={() => applyPreset(preset)}
+                    className={`p-3 rounded-xl border text-left transition hover:scale-105 cursor-pointer flex flex-col justify-between h-24 ${
+                      isSelected
+                        ? 'ring-2 ring-blue-500 shadow-md'
+                        : isDarkCard
+                        ? 'border-slate-700/80 hover:border-slate-600'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    style={{ backgroundColor: preset.background }}
+                  >
+                    <div className="flex items-center space-x-1.5">
+                      <span
+                        className="w-4 h-4 rounded-full border border-white/60 shadow-xs"
+                        style={{ backgroundColor: preset.primary }}
+                      />
+                      <span
+                        className="w-3 h-3 rounded-full border"
+                        style={{
+                          backgroundColor: preset.cardBg,
+                          borderColor: isDarkCard ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.15)',
+                        }}
+                      />
+                    </div>
                     <span
-                      className="w-4 h-4 rounded-full border border-white shadow-xs"
-                      style={{ backgroundColor: preset.primary }}
-                    />
-                    <span
-                      className="w-3 h-3 rounded-full border border-gray-200"
-                      style={{ backgroundColor: preset.cardBg }}
-                    />
-                  </div>
-                  <span className="text-[11px] font-bold text-gray-800 leading-tight">
-                    {preset.name}
-                  </span>
-                </button>
-              ))}
+                      className={`preset-card-title keep-color text-[11px] font-bold leading-tight ${
+                        isDarkCard ? 'light-text' : 'dark-text'
+                      }`}
+                      style={{
+                        color: isDarkCard ? '#ffffff' : '#0f172a',
+                      }}
+                    >
+                      {preset.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
