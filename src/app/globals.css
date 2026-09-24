@@ -63,16 +63,6 @@ main {
   background-color: var(--primary) !important;
 }
 
-.hover\:bg-\[\#b90051\]:hover {
-  background-color: var(--primary) !important;
-}
-
-.hover\:bg-\[\#a00045\]:hover,
-.hover\:bg-\[\#8f003e\]:hover,
-.hover\:bg-\[\#8a003b\]:hover {
-  background-color: var(--primary-hover) !important;
-}
-
 .text-\[\#b90051\],
 .text-\[\#a00045\],
 .text-\[\#8f003e\],
@@ -80,26 +70,8 @@ main {
   color: var(--primary) !important;
 }
 
-.hover\:text-\[\#b90051\]:hover,
-.hover\:text-\[\#8a003b\]:hover {
-  color: var(--primary) !important;
-}
-
-.group:hover .group-hover\:text-\[\#b90051\] {
-  color: var(--primary) !important;
-}
-
 .border-\[\#b90051\],
 .border-\[\#a00045\] {
-  border-color: var(--primary) !important;
-}
-
-.hover\:border-\[\#b90051\]:hover,
-.hover\:border-\[\#a00045\]:hover {
-  border-color: var(--primary) !important;
-}
-
-.group:hover .group-hover\:border-\[\#b90051\] {
   border-color: var(--primary) !important;
 }
 
@@ -123,15 +95,6 @@ main {
   background-color: var(--primary-light) !important;
 }
 
-.hover\:bg-\[\#fff0f4\]:hover,
-.hover\:bg-\[\#fae2ea\]:hover,
-.hover\:bg-\[\#fad2df\]:hover,
-.hover\:bg-\[\#f8c0d3\]:hover,
-.hover\:bg-\[\#fff5f8\]:hover,
-.hover\:bg-\[\#fce7ee\]\/30:hover {
-  background-color: var(--primary-light) !important;
-}
-
 .border-\[\#f5b8cc\],
 .border-\[\#f8c8d8\],
 .border-\[\#f0a8bf\],
@@ -139,10 +102,6 @@ main {
 .border-\[\#e8b5c4\],
 .border-\[\#f5b8cc\]\/50,
 .border-\[\#f5b8cc\]\/60 {
-  border-color: var(--primary-border) !important;
-}
-
-.hover\:border-\[\#f5b8cc\]:hover {
   border-color: var(--primary-border) !important;
 }
 
@@ -260,6 +219,141 @@ main .bg-gray-50\/75 {
 
 .dark-theme main table tr:hover:not(.no-hover) {
   background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* ==============================================================================
+   6. INTERACTIVE HOVER & GROUP-HOVER OVERRIDES (Highest Cascade Priority)
+   Ensures card and button hover styles override static card-bg and dark-theme rules
+   ============================================================================== */
+
+/* A. Dashboard Metric Cards & Primary Hover Backgrounds */
+.dashboard-metric-card:hover,
+main .dashboard-metric-card:hover,
+div.dashboard-metric-card:hover,
+.hover\:bg-\[\#b90051\]:hover,
+main .hover\:bg-\[\#b90051\]:hover,
+main div.hover\:bg-\[\#b90051\]:hover,
+main a.hover\:bg-\[\#b90051\]:hover,
+main button.hover\:bg-\[\#b90051\]:hover,
+.bg-white.hover\:bg-\[\#b90051\]:hover,
+main .bg-white.hover\:bg-\[\#b90051\]:hover,
+main .bg-white.rounded-2xl.hover\:bg-\[\#b90051\]:hover,
+main .bg-white.rounded-xl.hover\:bg-\[\#b90051\]:hover {
+  background-color: var(--primary) !important;
+}
+
+/* B. Hover Border Color Overrides */
+.dashboard-metric-card:hover,
+main .dashboard-metric-card:hover,
+.hover\:border-\[\#a00045\]:hover,
+.hover\:border-\[\#b90051\]:hover,
+main .hover\:border-\[\#a00045\]:hover,
+main .hover\:border-\[\#b90051\]:hover,
+main div.hover\:border-\[\#a00045\]:hover,
+main a.hover\:border-\[\#a00045\]:hover,
+main button.hover\:border-\[\#a00045\]:hover,
+main .border-gray-200.hover\:border-\[\#a00045\]:hover,
+main .border-gray-200.rounded-2xl.hover\:border-\[\#a00045\]:hover,
+main .border-gray-200.rounded-xl.hover\:border-\[\#a00045\]:hover {
+  border-color: var(--primary-hover, var(--primary)) !important;
+}
+
+/* C. Hover Shadow Overrides */
+.dashboard-metric-card:hover,
+main .dashboard-metric-card:hover,
+.hover\:shadow-\[\#b90051\]\/20:hover,
+.hover\:shadow-\[\#b90051\]\/30:hover,
+main .hover\:shadow-\[\#b90051\]\/20:hover,
+main .hover\:shadow-\[\#b90051\]\/30:hover {
+  box-shadow: 0 10px 15px -3px var(--primary-shadow, rgba(0, 0, 0, 0.15)), 0 4px 6px -4px var(--primary-shadow, rgba(0, 0, 0, 0.15)) !important;
+}
+
+/* D. Darker Primary Hover (solid primary buttons like submit / save) */
+.hover\:bg-\[\#a00045\]:hover,
+.hover\:bg-\[\#8f003e\]:hover,
+.hover\:bg-\[\#8a003b\]:hover,
+main .hover\:bg-\[\#a00045\]:hover,
+main .hover\:bg-\[\#8f003e\]:hover,
+main .hover\:bg-\[\#8a003b\]:hover,
+main button.hover\:bg-\[\#a00045\]:hover,
+main a.hover\:bg-\[\#a00045\]:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+/* E. Light Tint Hovers */
+.hover\:bg-\[\#fae2ea\]:hover,
+.hover\:bg-\[\#fad2df\]:hover,
+.hover\:bg-\[\#f8c0d3\]:hover,
+.hover\:bg-\[\#fff0f4\]:hover,
+.hover\:bg-\[\#fff5f8\]:hover,
+.hover\:bg-\[\#fce7ee\]\/30:hover,
+main .hover\:bg-\[\#fae2ea\]:hover,
+main .hover\:bg-\[\#fad2df\]:hover,
+main .hover\:bg-\[\#f8c0d3\]:hover,
+main .hover\:bg-\[\#fff0f4\]:hover,
+main .hover\:bg-\[\#fff5f8\]:hover,
+main .bg-white.hover\:bg-\[\#fae2ea\]:hover,
+main .bg-white.hover\:bg-\[\#fad2df\]:hover {
+  background-color: var(--primary-light) !important;
+}
+
+/* F. Light Border Hovers */
+.hover\:border-\[\#f5b8cc\]:hover,
+main .hover\:border-\[\#f5b8cc\]:hover,
+main .border-gray-200.hover\:border-\[\#f5b8cc\]:hover {
+  border-color: var(--primary-border) !important;
+}
+
+/* G. Hover Text Colors */
+.hover\:text-white:hover,
+main .hover\:text-white:hover,
+main a.hover\:text-white:hover,
+main button.hover\:text-white:hover {
+  color: #ffffff !important;
+}
+
+.hover\:text-\[\#b90051\]:hover,
+.hover\:text-\[\#8a003b\]:hover,
+main .hover\:text-\[\#b90051\]:hover,
+main .hover\:text-\[\#8a003b\]:hover {
+  color: var(--primary) !important;
+}
+
+/* H. Group-Hover Children Overrides (Cards, Rows, Composite Components) */
+.group:hover .group-hover\:text-white,
+.dashboard-metric-card:hover .group-hover\:text-white,
+main .group:hover .group-hover\:text-white,
+main .dashboard-metric-card:hover .group-hover\:text-white {
+  color: #ffffff !important;
+}
+
+.group:hover .group-hover\:text-white\/80,
+.dashboard-metric-card:hover .group-hover\:text-white\/80,
+main .group:hover .group-hover\:text-white\/80,
+main .dashboard-metric-card:hover .group-hover\:text-white\/80 {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.group:hover .group-hover\:text-white\/90,
+.dashboard-metric-card:hover .group-hover\:text-white\/90,
+main .group:hover .group-hover\:text-white\/90,
+main .dashboard-metric-card:hover .group-hover\:text-white\/90 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.group:hover .group-hover\:bg-white\/20,
+.dashboard-metric-card:hover .group-hover\:bg-white\/20,
+main .group:hover .group-hover\:bg-white\/20,
+main .dashboard-metric-card:hover .group-hover\:bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.group:hover .group-hover\:text-\[\#b90051\] {
+  color: var(--primary) !important;
+}
+
+.group:hover .group-hover\:border-\[\#b90051\] {
+  border-color: var(--primary) !important;
 }
 
 /* Ensure official print documents remain pristine black on white */

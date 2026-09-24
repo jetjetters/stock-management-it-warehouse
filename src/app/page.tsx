@@ -87,7 +87,7 @@ export default async function DashboardPage() {
       {/* 5 Analytics Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* TOTAL ASET */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
+        <div className="dashboard-metric-card bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               TOTAL ASET
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ASET TERSEDIA */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
+        <div className="dashboard-metric-card bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET TERSEDIA
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ASET DIPAKAI */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
+        <div className="dashboard-metric-card bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET DIPAKAI
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ASET RUSAK */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
+        <div className="dashboard-metric-card bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               ASET RUSAK
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* HABIS PAKAI (BARANG) */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
+        <div className="dashboard-metric-card bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-sm hover:bg-[#b90051] hover:border-[#a00045] hover:shadow-md hover:shadow-[#b90051]/20 transition-all duration-200 group cursor-pointer">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 group-hover:text-white/80 uppercase tracking-wider transition-colors">
               HABIS PAKAI (BARANG)
