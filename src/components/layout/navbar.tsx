@@ -24,7 +24,13 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className="h-16 bg-white/95 backdrop-blur-md border-b border-gray-200 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 select-none">
+    <header
+      className="h-16 backdrop-blur-md border-b px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 select-none transition-colors duration-200"
+      style={{
+        backgroundColor: config.cardBackgroundColor ? `${config.cardBackgroundColor}f0` : 'rgba(255, 255, 255, 0.95)',
+        borderColor: config.cardBorderColor || '#e2e8f0',
+      }}
+    >
       <div className="flex items-center space-x-2.5 text-gray-700 text-sm font-medium">
         <Clock className="w-4 h-4" style={{ color: config.primaryColor }} />
         <span>{timeString || config.appTitle || 'IT Warehouse System'}</span>

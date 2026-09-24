@@ -184,11 +184,17 @@ export function Sidebar() {
 
   return (
     <aside
-      className="w-64 border-r border-gray-200 flex flex-col h-screen sticky top-0 z-20 select-none shrink-0 shadow-xs transition-colors duration-150"
-      style={{ backgroundColor: config.sidebarBackgroundColor || '#ffffff' }}
+      className="w-64 border-r flex flex-col h-screen sticky top-0 z-20 select-none shrink-0 shadow-xs transition-colors duration-150"
+      style={{
+        backgroundColor: config.sidebarBackgroundColor || '#ffffff',
+        borderColor: config.cardBorderColor || '#e2e8f0',
+      }}
     >
       {/* Brand Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center space-x-3 bg-white/60 backdrop-blur-xs">
+      <div
+        className="p-4 border-b flex items-center space-x-3 bg-white/40 backdrop-blur-xs transition-colors duration-150"
+        style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={config.appLogo || '/logo.png'}
@@ -211,7 +217,10 @@ export function Sidebar() {
       </Suspense>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-gray-100 bg-gray-50/50 text-[10px] text-gray-400 text-center select-none font-mono">
+      <div
+        className="p-3 border-t bg-gray-50/50 text-[10px] text-gray-400 text-center select-none font-mono transition-colors duration-150"
+        style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
+      >
         {config.appTitle || 'IT Warehouse'} • 2026
       </div>
     </aside>

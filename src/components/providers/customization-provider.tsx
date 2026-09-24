@@ -4,6 +4,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { updateAppConfig, resetAppConfig } from '@/app/actions/config';
 import { AppConfigData, DEFAULT_CONFIG } from '@/lib/config';
 
+import { hexToRgb, adjustBrightness, getLuminance } from '@/lib/color-utils';
+
 type CustomizationContextType = {
   config: AppConfigData;
   setLocalConfig: (data: Partial<AppConfigData>) => void;
@@ -18,14 +20,49 @@ function applyThemeVariables(config: AppConfigData): void {
   if (typeof document === 'undefined') return;
 
   const root = document.documentElement;
-  root.style.setProperty('--primary', config.primaryColor);
-  root.style.setProperty('--accent', config.primaryColor);
-  root.style.setProperty('--background', config.backgroundColor);
-  root.style.setProperty('--card-bg', config.cardBackgroundColor);
-  root.style.setProperty('--card-border', config.cardBorderColor);
+  const primary = config.primaryColor || '#b90051';
+  const primaryRgb = hexToRgb(primary);
+  const hoverColor = adjustBrightness(primary, -15);
+  const gradFrom = adjustBrightness(primary, 15);
+  const gradTo = adjustBrightness(primary, -25);
 
-  // Apply background to body
-  document.body.style.backgroundColor = config.backgroundColor;
+  root.style.setProperty('--primary', primary);
+  root.style.setProperty('--accent', primary);
+  root.style.setProperty('--primary-hover', hoverColor);
+  root.style.setProperty('--primary-light', `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.12)`);
+  root.style.setProperty('--primary-border', `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.28)`);
+  root.style.setProperty('--primary-shadow', `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.25)`);
+  root.style.setProperty('--primary-gradient-from', gradFrom);
+  root.style.setProperty('--primary-gradient-via', primary);
+  root.style.setProperty('--primary-gradient-to', gradTo);
+
+  const bg = config.backgroundColor || '#f8fafc';
+  const cardBg = config.cardBackgroundColor || '#ffffff';
+  const cardBorder = config.cardBorderColor || '#e2e8f0';
+  const sidebarBg = config.sidebarBackgroundColor || '#ffffff';
+
+  root.style.setProperty('--background', bg);
+  root.style.setProperty('--card-bg', cardBg);
+  root.style.setProperty('--card-border', cardBorder);
+  root.style.setProperty('--sidebar-bg', sidebarBg);
+
+  // Apply directly to body element
+  document.body.style.backgroundColor = bg;
+
+  // Dark mode / contrast calculation
+  const cardLum = getLuminance(cardBg);
+  const bgLum = getLuminance(bg);
+  const isDark = cardLum < 0.45 || bgLum < 0.45;
+
+  if (isDark) {
+    root.classList.add('dark-theme');
+    root.style.setProperty('--table-header-bg', 'rgba(255, 255, 255, 0.05)');
+    root.style.setProperty('--foreground', '#f8fafc');
+  } else {
+    root.classList.remove('dark-theme');
+    root.style.setProperty('--table-header-bg', 'rgba(0, 0, 0, 0.02)');
+    root.style.setProperty('--foreground', '#0f172a');
+  }
 }
 
 export function CustomizationProvider({

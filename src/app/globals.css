@@ -7,11 +7,17 @@
   --foreground: #0f172a;
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
+  --sidebar-bg: #ffffff;
   --primary: #b90051;
-  --primary-hover: #a00045;
-  --primary-light: #fae2ea;
-  --primary-border: #f5b8cc;
+  --primary-hover: #9d0045;
+  --primary-light: rgba(185, 0, 81, 0.12);
+  --primary-border: rgba(185, 0, 81, 0.28);
+  --primary-shadow: rgba(185, 0, 81, 0.25);
+  --primary-gradient-from: #d84d7d;
+  --primary-gradient-via: #b90051;
+  --primary-gradient-to: #8b003d;
   --accent: #b90051;
+  --table-header-bg: rgba(0, 0, 0, 0.02);
 }
 
 body {
@@ -19,6 +25,12 @@ body {
   background: var(--background);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+main {
+  background-color: var(--background);
+  transition: background-color 0.2s ease;
 }
 
 /* Custom scrollbar */
@@ -35,4 +47,224 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ==============================================================================
+   DYNAMIC THEME ENGINE
+   Connects application UI elements across all pages to Customization Settings
+   ============================================================================== */
+
+/* 1. PRIMARY ACCENT COLOR OVERRIDES (BUTTONS, ACTIVE STATES, BADGES) */
+.bg-\[\#b90051\],
+.bg-\[\#a00045\],
+.bg-\[\#8f003e\],
+.bg-\[\#8a003b\],
+.bg-\[\#730030\] {
+  background-color: var(--primary) !important;
+}
+
+.hover\:bg-\[\#b90051\]:hover {
+  background-color: var(--primary) !important;
+}
+
+.hover\:bg-\[\#a00045\]:hover,
+.hover\:bg-\[\#8f003e\]:hover,
+.hover\:bg-\[\#8a003b\]:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+.text-\[\#b90051\],
+.text-\[\#a00045\],
+.text-\[\#8f003e\],
+.text-\[\#8a003b\] {
+  color: var(--primary) !important;
+}
+
+.hover\:text-\[\#b90051\]:hover,
+.hover\:text-\[\#8a003b\]:hover {
+  color: var(--primary) !important;
+}
+
+.group:hover .group-hover\:text-\[\#b90051\] {
+  color: var(--primary) !important;
+}
+
+.border-\[\#b90051\],
+.border-\[\#a00045\] {
+  border-color: var(--primary) !important;
+}
+
+.hover\:border-\[\#b90051\]:hover,
+.hover\:border-\[\#a00045\]:hover {
+  border-color: var(--primary) !important;
+}
+
+.group:hover .group-hover\:border-\[\#b90051\] {
+  border-color: var(--primary) !important;
+}
+
+.focus\:border-\[\#b90051\]:focus {
+  border-color: var(--primary) !important;
+}
+
+.focus\:ring-\[\#b90051\]:focus {
+  --tw-ring-color: var(--primary) !important;
+}
+
+/* 2. PRIMARY LIGHT TINTS (BADGES, SOFT ICONS, ACTIVE SUBMENU) */
+.bg-\[\#fae2ea\],
+.bg-\[\#fce7ee\],
+.bg-\[\#fff0f4\],
+.bg-\[\#fff5f8\],
+.bg-\[\#fff8fa\],
+.bg-\[\#fad2df\],
+.bg-\[\#f8c0d3\],
+.bg-\[\#fce7ee\]\/60 {
+  background-color: var(--primary-light) !important;
+}
+
+.hover\:bg-\[\#fff0f4\]:hover,
+.hover\:bg-\[\#fae2ea\]:hover,
+.hover\:bg-\[\#fad2df\]:hover,
+.hover\:bg-\[\#f8c0d3\]:hover,
+.hover\:bg-\[\#fff5f8\]:hover,
+.hover\:bg-\[\#fce7ee\]\/30:hover {
+  background-color: var(--primary-light) !important;
+}
+
+.border-\[\#f5b8cc\],
+.border-\[\#f8c8d8\],
+.border-\[\#f0a8bf\],
+.border-\[\#f0a8bf\]\/70,
+.border-\[\#e8b5c4\],
+.border-\[\#f5b8cc\]\/50,
+.border-\[\#f5b8cc\]\/60 {
+  border-color: var(--primary-border) !important;
+}
+
+.hover\:border-\[\#f5b8cc\]:hover {
+  border-color: var(--primary-border) !important;
+}
+
+/* 3. HERO & BANNER GRADIENTS */
+.from-\[\#d84d7d\],
+.from-\[\#b90051\] {
+  --tw-gradient-from: var(--primary-gradient-from, var(--primary)) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(0, 0, 0, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.via-\[\#bd245a\],
+.via-\[\#a00045\] {
+  --tw-gradient-to: rgba(0, 0, 0, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--primary-gradient-via, var(--primary)) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.to-\[\#a80e4b\],
+.to-\[\#730030\] {
+  --tw-gradient-to: var(--primary-gradient-to, var(--primary-hover)) var(--tw-gradient-to-position) !important;
+}
+
+.shadow-\[\#b90051\]\/20,
+.shadow-\[\#b90051\]\/30,
+.shadow-\[\#b90051\]\/10 {
+  box-shadow: 0 4px 14px 0 var(--primary-shadow, rgba(0, 0, 0, 0.15)) !important;
+}
+
+/* 4. CARD BACKGROUND & BORDER OVERRIDES ACROSS ALL PAGES */
+main .bg-white:not(.keep-white),
+.bg-white.rounded-2xl:not(.keep-white),
+.bg-white.rounded-xl:not(.keep-white),
+.bg-white.rounded-3xl:not(.keep-white),
+.bg-white.shadow-sm:not(.keep-white),
+.bg-white.shadow-md:not(.keep-white),
+.bg-white.shadow-2xl:not(.keep-white),
+.bg-white.p-4:not(.keep-white),
+.bg-white.p-5:not(.keep-white),
+.bg-white.p-6:not(.keep-white),
+.app-card {
+  background-color: var(--card-bg) !important;
+}
+
+main .border-gray-200:not(.keep-border),
+main .border-slate-200:not(.keep-border),
+.border-gray-200.rounded-2xl:not(.keep-border),
+.border-gray-200.rounded-xl:not(.keep-border),
+.border-gray-200.rounded-3xl:not(.keep-border),
+.border-gray-200.p-4:not(.keep-border),
+.border-gray-200.p-5:not(.keep-border),
+.border-gray-200.p-6:not(.keep-border) {
+  border-color: var(--card-border) !important;
+}
+
+/* Table header adaptation */
+main table thead tr.bg-gray-50,
+main table thead tr.bg-gray-50\/75,
+main table thead tr.bg-gray-50\/50,
+main .bg-gray-50\/50,
+main .bg-gray-50\/75 {
+  background-color: var(--table-header-bg) !important;
+}
+
+/* 5. DARK THEME CONTRAST & ADAPTATION */
+.dark-theme body,
+.dark-theme main {
+  color: #f1f5f9 !important;
+}
+
+.dark-theme h1:not(.keep-color),
+.dark-theme h2:not(.keep-color),
+.dark-theme h3:not(.keep-color),
+.dark-theme h4:not(.keep-color),
+.dark-theme .text-gray-900:not(.keep-color),
+.dark-theme .text-slate-900:not(.keep-color),
+.dark-theme .text-gray-800:not(.keep-color),
+.dark-theme .text-black:not(.keep-color) {
+  color: #f8fafc !important;
+}
+
+.dark-theme .text-gray-700:not(.keep-color),
+.dark-theme .text-slate-700:not(.keep-color),
+.dark-theme .text-gray-600:not(.keep-color),
+.dark-theme .text-slate-600:not(.keep-color) {
+  color: #cbd5e1 !important;
+}
+
+.dark-theme .text-gray-500:not(.keep-color),
+.dark-theme .text-slate-500:not(.keep-color),
+.dark-theme .text-gray-400:not(.keep-color) {
+  color: #94a3b8 !important;
+}
+
+/* Dark mode inputs & selects */
+.dark-theme input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not(.keep-input),
+.dark-theme select:not(.keep-input),
+.dark-theme textarea:not(.keep-input) {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Dark mode subtle containers */
+.dark-theme main .bg-gray-50:not(.keep-bg),
+.dark-theme main .bg-gray-100:not(.keep-bg),
+.dark-theme main .bg-slate-50:not(.keep-bg) {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme main table tr:hover:not(.no-hover) {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Ensure official print documents remain pristine black on white */
+.print-clean-container,
+.print-clean-container * {
+  color: #000000 !important;
+  background-color: #ffffff !important;
 }
