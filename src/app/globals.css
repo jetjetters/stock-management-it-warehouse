@@ -8,6 +8,7 @@
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
   --sidebar-bg: #ffffff;
+  --sidebar-hover-bg: rgba(0, 0, 0, 0.05);
   --primary: #b90051;
   --primary-hover: #9d0045;
   --primary-light: rgba(185, 0, 81, 0.12);
@@ -354,6 +355,60 @@ main .dashboard-metric-card:hover .group-hover\:bg-white\/20 {
 
 .group:hover .group-hover\:border-\[\#b90051\] {
   border-color: var(--primary) !important;
+}
+
+/* ==============================================================================
+   7. SIDEBAR NAVIGATION HOVER & THEME BLEND
+   ============================================================================== */
+.sidebar-nav-item {
+  color: #4b5563;
+  transition: all 0.15s ease;
+}
+
+.sidebar-nav-item .sidebar-nav-icon {
+  color: #9ca3af;
+  transition: color 0.15s ease;
+}
+
+.sidebar-nav-item:not(.active):hover {
+  background-color: var(--sidebar-hover-bg, rgba(0, 0, 0, 0.05)) !important;
+  color: #111827 !important;
+}
+
+.sidebar-nav-item:not(.active):hover .sidebar-nav-icon {
+  color: #374151 !important;
+}
+
+/* Dark Sidebar Navigation Items (Executive Dark & dark themes) */
+.dark-theme .sidebar-nav-item:not(.active),
+.dark-sidebar .sidebar-nav-item:not(.active) {
+  color: #94a3b8 !important;
+}
+
+.dark-theme .sidebar-nav-item:not(.active) .sidebar-nav-icon,
+.dark-sidebar .sidebar-nav-item:not(.active) .sidebar-nav-icon {
+  color: #64748b !important;
+}
+
+.dark-theme .sidebar-nav-item:not(.active):hover,
+.dark-sidebar .sidebar-nav-item:not(.active):hover {
+  background-color: var(--sidebar-hover-bg, #080d17) !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .sidebar-nav-item:not(.active):hover .sidebar-nav-icon,
+.dark-sidebar .sidebar-nav-item:not(.active):hover .sidebar-nav-icon {
+  color: #ffffff !important;
+}
+
+.dark-theme .sidebar-nav-item.active,
+.dark-sidebar .sidebar-nav-item.active {
+  color: #ffffff !important;
+}
+
+.dark-theme .sidebar-nav-item.active .sidebar-nav-icon,
+.dark-sidebar .sidebar-nav-item.active .sidebar-nav-icon {
+  color: #ffffff !important;
 }
 
 /* Ensure official print documents remain pristine black on white */

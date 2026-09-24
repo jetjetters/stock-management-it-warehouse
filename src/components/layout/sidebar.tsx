@@ -154,18 +154,16 @@ function SidebarContent() {
                       : undefined
                   }
                   className={clsx(
-                    'group flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs transition-all duration-150',
+                    'sidebar-nav-item group flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs transition-all duration-150',
                     isActive
-                      ? 'text-white font-bold'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 font-medium'
+                      ? 'active text-white font-bold'
+                      : 'font-medium'
                   )}
                 >
                   <Icon
                     className={clsx(
-                      'w-4 h-4 shrink-0 transition-colors',
-                      isActive
-                        ? 'text-white'
-                        : 'text-gray-400 group-hover:text-gray-700'
+                      'sidebar-nav-icon w-4 h-4 shrink-0 transition-colors',
+                      isActive ? 'text-white' : ''
                     )}
                   />
                   <span className="truncate">{item.label}</span>
@@ -192,7 +190,7 @@ export function Sidebar() {
     >
       {/* Brand Header */}
       <div
-        className="p-4 border-b flex items-center space-x-3 bg-white/40 backdrop-blur-xs transition-colors duration-150"
+        className="p-4 border-b flex items-center space-x-3 transition-colors duration-150"
         style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -218,7 +216,7 @@ export function Sidebar() {
 
       {/* Footer Info */}
       <div
-        className="p-3 border-t bg-gray-50/50 text-[10px] text-gray-400 text-center select-none font-mono transition-colors duration-150"
+        className="p-3 border-t text-[10px] text-gray-400 text-center select-none font-mono transition-colors duration-150"
         style={{ borderColor: config.cardBorderColor || '#e2e8f0' }}
       >
         {config.appTitle || 'IT Warehouse'} • 2026

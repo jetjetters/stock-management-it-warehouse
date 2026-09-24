@@ -52,7 +52,21 @@ function applyThemeVariables(config: AppConfigData): void {
   // Dark mode / contrast calculation
   const cardLum = getLuminance(cardBg);
   const bgLum = getLuminance(bg);
+  const sidebarLum = getLuminance(sidebarBg);
   const isDark = cardLum < 0.45 || bgLum < 0.45;
+  const isSidebarDark = sidebarLum < 0.45;
+
+  // Sidebar hover background: darker than sidebar in dark theme, subtle light tint in light theme
+  const sidebarHoverBg = isSidebarDark
+    ? (sidebarLum < 0.02 ? 'rgba(255, 255, 255, 0.08)' : adjustBrightness(sidebarBg, -45))
+    : 'rgba(0, 0, 0, 0.05)';
+  root.style.setProperty('--sidebar-hover-bg', sidebarHoverBg);
+
+  if (isSidebarDark) {
+    root.classList.add('dark-sidebar');
+  } else {
+    root.classList.remove('dark-sidebar');
+  }
 
   if (isDark) {
     root.classList.add('dark-theme');
