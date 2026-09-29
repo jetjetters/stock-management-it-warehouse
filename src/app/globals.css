@@ -210,12 +210,128 @@ main .bg-gray-50\/75 {
   color: #64748b !important;
 }
 
-/* Dark mode subtle containers */
-.dark-theme main .bg-gray-50:not(.keep-bg),
-.dark-theme main .bg-gray-100:not(.keep-bg),
-.dark-theme main .bg-slate-50:not(.keep-bg) {
+/* Dark mode subtle containers & panels (removes grey across tables, modals, cards) */
+.dark-theme [class~="bg-gray-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-gray-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-gray-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class~="bg-gray-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-gray-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-gray-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class~="bg-gray-200"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-gray-200"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-gray-200"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class~="bg-slate-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-slate-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-slate-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class~="bg-slate-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-slate-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-slate-100"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class~="bg-zinc-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class*=" bg-zinc-50"]:not(.keep-bg):not(.keep-white),
+.dark-theme [class^="bg-zinc-50"]:not(.keep-bg):not(.keep-white) {
   background-color: rgba(255, 255, 255, 0.04) !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark mode hover overrides on gray/slate utility buttons */
+.dark-theme [class*="hover:bg-gray-50"]:hover:not(.keep-bg):not(.keep-white),
+.dark-theme [class*="hover:bg-gray-100"]:hover:not(.keep-bg):not(.keep-white),
+.dark-theme [class*="hover:bg-gray-200"]:hover:not(.keep-bg):not(.keep-white),
+.dark-theme [class*="hover:bg-slate-50"]:hover:not(.keep-bg):not(.keep-white),
+.dark-theme [class*="hover:bg-slate-100"]:hover:not(.keep-bg):not(.keep-white) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Expanded SN table rows in inventory */
+.dark-theme tr.expanded-sn-row,
+.dark-theme tr.expanded-sn-row > td {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Procedure Page Specific Elements in Dark Theme */
+.dark-theme .procedure-cta-banner {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(15, 23, 42, 0.9)) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+.dark-theme .procedure-cta-banner h3 {
+  color: #f8fafc !important;
+}
+
+.dark-theme .procedure-cta-banner p {
+  color: #94a3b8 !important;
+}
+
+.dark-theme .faq-accordion-btn,
+.dark-theme button.faq-accordion-btn {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-theme .faq-accordion-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* High-contrast Badges & Pills in Dark Theme */
+.dark-theme .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+.dark-theme .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #34d399 !important;
+}
+
+.dark-theme .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  color: #60a5fa !important;
+}
+
+.dark-theme .bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+  color: #c084fc !important;
+}
+
+.dark-theme .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  color: #fb7185 !important;
+}
+
+.dark-theme .text-amber-700 {
+  color: #fbbf24 !important;
+}
+
+.dark-theme .text-emerald-700 {
+  color: #34d399 !important;
+}
+
+.dark-theme .text-purple-700 {
+  color: #c084fc !important;
+}
+
+.dark-theme .text-rose-700 {
+  color: #fb7185 !important;
+}
+
+/* Explicit Keep-white Guarantee */
+.keep-white {
+  background-color: #ffffff !important;
+}
+
+.keep-white:hover {
+  background-color: #f8fafc !important;
+}
+
+.keep-white.text-\[\#b90051\],
+.keep-white .text-\[\#b90051\] {
+  color: var(--primary) !important;
 }
 
 .dark-theme main table tr:hover:not(.no-hover) {

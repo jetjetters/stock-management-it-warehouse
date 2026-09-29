@@ -86,10 +86,10 @@ export function ProcedureClient() {
           <div className="pt-2 flex flex-wrap gap-3">
             <Link
               href="/items/new"
-              className="px-5 py-3 bg-white text-[#b90051] hover:bg-rose-50 font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center space-x-2 cursor-pointer"
+              className="px-5 py-3 bg-white keep-white text-[#b90051] hover:bg-white/95 font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center space-x-2 cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 text-[#b90051]" />
-              <span>Mulai Input Unit Barang Sekarang</span>
+              <span className="text-[#b90051]">Mulai Input Unit Barang Sekarang</span>
             </Link>
 
             <Link
@@ -186,19 +186,19 @@ export function ProcedureClient() {
           {/* Card 4: Unit Barang */}
           <div className="bg-[#b90051] text-white rounded-2xl p-5 space-y-3 shadow-md">
             <div className="flex items-center justify-between">
-              <span className="w-7 h-7 rounded-full bg-white text-[#b90051] text-xs font-bold flex items-center justify-center">
+              <span className="w-7 h-7 rounded-full bg-white keep-white text-[#b90051] text-xs font-bold flex items-center justify-center shadow-xs">
                 4
               </span>
-              <Package className="w-5 h-5 text-rose-200" />
+              <Package className="w-5 h-5 text-white/80" />
             </div>
             <div>
               <h3 className="font-bold text-white text-sm">Unit Barang (SN)</h3>
-              <p className="text-[11px] text-rose-100 mt-1">
+              <p className="text-[11px] text-white/90 mt-1">
                 Data final inventaris yang menggabungkan <strong>Kategori + Merk + Lokasi + Nama Model + Serial Number (SN)</strong> unik.
               </p>
             </div>
             <div className="pt-2 border-t border-white/20 flex justify-between items-center text-[10.5px]">
-              <span className="font-semibold text-rose-200">Hasil Akhir</span>
+              <span className="font-semibold text-white/80">Hasil Akhir</span>
               <Link href="/items/new" className="font-bold text-white hover:underline">
                 Form Input →
               </Link>
@@ -496,7 +496,7 @@ export function ProcedureClient() {
                 <button
                   type="button"
                   onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-gray-50/60 hover:bg-[#fce7ee]/30 transition cursor-pointer"
+                  className="faq-accordion-btn w-full flex items-center justify-between p-4 sm:p-5 text-left bg-gray-50/60 hover:bg-[#fce7ee]/30 transition cursor-pointer"
                 >
                   <span className="font-bold text-gray-900 text-xs sm:text-sm pr-4">
                     {faq.question}
@@ -520,7 +520,7 @@ export function ProcedureClient() {
       </div>
 
       {/* Bottom CTA Box */}
-      <div className="bg-gradient-to-r from-[#fce7ee] via-rose-50 to-[#fce7ee] border-2 border-[#f5b8cc] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
+      <div className="procedure-cta-banner bg-gradient-to-r from-[#fce7ee] via-rose-50 to-[#fce7ee] border-2 border-[#f5b8cc] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
         <div className="space-y-1">
           <h3 className="font-bold text-gray-900 text-base sm:text-lg">
             Siap Menambahkan Barang ke Inventaris?

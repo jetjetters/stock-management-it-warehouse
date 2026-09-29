@@ -653,7 +653,7 @@ export function ItemsClient({
 
                         {/* Collapsible Child Rows (Physical SN Units) */}
                         {isExpanded && (
-                          <tr className="bg-gray-50/70 border-b border-gray-200">
+                          <tr className="expanded-sn-row bg-gray-50/70 border-b border-gray-200">
                             <td colSpan={activeTab === 'DEVICE' ? 8 : 7} className="p-4 pl-12">
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
@@ -673,7 +673,7 @@ export function ItemsClient({
                                     className="px-3 py-1 bg-[#b90051] hover:bg-[#8f003e] text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-sm cursor-pointer"
                                   >
                                     <Plus className="w-3.5 h-3.5" />
-                                    <span>+ Tambah Unit SN ({group.name})</span>
+                                    <span>Tambah Unit SN ({group.name})</span>
                                   </button>
                                 </div>
 
