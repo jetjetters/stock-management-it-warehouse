@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Navbar } from '@/components/layout/navbar';
+import { TopLoadingBar } from '@/components/layout/top-loading-bar';
 import { CustomizationProvider } from '@/components/providers/customization-provider';
 import { getAppConfig } from '@/app/actions/config';
 import { hexToRgb, adjustBrightness, getLuminance } from '@/lib/color-utils';
@@ -65,6 +67,9 @@ export default async function RootLayout({
       </head>
       <body className="flex min-h-screen antialiased" style={{ backgroundColor: 'var(--background)' }}>
         <CustomizationProvider initialConfig={initialConfig}>
+          <Suspense fallback={null}>
+            <TopLoadingBar />
+          </Suspense>
           <Sidebar />
           <div className="flex-1 flex flex-col min-w-0" style={{ backgroundColor: 'var(--background)' }}>
             <Navbar />
