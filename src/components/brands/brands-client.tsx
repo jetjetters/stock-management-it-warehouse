@@ -13,6 +13,7 @@ import {
   Search,
   Filter,
   RotateCcw,
+  MapPin,
 } from 'lucide-react';
 import { deleteBrand } from '@/app/actions/master-data';
 import { BrandModal } from '@/components/brands/brand-modal';
@@ -254,7 +255,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-xl bg-[#f5b8cc]/60 text-[#b90051] flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-[#fae2ea] text-[#b90051] border border-[#f5b8cc] flex items-center justify-center shrink-0">
                         <Layers className="w-4 h-4" />
                       </div>
                       <div>
@@ -270,14 +271,14 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                           setIsModalOpen(true);
                         }}
                         title="Edit Merk"
-                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#fae2ea] rounded-lg transition cursor-pointer"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget({ id: brand.id, name: brand.name })}
                         title="Hapus Merk"
-                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#fae2ea] rounded-lg transition cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -295,10 +296,10 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                   <button
                     type="button"
                     onClick={() => setOpenDropdownId(isOpen ? null : brand.id)}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 border rounded-xl text-xs font-semibold transition cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3 py-1.5 border rounded-xl text-xs font-semibold transition cursor-pointer card-dropdown-trigger ${
                       isOpen
-                        ? 'bg-white border-[#b90051] text-[#b90051] shadow-xs'
-                        : 'bg-white/70 hover:bg-white border-[#f5b8cc] text-gray-700'
+                        ? 'is-open border-[#b90051] text-[#b90051]'
+                        : 'border-[#f5b8cc] text-gray-700'
                     }`}
                   >
                     <span className="flex items-center space-x-1.5">
@@ -329,7 +330,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                             {previewItems.map((item) => (
                               <div
                                 key={item.id}
-                                className="p-2 bg-gray-50/80 hover:bg-white rounded-lg border border-gray-200 text-xs space-y-0.5 shadow-2xs hover:border-[#f5b8cc] transition"
+                                className="p-2 bg-gray-50/80 hover:bg-white rounded-lg border border-gray-200 text-xs space-y-0.5 shadow-2xs hover:border-[#f5b8cc] transition dropdown-item-row"
                               >
                                 <div className="flex items-center justify-between">
                                   <span
@@ -353,8 +354,9 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                                   <span className="text-[#b90051] font-semibold">SN: {item.serialNumber}</span>
                                 </div>
                                 {item.location?.name && (
-                                  <div className="text-[9.5px] text-gray-400 pt-0.5 border-t border-gray-50">
-                                    <span>📍 {item.location.name}</span>
+                                  <div className="text-[9.5px] text-gray-400 pt-0.5 border-t border-gray-50 flex items-center space-x-1">
+                                    <MapPin className="w-3 h-3 text-gray-400" />
+                                    <span>{item.location.name}</span>
                                   </div>
                                 )}
                               </div>
@@ -371,7 +373,7 @@ export function BrandsClient({ initialBrands, categories }: BrandsClientProps) {
                           </Link>
                         </div>
                       ) : (
-                        <div className="p-3 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center space-y-1.5">
+                        <div className="p-3 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center space-y-1.5 dropdown-empty-state">
                           <p className="text-[11px] text-gray-500">Belum ada barang dengan merk ini.</p>
                           <Link
                             href={`/items/new?brandId=${brand.id}&categoryId=${brand.categoryId}`}

@@ -92,7 +92,12 @@ main {
 .bg-\[\#fff8fa\],
 .bg-\[\#fad2df\],
 .bg-\[\#f8c0d3\],
-.bg-\[\#fce7ee\]\/60 {
+.bg-\[\#fce7ee\]\/60,
+.bg-\[\#f5b8cc\]\/60,
+.bg-\[\#f5b8cc\]\/40,
+.bg-\[\#f5b8cc\],
+.bg-\[\#f0a8bf\],
+.bg-\[\#f0a8bf\]\/70 {
   background-color: var(--primary-light) !important;
 }
 
@@ -273,6 +278,69 @@ main .bg-gray-50\/75 {
   background-color: rgba(255, 255, 255, 0.06) !important;
 }
 
+/* Card Accordion / Dropdown Trigger Buttons (Categories, Brands, Locations) */
+.card-dropdown-trigger {
+  background-color: #ffffff;
+  border-color: var(--primary-border);
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.card-dropdown-trigger:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.card-dropdown-trigger.is-open {
+  background-color: #ffffff;
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .card-dropdown-trigger {
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  border-color: var(--primary-border) !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-theme .card-dropdown-trigger:hover {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .card-dropdown-trigger.is-open {
+  background-color: var(--card-bg) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 4px 12px 0 var(--primary-shadow, rgba(0, 0, 0, 0.25)) !important;
+}
+
+.dark-theme .dropdown-item-row,
+.dark-theme div.dropdown-item-row {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-theme .dropdown-item-row:hover,
+.dark-theme div.dropdown-item-row:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--primary-border) !important;
+}
+
+.dark-theme .dropdown-empty-state {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-theme .border-gray-100,
+.dark-theme .border-gray-100\/70,
+.dark-theme .border-gray-100\/50 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 /* High-contrast Badges & Pills in Dark Theme */
 .dark-theme .bg-amber-50 {
   background-color: rgba(245, 158, 11, 0.15) !important;
@@ -404,11 +472,15 @@ main a.hover\:bg-\[\#a00045\]:hover {
 .hover\:bg-\[\#fff0f4\]:hover,
 .hover\:bg-\[\#fff5f8\]:hover,
 .hover\:bg-\[\#fce7ee\]\/30:hover,
+.hover\:bg-\[\#f5b8cc\]\/40:hover,
+.hover\:bg-\[\#f0a8bf\]:hover,
 main .hover\:bg-\[\#fae2ea\]:hover,
 main .hover\:bg-\[\#fad2df\]:hover,
 main .hover\:bg-\[\#f8c0d3\]:hover,
 main .hover\:bg-\[\#fff0f4\]:hover,
 main .hover\:bg-\[\#fff5f8\]:hover,
+main .hover\:bg-\[\#f5b8cc\]\/40:hover,
+main .hover\:bg-\[\#f0a8bf\]:hover,
 main .bg-white.hover\:bg-\[\#fae2ea\]:hover,
 main .bg-white.hover\:bg-\[\#fad2df\]:hover {
   background-color: var(--primary-light) !important;

@@ -15,6 +15,7 @@ import {
   Monitor,
   Boxes,
   RotateCcw,
+  MapPin,
 } from 'lucide-react';
 import { deleteCategory } from '@/app/actions/master-data';
 import { CategoryModal } from '@/components/categories/category-modal';
@@ -253,7 +254,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-[#f5b8cc]/60 text-[#b90051] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-[#fae2ea] text-[#b90051] border border-[#f5b8cc] flex items-center justify-center shrink-0">
                         <Tags className="w-5 h-5" />
                       </div>
                       <div>
@@ -271,14 +272,14 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                           setIsModalOpen(true);
                         }}
                         title="Edit Kategori"
-                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#fae2ea] rounded-lg transition cursor-pointer"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget({ id: category.id, name: category.name })}
                         title="Hapus Kategori"
-                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#f5b8cc]/40 rounded-lg transition cursor-pointer"
+                        className="p-1.5 text-[#b90051] hover:text-[#8a003b] hover:bg-[#fae2ea] rounded-lg transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -287,7 +288,13 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
 
                   {/* Classification & Total Count */}
                   <div className="flex items-center justify-between pt-3 border-t border-[#f0a8bf]/70 text-xs">
-                    <span className="font-bold px-3 py-0.5 rounded-full bg-[#f0a8bf] text-[#8a003b] text-[11px] tracking-wide uppercase">
+                    <span
+                      className={`font-bold px-3 py-0.5 rounded-full text-[11px] tracking-wide uppercase border ${
+                        category.type === 'DEVICE'
+                          ? 'bg-[#fae2ea] text-[#b90051] border-[#f5b8cc]'
+                          : 'bg-purple-50 text-purple-700 border-purple-200'
+                      }`}
+                    >
                       {category.type}
                     </span>
 
@@ -302,10 +309,10 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                   <button
                     type="button"
                     onClick={() => setOpenDropdownId(isOpen ? null : category.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 border rounded-xl text-xs font-semibold transition cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3 py-2 border rounded-xl text-xs font-semibold transition cursor-pointer card-dropdown-trigger ${
                       isOpen
-                        ? 'bg-white border-[#b90051] text-[#b90051] shadow-xs'
-                        : 'bg-white/70 hover:bg-white border-[#f5b8cc] text-gray-700'
+                        ? 'is-open border-[#b90051] text-[#b90051]'
+                        : 'border-[#f5b8cc] text-gray-700'
                     }`}
                   >
                     <span className="flex items-center space-x-1.5">
@@ -336,7 +343,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                             {previewItems.map((item) => (
                               <div
                                 key={item.id}
-                                className="p-2 bg-gray-50/80 hover:bg-white rounded-lg border border-gray-200 text-xs space-y-0.5 shadow-2xs hover:border-[#f5b8cc] transition"
+                                className="p-2 bg-gray-50/80 hover:bg-white rounded-lg border border-gray-200 text-xs space-y-0.5 shadow-2xs hover:border-[#f5b8cc] transition dropdown-item-row"
                               >
                                 <div className="flex items-center justify-between">
                                   <span
@@ -362,7 +369,10 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                                 {(item.brand?.name || item.location?.name) && (
                                   <div className="flex items-center justify-between text-[9.5px] text-gray-400 pt-0.5 border-t border-gray-100">
                                     <span>{item.brand?.name || '-'}</span>
-                                    <span>📍 {item.location?.name || '-'}</span>
+                                    <span className="flex items-center space-x-1">
+                                      <MapPin className="w-3 h-3 text-gray-400" />
+                                      <span>{item.location?.name || '-'}</span>
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -379,7 +389,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                           </Link>
                         </div>
                       ) : (
-                        <div className="p-3 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center space-y-1.5">
+                        <div className="p-3 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center space-y-1.5 dropdown-empty-state">
                           <p className="text-[11px] text-gray-500">Belum ada barang di kategori ini.</p>
                           <Link
                             href={`/items/new?categoryId=${category.id}`}
